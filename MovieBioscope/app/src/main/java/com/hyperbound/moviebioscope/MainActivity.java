@@ -13,6 +13,7 @@ import android.widget.VideoView;
 public class MainActivity extends AppCompatActivity {
 
     VideoView videoView1;
+    VideoView videoView2;
     Button Hide,Show;
     int videoTime;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         videoView1=(VideoView)findViewById(R.id.video1);
+        videoView2=(VideoView)findViewById(R.id.video2);
         Hide=(Button)findViewById(R.id.hide);
         Hide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,15 +37,22 @@ public class MainActivity extends AppCompatActivity {
         Show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                videoView1.setVisibility(View.VISIBLE);
+                videoView1.pause();
+                videoTime=videoView1.getCurrentPosition();
+                videoView1.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(),"can seek "+videoView1.canSeekForward(),Toast.LENGTH_SHORT).show();
-                videoView1.seekTo(videoTime);
+                videoView2.requestFocus();
+                videoView2.start();
+                //videoView1.seekTo(videoTime);
             }
         });
         videoView1.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.sample));
         videoView1.setMediaController(new MediaController(this));
         videoView1.requestFocus();
         videoView1.start();
+
+        videoView2.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.ad));
+        videoView2.setMediaController(new MediaController(this));
 
         videoView1.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -53,10 +62,19 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSeekComplete(MediaPlayer mp) {
                         int time=videoView1.getCurrentPosition();
+                        videoView1.requestFocus();
                         videoView1.start();
                     }
                 });
 
+            }
+        });
+
+        videoView2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                videoView1.setVisibility(View.VISIBLE);
+                videoView1.seekTo(videoTime);
             }
         });
 

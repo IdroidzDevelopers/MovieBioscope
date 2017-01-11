@@ -14,6 +14,10 @@
         android:id="@+id/video1"
         android:layout_width="wrap_content"
         android:layout_height="200dp" />
+    <VideoView
+        android:id="@+id/video2"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/show"
-        android:text="Show"
+        android:text="Show AD"
         android:layout_below="@+id/hide"
         />
 </RelativeLayout>

@@ -11,9 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.LandingActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/title_activity_landing"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="landscape">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

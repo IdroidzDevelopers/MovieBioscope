@@ -4,11 +4,17 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -78,6 +86,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        createJson();
+    }
 
+    private void createJson(){
+        Firebasedata data=createData();
+        ObjectMapper ob=new ObjectMapper();
+        StringWriter stringEmp = new StringWriter();
+        try {
+            ob.writeValue(stringEmp, data);
+            Log.i("TEST","Data : "+stringEmp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        parseJson(stringEmp.toString());
+    }
+
+    private void parseJson(String jsonData){
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        //convert json string to object
+        try {
+            Firebasedata data = objectMapper.readValue(jsonData, Firebasedata.class);
+            Log.i("TEST","Data : "+data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Firebasedata createData(){
+        AssetDetails assets=new AssetDetails();
+        assets.setAssetID(101);
+        assets.setType("Movie");
+        assets.setUrl("www.google.com");
+        Firebasedata data=new Firebasedata();
+        data.setCommand("Download");
+        data.setAssetDetails(assets);
+        return data;
     }
 }

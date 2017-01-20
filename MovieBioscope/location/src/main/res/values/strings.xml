@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Location</string>
+    <string name="google_api_key">AIzaSyArjd9iDYCRZ-sv3CoDMFmbyRA-eVf4RC8</string>
+    <string name="distance_matrix_api">https://maps.googleapis.com/maps/api/distancematrix/json?origins=</string>
+</resources>

@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.lib.videoplayer.ui.VideoActivity"
             android:label="@string/title_activity_landing"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape">

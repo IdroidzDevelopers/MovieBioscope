@@ -7,9 +7,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <activity
+            android:name="com.lib.videoplayer.ui.VideoActivity"
+            android:screenOrientation="landscape" />
+
+        <provider
+            android:name="com.lib.videoplayer.database.VideoDatabaseProvider"
+            android:authorities="com.lib.videoplayer.contentprovider.database.VideoDatabaseProvider"/>
     </application>
-    <activity
-        android:name="com.lib.videoplayer.MainActivity"
-        android:screenOrientation="landscape" />
+
 
 </manifest>

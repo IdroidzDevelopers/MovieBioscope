@@ -4,10 +4,10 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lib.videoplayer.MainActivity">
+    tools:context="com.lib.videoplayer.ui.VideoActivity">
 
     <VideoView
-        android:id="@+id/video"
+        android:id="@+id/movie_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <VideoView

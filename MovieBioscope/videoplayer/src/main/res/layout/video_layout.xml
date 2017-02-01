@@ -6,13 +6,27 @@
     android:layout_height="match_parent"
     tools:context="com.lib.videoplayer.ui.VideoActivity">
 
+    <include
+        android:id="@+id/top_banner_video"
+        layout="@layout/top_banner"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/bottom_banner_video"
+        layout="@layout/bottom_banner"
+        android:visibility="gone" />
+
+
+
     <VideoView
         android:id="@+id/movie_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <VideoView
         android:id="@+id/ad_video"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </RelativeLayout>

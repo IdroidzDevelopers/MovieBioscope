@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">videoplayer</string>
+    <string name="title_activity_landing">LandingActivity</string>
+    <string name="total_distance_text">total distance</string>
+    <string name="journey_hours_text">journey hours</string>
+    <string name="start_text">start</string>
+    <string name="destination_text">destination</string>
+    <string name="time_left_text">Time left</string>
+    <string name="_current_time_text">Current time</string>
+    <string name="_current_location_text">Current location</string>
 </resources>

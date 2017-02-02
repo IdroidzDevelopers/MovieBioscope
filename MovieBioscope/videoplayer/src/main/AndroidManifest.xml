@@ -12,7 +12,7 @@
             android:screenOrientation="landscape" />
 
         <provider
-            android:name="com.lib.videoplayer.database.VideoDatabaseProvider"
+            android:name="com.lib.videoplayer.database.VideoProvider"
             android:authorities="com.lib.videoplayer.contentprovider.database.VideoDatabaseProvider"/>
     </application>
 

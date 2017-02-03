@@ -5,7 +5,6 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +25,7 @@ import com.lib.videoplayer.util.VideoData;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
+    private static final long BANNER_TIMEOUT = 3 * 1000;//3 secs
     private Context mContext;
     private VideoView mMovieView;
     private VideoView mAdvView;
@@ -34,6 +34,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private RelativeLayout mHeader;
     private RelativeLayout mFooter;
     private Handler mHandler;
+    private View mLoading;
+    private int mVideoState = VIDEO_STATE.NONE;
+    private int mStopTime;
+
 
     /******************
      * Listeners
@@ -45,9 +49,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private MovieSeekListener mMovieSeekListener;
     private AdPrepareListener mAdPrepareListener;
     private AdSeekListener mAdSeekListener;
-    private View mLoading;
-    private int mVideoState = VIDEO_STATE.NONE;
-    private int mStopTime;
+
+    /*****************
+     * Video state constants
+     ****************/
 
 
     public interface VIDEO_STATE {
@@ -86,66 +91,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fullScreen();
+        hideNotificationBar();
         initView();
         //putDummyData();
         mHandler.sendEmptyMessage(TASK_EVENT.PLAY_MOVIE);
         mHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-    }
-
-    private void putDummyData() {
-        ContentValues lValues = new ContentValues();
-        lValues.put(VideoProvider.VIDEO_COLUMNS.NAME, "Spotlight");
-        lValues.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
-        lValues.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/Spotlight.mp4");
-        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues);
-
-        ContentValues lValue = new ContentValues();
-        lValue.put(VideoProvider.VIDEO_COLUMNS.NAME, "insipiration");
-        lValue.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
-        lValue.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/test_ad.mp4");
-        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue);
-    }
-
-
-    private void initNextAdTiming() {
-        long lNextAdTime = VideoData.getNextAdTime();
-        //remove ad if any
-        mHandler.removeMessages(TASK_EVENT.PLAY_AD);
-        mHandler.sendEmptyMessageDelayed(TASK_EVENT.PLAY_AD, lNextAdTime);
-    }
-
-
-    private void startMovie() {
-        Uri lMovieUri = VideoData.getRandomMovieUri(mContext);
-        if (null != lMovieUri) {
-            mMovieView.setVisibility(View.VISIBLE);
-            mMovieView.setVideoURI(lMovieUri);
-            mMovieView.setMediaController(null);
-            mMovieView.requestFocus();
-            mMovieView.start();
-            setVideoState(VIDEO_STATE.MOVIE);
-        } else {
-            mNoContentView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void hideMovie() {
-        mVideoSeekTime = mMovieView.getCurrentPosition();
-        mMovieView.pause();
-        mMovieView.setVisibility(View.GONE);
-    }
-
-    private void startAd() {
-        if (!this.isFinishing()) {
-            mAdvView.setVisibility(View.VISIBLE);
-            mAdvView.setVideoURI(VideoData.getRandomAdUri(mContext));
-            mAdMediaController.show();
-            mAdvView.setMediaController(mAdMediaController);
-            mAdvView.requestFocus();
-            mAdvView.start();
-            setVideoState(VIDEO_STATE.AD);
-        }
     }
 
     /**
@@ -175,7 +125,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mAdSeekListener = new AdSeekListener();
 
     }
-
 
     @Override
     protected void onResume() {
@@ -207,24 +156,136 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    private void fullScreen() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
-                mHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, 3 * 1000);
+                if (mHeader.getVisibility() != View.VISIBLE && View.VISIBLE != mFooter.getVisibility()) {
+                    mHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
+                    mHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
+                } else {
+                    mHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
+                    mHandler.sendEmptyMessage(TASK_EVENT.HIDE_LOCATION_INFO);
+                }
                 break;
 
         }
         return false;
     }
 
+    /**
+     * Method to post advertisement after random time
+     */
+    private void initNextAdTiming() {
+        long lNextAdTime = VideoData.getNextAdTime();
+        //remove ad if any
+        mHandler.removeMessages(TASK_EVENT.PLAY_AD);
+        mHandler.sendEmptyMessageDelayed(TASK_EVENT.PLAY_AD, lNextAdTime);
+    }
+
+    /**
+     * Method to start movie view
+     */
+    private void startMovie() {
+        Uri lMovieUri = VideoData.getRandomMovieUri(mContext);
+        if (null != lMovieUri) {
+            mMovieView.setVisibility(View.VISIBLE);
+            mMovieView.setVideoURI(lMovieUri);
+            mMovieView.setMediaController(null);
+            mMovieView.requestFocus();
+            mMovieView.start();
+            setVideoState(VIDEO_STATE.MOVIE);
+        } else {
+            mNoContentView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Method to hide the movie view
+     */
+    private void hideMovie() {
+        mVideoSeekTime = mMovieView.getCurrentPosition();
+        mMovieView.pause();
+        mMovieView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Method to start ad view
+     */
+    private void startAd() {
+        if (!this.isFinishing()) {
+            mAdvView.setVisibility(View.VISIBLE);
+            mAdvView.setVideoURI(VideoData.getRandomAdUri(mContext));
+            mAdMediaController.show();
+            mAdvView.setMediaController(mAdMediaController);
+            mAdvView.requestFocus();
+            mAdvView.start();
+            setVideoState(VIDEO_STATE.AD);
+        }
+    }
+
+    /**
+     * Method to hide the notification bar
+     */
+    private void hideNotificationBar() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    /**
+     * Method to hide the loading/buffering icon
+     */
+    private void showLoadingIcon() {
+        mLoading.setVisibility(View.VISIBLE);
+        mLoading.bringToFront();
+    }
+
+    /**
+     * Method to show the loading icon
+     */
+    private void hideLoadingIcon() {
+        mLoading.setVisibility(View.GONE);
+
+    }
+
+    /**
+     * Method to start from particular position
+     */
+    private void startSeekingMovie() {
+        mMovieView.setVisibility(View.VISIBLE);
+        mMovieView.seekTo(mVideoSeekTime);
+        mMovieView.start();
+        setVideoState(VIDEO_STATE.MOVIE);
+
+    }
+
+    /**
+     * Method to hide the ad view
+     */
+    private void hideAdView() {
+        mAdvView.setVisibility(View.GONE);
+        mAdMediaController.hide();
+    }
+
+
+    /**
+     * show location information from screen
+     */
+    private void showLocationInfo() {
+        mHeader.setVisibility(View.VISIBLE);
+        mFooter.setVisibility(View.VISIBLE);
+        mHeader.bringToFront();
+        mFooter.bringToFront();
+    }
+
+    /**
+     * Hide location information from screen
+     */
+    private void hideLocationInfo() {
+        mHeader.setVisibility(View.GONE);
+        mFooter.setVisibility(View.GONE);
+    }
 
     public class TaskHandler extends Handler {
         @Override
@@ -272,33 +333,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    private void showLoadingIcon() {
-        mLoading.setVisibility(View.VISIBLE);
-        mLoading.bringToFront();
-    }
 
-
-    private void hideLoadingIcon() {
-        mLoading.setVisibility(View.GONE);
-
-    }
-
-    private void startSeekingMovie() {
-        mMovieView.setVisibility(View.VISIBLE);
-        mMovieView.seekTo(mVideoSeekTime);
-        mMovieView.start();
-        setVideoState(VIDEO_STATE.MOVIE);
-
-    }
-
-    private void hideAdView() {
-        mAdvView.setVisibility(View.GONE);
-        mAdMediaController.hide();
-    }
-
-    /**
-     *
-     */
     public class MovieCompleteListener implements MediaPlayer.OnCompletionListener {
 
         @Override
@@ -357,21 +392,21 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    /**
-     * show location information from screen
-     */
-    private void showLocationInfo() {
-        mHeader.setVisibility(View.VISIBLE);
-        mFooter.setVisibility(View.VISIBLE);
-        mHeader.bringToFront();
-        mFooter.bringToFront();
-    }
 
-    /**
-     * Hide location information from screen
+    /***********************************************************************************
+     * Testing code needs to be removed
      */
-    private void hideLocationInfo() {
-        mHeader.setVisibility(View.GONE);
-        mFooter.setVisibility(View.GONE);
+    private void putDummyData() {
+        ContentValues lValues = new ContentValues();
+        lValues.put(VideoProvider.VIDEO_COLUMNS.NAME, "Spotlight");
+        lValues.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
+        lValues.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/Spotlight.mp4");
+        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues);
+
+        ContentValues lValue = new ContentValues();
+        lValue.put(VideoProvider.VIDEO_COLUMNS.NAME, "insipiration");
+        lValue.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
+        lValue.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/test_ad.mp4");
+        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue);
     }
 }

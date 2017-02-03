@@ -15,15 +15,15 @@ import com.lib.videoplayer.ui.VideoActivity;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
- * Use the {@link Landingfragment#newInstance} factory method to
+ * Use the {@link LandingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Landingfragment extends Fragment implements View.OnClickListener {
+public class LandingFragment extends Fragment implements View.OnClickListener {
 
     private ImageButton mPlayBottom;
     private View mRootView;
 
-    public Landingfragment() {
+    public LandingFragment() {
         // Required empty public constructor
     }
 
@@ -31,11 +31,11 @@ public class Landingfragment extends Fragment implements View.OnClickListener {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment Landingfragment.
+     * @return A new instance of fragment LandingFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static Fragment newInstance() {
-        Landingfragment fragment = new Landingfragment();
+        LandingFragment fragment = new LandingFragment();
         return fragment;
     }
 

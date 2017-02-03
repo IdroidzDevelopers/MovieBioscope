@@ -8,4 +8,5 @@
     <string name="time_left_text">Time left</string>
     <string name="_current_time_text">Current time</string>
     <string name="_current_location_text">Current location</string>
+    <string name="_no_content_text">No content available</string>
 </resources>

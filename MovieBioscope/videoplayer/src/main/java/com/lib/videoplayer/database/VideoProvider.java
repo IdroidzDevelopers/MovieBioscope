@@ -33,14 +33,21 @@ public class VideoProvider extends ContentProvider {
         String ID = "_id";
         String NAME = "name";
         String PATH = "path";
+        String TYPE = "type";
         String LAST_PLAYED_TIME = "last_played_time";
         String PLAY_COUNT = "play_count";
     }
 
+    public interface VIDEO_TYPE {
+        String MOVIE = "movie";
+        String ADV = "adv";
+        String BREAKING_NEWS = "breaking_news";
+    }
+
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " TEXT PRIMARY KEY,"
-            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " TEXT" + ")";
+            + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER" + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_DEFAULT = 3;
@@ -50,6 +57,8 @@ public class VideoProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
+
+
 
     @Override
     public String getType(Uri uri) {

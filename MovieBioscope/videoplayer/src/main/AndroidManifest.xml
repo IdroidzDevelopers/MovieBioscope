@@ -13,7 +13,7 @@
 
         <provider
             android:name="com.lib.videoplayer.database.VideoProvider"
-            android:authorities="com.lib.videoplayer.contentprovider.database.VideoDatabaseProvider"/>
+            android:authorities="com.lib.videoplayer.contentprovider.database.VideoProvider"/>
     </application>
 
 

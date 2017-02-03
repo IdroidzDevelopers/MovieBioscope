@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -83,6 +86,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fullScreen();
         initView();
         //putDummyData();
         mHandler.sendEmptyMessage(TASK_EVENT.PLAY_MOVIE);
@@ -119,7 +123,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.setVideoURI(lMovieUri);
             mMovieView.setMediaController(null);
             mMovieView.requestFocus();
-            mMovieView.seekTo(5000000);
             mMovieView.start();
             setVideoState(VIDEO_STATE.MOVIE);
         } else {
@@ -134,13 +137,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private void startAd() {
-        mAdvView.setVisibility(View.VISIBLE);
-        mAdvView.setVideoURI(VideoData.getRandomAdUri(mContext));
-        mAdMediaController.show();
-        mAdvView.setMediaController(mAdMediaController);
-        mAdvView.requestFocus();
-        mAdvView.start();
-        setVideoState(VIDEO_STATE.AD);
+        if (!this.isFinishing()) {
+            mAdvView.setVisibility(View.VISIBLE);
+            mAdvView.setVideoURI(VideoData.getRandomAdUri(mContext));
+            mAdMediaController.show();
+            mAdvView.setMediaController(mAdMediaController);
+            mAdvView.requestFocus();
+            mAdvView.start();
+            setVideoState(VIDEO_STATE.AD);
+        }
     }
 
     /**
@@ -202,18 +207,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
+    private void fullScreen() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override

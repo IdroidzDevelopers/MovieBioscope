@@ -14,4 +14,14 @@
 
     <include layout="@layout/bottom_banner" />
 
+    <ImageButton
+        android:id="@+id/play"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:paddingRight="20dp"
+        android:src="@mipmap/play_icon" />
+
 </RelativeLayout>

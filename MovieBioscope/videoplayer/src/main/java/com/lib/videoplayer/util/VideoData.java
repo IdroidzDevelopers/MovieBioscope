@@ -58,6 +58,6 @@ public class VideoData {
     }
 
     public static long getNextAdTime() {
-        return 30 * 1000;
+        return 60 * 1000;
     }
 }

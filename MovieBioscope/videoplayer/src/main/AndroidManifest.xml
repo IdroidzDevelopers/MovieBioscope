@@ -8,7 +8,9 @@
         android:supportsRtl="true">
 
         <activity
+
             android:name="com.lib.videoplayer.ui.VideoActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape" />
 
         <provider

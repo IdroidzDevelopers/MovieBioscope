@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private void addLayout() {
         setContentView(R.layout.main_layout);
         FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.add(R.id.container, LandingFragment.newInstance());
+        lTransaction.add(R.id.container, HomeFragment.newInstance());
         lTransaction.commit();
     }
 

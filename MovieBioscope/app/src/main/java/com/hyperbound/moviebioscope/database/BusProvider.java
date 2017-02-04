@@ -1,4 +1,4 @@
-package com.lib.videoplayer.database;
+package com.hyperbound.moviebioscope.database;
 
 
 import android.content.ContentProvider;
@@ -13,48 +13,37 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-public class VideoProvider extends ContentProvider {
+public class BusProvider extends ContentProvider {
 
-    private static final String TAG = VideoProvider.class.getSimpleName();
+    private static final String TAG = BusProvider.class.getSimpleName();
     private static final boolean DEBUG = true;
 
     public static final String DATABASE_NAME = "bioscope.db";
-    public static final String TABLE_VIDEO = "video_table";
+    public static final String BUS_DETAIL_TABLE = "bus_details_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.hyperbound.moviebioscope.contentprovider.database.VideoProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
+    public static final Uri CONTENT_URI_BUS_DETAIL_TABLE = Uri.parse(CONTENT_URI + "/" + BUS_DETAIL_TABLE);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
 
-    public interface VIDEO_COLUMNS {
-        String ID = "_id";
-        String NAME = "name";
-        String PATH = "path";
-        String TYPE = "type";
-        String LAST_PLAYED_TIME = "last_played_time";
-        String PLAY_COUNT = "play_count";
+    public interface BUS_COLUMNS {
+        String ID = "bus_id";
+        String NUMBER = "bus_number";
     }
 
-    public interface VIDEO_TYPE {
-        String MOVIE = "movie";
-        String ADV = "adv";
-        String BREAKING_NEWS = "breaking_news";
-    }
+    private static final String CREATE_BUS_DETAIL_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + BUS_DETAIL_TABLE + "(" + BUS_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + BUS_COLUMNS.NUMBER+ " TEXT " +")";
 
-
-    private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0" + ")";
-
-    private static final int CASE_VIDEO_TABLE = 1;
+    private static final int CASE_BUS_DETAIL_TABLE = 1;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
+        sUriMatcher.addURI(AUTHORITY, BUS_DETAIL_TABLE, CASE_BUS_DETAIL_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -64,8 +53,8 @@ public class VideoProvider extends ContentProvider {
     public String getType(Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CASE_VIDEO_TABLE:
-                return AUTHORITY + "/" + TABLE_VIDEO;
+            case CASE_BUS_DETAIL_TABLE:
+                return AUTHORITY + "/" + BUS_DETAIL_TABLE;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -78,7 +67,7 @@ public class VideoProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL(CREATE_VIDEO_TABLE);
+        db.execSQL(CREATE_BUS_DETAIL_TABLE);
         return false;
     }
 
@@ -88,7 +77,7 @@ public class VideoProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_BUS_DETAIL_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -105,7 +94,7 @@ public class VideoProvider extends ContentProvider {
         Uri lInsertedUri = null;
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_BUS_DETAIL_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -123,7 +112,7 @@ public class VideoProvider extends ContentProvider {
         int count = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_BUS_DETAIL_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
             default:
@@ -137,7 +126,7 @@ public class VideoProvider extends ContentProvider {
         int lCount = 0;
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_BUS_DETAIL_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

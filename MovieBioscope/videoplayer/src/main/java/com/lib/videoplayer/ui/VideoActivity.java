@@ -1,6 +1,5 @@
 package com.lib.videoplayer.ui;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
@@ -20,7 +19,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.lib.videoplayer.R;
-import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.VideoData;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
@@ -93,7 +92,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         super.onCreate(savedInstanceState);
         hideNotificationBar();
         initView();
-        //putDummyData();
         mHandler.sendEmptyMessage(TASK_EVENT.PLAY_MOVIE);
         mHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
     }
@@ -131,7 +129,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         super.onResume();
         if (mVideoState != VIDEO_STATE.NONE) {
             mHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-            showLoadingIcon();
+            //showLoadingIcon();
             if (getVideoState() == VIDEO_STATE.MOVIE) {
                 mMovieView.seekTo(mStopTime);
                 mMovieView.start();
@@ -187,14 +185,16 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * Method to start movie view
      */
     private void startMovie() {
-        Uri lMovieUri = VideoData.getRandomMovieUri(mContext);
-        if (null != lMovieUri) {
+        Data lData = VideoData.getRandomMovieUri(mContext);
+        String lPath = lData.getPath();
+        if (null != lPath) {
             mMovieView.setVisibility(View.VISIBLE);
-            mMovieView.setVideoURI(lMovieUri);
+            mMovieView.setVideoURI(Uri.parse(lPath));
             mMovieView.setMediaController(null);
             mMovieView.requestFocus();
             mMovieView.start();
             setVideoState(VIDEO_STATE.MOVIE);
+            VideoData.updateVideoData(mContext, lData);
         } else {
             mNoContentView.setVisibility(View.VISIBLE);
         }
@@ -213,14 +213,19 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * Method to start ad view
      */
     private void startAd() {
-        if (!this.isFinishing()) {
-            mAdvView.setVisibility(View.VISIBLE);
-            mAdvView.setVideoURI(VideoData.getRandomAdUri(mContext));
-            mAdMediaController.show();
-            mAdvView.setMediaController(mAdMediaController);
-            mAdvView.requestFocus();
-            mAdvView.start();
-            setVideoState(VIDEO_STATE.AD);
+        Data lData = VideoData.getRandomAdUri(mContext);
+        String lPath = lData.getPath();
+        if (null != lPath) {
+            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
+                mAdvView.setVisibility(View.VISIBLE);
+                mAdvView.setVideoURI(Uri.parse(lPath));
+                mAdMediaController.show();
+                mAdvView.setMediaController(mAdMediaController);
+                mAdvView.requestFocus();
+                mAdvView.start();
+                setVideoState(VIDEO_STATE.AD);
+                VideoData.updateVideoData(mContext, lData);
+            }
         }
     }
 
@@ -365,14 +370,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            //mediaPlayer.setOnSeekCompleteListener(mAdSeekListener);
+            mediaPlayer.setOnSeekCompleteListener(mAdSeekListener);
         }
     }
 
     public class AdSeekListener implements OnSeekCompleteListener {
         @Override
         public void onSeekComplete(MediaPlayer mediaPlayer) {
-            //hideLoadingIcon();
+            hideLoadingIcon();
         }
     }
 
@@ -392,21 +397,4 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-
-    /***********************************************************************************
-     * Testing code needs to be removed
-     */
-    private void putDummyData() {
-        ContentValues lValues = new ContentValues();
-        lValues.put(VideoProvider.VIDEO_COLUMNS.NAME, "Spotlight");
-        lValues.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
-        lValues.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/Spotlight.mp4");
-        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues);
-
-        ContentValues lValue = new ContentValues();
-        lValue.put(VideoProvider.VIDEO_COLUMNS.NAME, "insipiration");
-        lValue.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
-        lValue.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/test_ad.mp4");
-        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue);
-    }
 }

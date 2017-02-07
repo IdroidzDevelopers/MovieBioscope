@@ -10,12 +10,17 @@
         <activity
 
             android:name="com.lib.videoplayer.ui.VideoActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="com.lib.videoplayer.database.VideoProvider"
-            android:authorities="com.lib.videoplayer.contentprovider.database.VideoProvider"/>
+            android:authorities="com.lib.videoplayer.contentprovider.database.VideoProvider" />
+        <receiver android:name="com.lib.videoplayer.receivers.VideoCommandReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.VIDEO_COMMAND_ACTION"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 

@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -36,12 +35,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private View mLoading;
     private int mVideoState = VIDEO_STATE.NONE;
     private int mStopTime;
+    private RelativeLayout mNewFeedLayout;
+    private TextView mNewsTextView;
 
 
     /******************
      * Listeners
      ******************/
-    private AdMediaController mAdMediaController;
     private AdsCompleteListener mAdsCompleteListener;
     private MovieCompleteListener mMovieCompleteListener;
     private MoviePrepareListener mMoviePrepareListener;
@@ -74,6 +74,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int PLAY_AD = 4;
         int STOP_AD = 5;
         int PREPARE_FOR_NEXT_AD = 6;
+        int SHOW_NEWS_FEED = 7;
+        int HIDE_NEWS_FEED = 8;
 
     }
 
@@ -116,12 +118,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mAdsCompleteListener = new AdsCompleteListener();
         mMovieView.setOnCompletionListener(mMovieCompleteListener);
         mAdvView.setOnCompletionListener(mAdsCompleteListener);
-        mAdMediaController = new AdMediaController(mContext);
         mMoviePrepareListener = new MoviePrepareListener();
         mMovieSeekListener = new MovieSeekListener();
         mAdPrepareListener = new AdPrepareListener();
         mAdSeekListener = new AdSeekListener();
-
+        //news feed
+        mNewFeedLayout = (RelativeLayout) findViewById(R.id.news_feed_layout);
+        mNewFeedLayout.bringToFront();
+        mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
+        mNewsTextView.setSelected(true);
     }
 
     @Override
@@ -219,8 +224,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mAdvView.setVisibility(View.VISIBLE);
                 mAdvView.setVideoURI(Uri.parse(lPath));
-                mAdMediaController.show();
-                mAdvView.setMediaController(mAdMediaController);
                 mAdvView.requestFocus();
                 mAdvView.start();
                 setVideoState(VIDEO_STATE.AD);
@@ -270,7 +273,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void hideAdView() {
         mAdvView.setVisibility(View.GONE);
-        mAdMediaController.hide();
     }
 
 
@@ -290,6 +292,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private void hideLocationInfo() {
         mHeader.setVisibility(View.GONE);
         mFooter.setVisibility(View.GONE);
+    }
+
+    private void hideNewsFeed() {
+        mNewFeedLayout.setVisibility(View.GONE);
+    }
+
+    private void showNewsFeed() {
+        mNewFeedLayout.setVisibility(View.VISIBLE);
+        mNewFeedLayout.bringToFront();
     }
 
     public class TaskHandler extends Handler {
@@ -317,6 +328,12 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
                 case TASK_EVENT.PREPARE_FOR_NEXT_AD:
                     initNextAdTiming();
+                    break;
+                case TASK_EVENT.SHOW_NEWS_FEED:
+                    showNewsFeed();
+                    break;
+                case TASK_EVENT.HIDE_NEWS_FEED:
+                    hideNewsFeed();
                     break;
                 default:
                     break;
@@ -378,22 +395,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         @Override
         public void onSeekComplete(MediaPlayer mediaPlayer) {
             hideLoadingIcon();
-        }
-    }
-
-
-    /**
-     * Media controller for advertisement
-     */
-    private class AdMediaController extends MediaController {
-
-        public AdMediaController(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void show() {
-            super.show(0);
         }
     }
 

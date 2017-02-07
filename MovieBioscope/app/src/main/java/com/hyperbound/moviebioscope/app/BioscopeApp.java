@@ -2,11 +2,15 @@ package com.hyperbound.moviebioscope.app;
 
 import android.app.Application;
 import android.content.ContentValues;
+import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.hyperbound.moviebioscope.database.BusProvider;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.receivers.VideoCommandReceiver;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +27,10 @@ public class BioscopeApp extends Application {
         super.onCreate();
         createFolderIfRequired();
         putDummyData();
+        putBusDetail();
+        registerVideoCommand();
     }
+
 
     private void createFolderIfRequired() {
         File folder = new File(Environment.getExternalStorageDirectory() + "/" + FOLDER_NAME);
@@ -81,5 +88,17 @@ public class BioscopeApp extends Application {
         lValue5.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue5);
 
+    }
+
+    private void putBusDetail() {
+        ContentValues lValue5 = new ContentValues();
+        lValue5.put(BusProvider.BUS_COLUMNS.NUMBER, "OR07EA2352");
+        getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lValue5);
+    }
+
+    private void registerVideoCommand() {
+        IntentFilter lIntentFilter = new IntentFilter();
+        lIntentFilter.addAction("android.intent.action.VIDEO_COMMAND_ACTION");
+        LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 }

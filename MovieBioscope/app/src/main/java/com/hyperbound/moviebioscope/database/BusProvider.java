@@ -22,7 +22,7 @@ public class BusProvider extends ContentProvider {
     public static final String BUS_DETAIL_TABLE = "bus_details_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.hyperbound.moviebioscope.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.hyperbound.moviebioscope.contentprovider.database.BusProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri CONTENT_URI_BUS_DETAIL_TABLE = Uri.parse(CONTENT_URI + "/" + BUS_DETAIL_TABLE);
     public DatabaseHelper mDbHelper;

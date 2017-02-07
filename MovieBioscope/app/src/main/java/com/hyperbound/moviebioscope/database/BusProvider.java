@@ -29,14 +29,14 @@ public class BusProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher;
 
 
-    public interface BUS_COLUMNS {
+    public interface COLUMNS {
         String ID = "bus_id";
         String NUMBER = "bus_number";
     }
 
     private static final String CREATE_BUS_DETAIL_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + BUS_DETAIL_TABLE + "(" + BUS_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + BUS_COLUMNS.NUMBER+ " TEXT " +")";
+            + BUS_DETAIL_TABLE + "(" + COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + COLUMNS.NUMBER+ " TEXT " +")";
 
     private static final int CASE_BUS_DETAIL_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

@@ -2,6 +2,7 @@ package com.hyperbound.moviebioscope.app;
 
 import android.app.Application;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
@@ -20,15 +21,20 @@ public class BioscopeApp extends Application {
     private static final String TAG = BioscopeApp.class.getSimpleName();
     private static final String FOLDER_NAME = "movie_bioscope";
     private static final String FILE_NAME = "read_me.txt";
-
+    private static Context sContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sContext = this;
         createFolderIfRequired();
         putDummyData();
-        putBusDetail();
+       // putBusDetail();
         registerVideoCommand();
+    }
+
+    public static Context getContext() {
+        return sContext;
     }
 
 
@@ -92,7 +98,7 @@ public class BioscopeApp extends Application {
 
     private void putBusDetail() {
         ContentValues lValue5 = new ContentValues();
-        lValue5.put(BusProvider.BUS_COLUMNS.NUMBER, "OR07EA2352");
+        lValue5.put(BusProvider.COLUMNS.NUMBER, "OR07EA2352");
         getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lValue5);
     }
 

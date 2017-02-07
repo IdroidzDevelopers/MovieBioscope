@@ -7,6 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.util.BusUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private void addLayout() {
         setContentView(R.layout.main_layout);
         FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.add(R.id.container, HomeFragment.newInstance());
+        if (BusUtil.isRegistrationNumberAvailable(this)) {
+            lTransaction.add(R.id.container, HomeFragment.newInstance());
+        } else {
+            lTransaction.add(R.id.container, RegistrationFragment.newInstance());
+        }
         lTransaction.commit();
     }
 

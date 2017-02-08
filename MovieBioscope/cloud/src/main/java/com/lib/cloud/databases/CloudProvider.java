@@ -1,4 +1,4 @@
-package com.lib.videoplayer.database;
+package com.lib.cloud.databases;
 
 
 import android.content.ContentProvider;
@@ -13,51 +13,41 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-public class VideoProvider extends ContentProvider {
+public class CloudProvider extends ContentProvider {
 
-    private static final String TAG = VideoProvider.class.getSimpleName();
+    private static final String TAG = CloudProvider.class.getSimpleName();
     private static final boolean DEBUG = true;
 
     public static final String DATABASE_NAME = "bioscope.db";
-    public static final String TABLE_VIDEO = "video_table";
+    public static final String TABLE_CLOUD = "cloud_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.lib.cloud.contentprovider.database.CloudProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
+    public static final Uri CONTENT_URI_CLOUD_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_CLOUD);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
 
-    public interface VIDEO_COLUMNS {
+    public interface COLUMNS {
         String ID = "_id";
-        String NAME = "name";
-        String PATH = "path";
-        String TYPE = "type";
-        String LAST_PLAYED_TIME = "last_played_time";
-        String PLAY_COUNT = "play_count";
-        String DOWNLOADING_ID = "downloading_id";
-        String DOWNLOAD_STATUS = "download_status";
         String CLOUD_ID = "cloud_id";
+        String DATA = "data";
+        String STATUS = "status";//received , processed etc
+        String CLOUD_SEND_TIME = "cloud_time";
+        String CREATED_TIME = "created_time";
     }
 
-    public interface VIDEO_TYPE {
-        String MOVIE = "movie";
-        String ADV = "adv";
-        String BREAKING_NEWS = "breaking_news";
-    }
+    private static final String CREATE_CLOUD_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_CLOUD + "(" + COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + COLUMNS.CLOUD_ID + " TEXT," + COLUMNS.DATA + " TEXT," + COLUMNS.STATUS + " TEXT," + COLUMNS.CLOUD_SEND_TIME + " TEXT," + COLUMNS.CREATED_TIME + " TEXT " + ")";
 
-
-    private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
-
-    private static final int CASE_VIDEO_TABLE = 1;
+    private static final int CASE_CLOUD_TABLE = 1;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_CLOUD, CASE_CLOUD_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -66,8 +56,8 @@ public class VideoProvider extends ContentProvider {
     public String getType(Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CASE_VIDEO_TABLE:
-                return AUTHORITY + "/" + TABLE_VIDEO;
+            case CASE_CLOUD_TABLE:
+                return AUTHORITY + "/" + TABLE_CLOUD;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -80,7 +70,7 @@ public class VideoProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL(CREATE_VIDEO_TABLE);
+        db.execSQL(CREATE_CLOUD_TABLE);
         return false;
     }
 
@@ -90,7 +80,7 @@ public class VideoProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_CLOUD_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -107,7 +97,7 @@ public class VideoProvider extends ContentProvider {
         Uri lInsertedUri = null;
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_CLOUD_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -125,7 +115,7 @@ public class VideoProvider extends ContentProvider {
         int count = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_CLOUD_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
             default:
@@ -139,7 +129,7 @@ public class VideoProvider extends ContentProvider {
         int lCount = 0;
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_CLOUD_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

@@ -10,6 +10,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.database.BusProvider;
+import com.lib.cloud.databases.CloudProvider;
+import com.lib.location.databases.LocationProvider;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
 
@@ -29,8 +31,10 @@ public class BioscopeApp extends Application {
         sContext = this;
         createFolderIfRequired();
         putDummyData();
-       // putBusDetail();
+        // putBusDetail();
         registerVideoCommand();
+        putClouddata();
+        putLocationData();
     }
 
     public static Context getContext() {
@@ -100,6 +104,18 @@ public class BioscopeApp extends Application {
         ContentValues lValue5 = new ContentValues();
         lValue5.put(BusProvider.COLUMNS.NUMBER, "OR07EA2352");
         getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lValue5);
+    }
+
+    private void putClouddata() {
+        ContentValues lValue5 = new ContentValues();
+        lValue5.put(CloudProvider.COLUMNS.CLOUD_ID, "12345557");
+        getContentResolver().insert(CloudProvider.CONTENT_URI_CLOUD_TABLE, lValue5);
+    }
+
+    private void putLocationData() {
+        ContentValues lValue5 = new ContentValues();
+        lValue5.put(LocationProvider.LOCATION_COLUMNS.SOURCE, "Bangalore");
+        getContentResolver().insert(LocationProvider.CONTENT_URI_LOCATION_TABLE, lValue5);
     }
 
     private void registerVideoCommand() {

@@ -1,4 +1,4 @@
-package com.lib.videoplayer.database;
+package com.lib.location.databases;
 
 
 import android.content.ContentProvider;
@@ -13,51 +13,59 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-public class VideoProvider extends ContentProvider {
+public class LocationProvider extends ContentProvider {
 
-    private static final String TAG = VideoProvider.class.getSimpleName();
+    private static final String TAG = LocationProvider.class.getSimpleName();
     private static final boolean DEBUG = true;
 
     public static final String DATABASE_NAME = "bioscope.db";
-    public static final String TABLE_VIDEO = "video_table";
+    public static final String TABLE_LOCATION = "location_table";
+    public static final String TABLE_LOCATION_INFO = "location_info_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.lib.location.contentprovider.database.LocationProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
+    public static final Uri CONTENT_URI_LOCATION_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_LOCATION);
+    public static final Uri CONTENT_URI_LOCATION_INFO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_LOCATION_INFO);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
 
-    public interface VIDEO_COLUMNS {
+    public interface LOCATION_COLUMNS {
         String ID = "_id";
-        String NAME = "name";
-        String PATH = "path";
-        String TYPE = "type";
-        String LAST_PLAYED_TIME = "last_played_time";
-        String PLAY_COUNT = "play_count";
-        String DOWNLOADING_ID = "downloading_id";
-        String DOWNLOAD_STATUS = "download_status";
-        String CLOUD_ID = "cloud_id";
+        String SOURCE = "source";
+        String DESTINATION = "destination";
+        String DISTANCE_TO_SOURCE = "distance_to_source";
+        String TIME_TO_SOURCE = "time_to_source";
+        String DISTANCE_TO_DESTINATION = "distance_to_destination";
+        String TIME_TO_DESTINATION = "time_to_destination";
+        String CREATED_TIME = "created_time";
     }
 
-    public interface VIDEO_TYPE {
-        String MOVIE = "movie";
-        String ADV = "adv";
-        String BREAKING_NEWS = "breaking_news";
+    public interface LOCATION_INFO_COLUMNS {
+        String ID = "_id";
+        String SOURCE = "source";
+        String DESTINATION = "destination";
+        String TOTAL_DISTANCE = "total_distance";
+        String TOTAL_TIME = "total_time";
     }
 
+    private static final String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_LOCATION + "(" + LOCATION_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + LOCATION_COLUMNS.SOURCE + " TEXT," + LOCATION_COLUMNS.DESTINATION + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_SOURCE + " TEXT," + LOCATION_COLUMNS.TIME_TO_SOURCE + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.TIME_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.CREATED_TIME + " TEXT" + ")";
 
-    private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
+    private static final String CREATE_LOCATION_INFO_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_LOCATION_INFO + "(" + LOCATION_INFO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + LOCATION_INFO_COLUMNS.SOURCE + " TEXT," + LOCATION_INFO_COLUMNS.DESTINATION + " TEXT," + LOCATION_INFO_COLUMNS.TOTAL_DISTANCE + " TEXT," + LOCATION_INFO_COLUMNS.TOTAL_TIME + " TEXT" + ")";
 
-    private static final int CASE_VIDEO_TABLE = 1;
+    private static final int CASE_LOCATION_TABLE = 1;
+    private static final int CASE_LOCATION_INFO_TABLE = 2;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_LOCATION, CASE_LOCATION_TABLE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_LOCATION_INFO, CASE_LOCATION_INFO_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -66,8 +74,10 @@ public class VideoProvider extends ContentProvider {
     public String getType(Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CASE_VIDEO_TABLE:
-                return AUTHORITY + "/" + TABLE_VIDEO;
+            case CASE_LOCATION_TABLE:
+                return AUTHORITY + "/" + TABLE_LOCATION;
+            case CASE_LOCATION_INFO_TABLE:
+                return AUTHORITY + "/" + TABLE_LOCATION_INFO;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -80,7 +90,8 @@ public class VideoProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL(CREATE_VIDEO_TABLE);
+        db.execSQL(CREATE_LOCATION_TABLE);
+        db.execSQL(CREATE_LOCATION_INFO_TABLE);
         return false;
     }
 
@@ -90,7 +101,11 @@ public class VideoProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_LOCATION_TABLE:
+                queryBuilder.setTables(uri.getLastPathSegment());
+                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case CASE_LOCATION_INFO_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -107,7 +122,10 @@ public class VideoProvider extends ContentProvider {
         Uri lInsertedUri = null;
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_LOCATION_TABLE:
+                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                break;
+            case CASE_LOCATION_INFO_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -125,7 +143,10 @@ public class VideoProvider extends ContentProvider {
         int count = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_LOCATION_TABLE:
+                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
+                break;
+            case CASE_LOCATION_INFO_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
             default:
@@ -139,7 +160,10 @@ public class VideoProvider extends ContentProvider {
         int lCount = 0;
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_LOCATION_TABLE:
+                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
+                break;
+            case CASE_LOCATION_INFO_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.util.TimeUtil;
 import com.lib.videoplayer.ui.VideoActivity;
 
 /**
@@ -24,6 +26,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
     private ImageButton mPlayBottom;
     private View mRootView;
+    private TextView mCurrentTime;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -51,9 +54,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.landing_fragment_layout, container, false);
+        initView();
+        return mRootView;
+    }
+
+    private void initView() {
+        mCurrentTime = (TextView) mRootView.findViewById(R.id.current_time);
         mPlayBottom = (ImageButton) mRootView.findViewById(R.id.play);
         mPlayBottom.setOnClickListener(this);
-        return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCurrentTime.setText(TimeUtil.getTime().toLowerCase());
     }
 
     @Override
@@ -61,7 +75,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.play:
                 startActivity(new Intent(getActivity(), VideoActivity.class));
-                Log.d("test"+TAG,"sending broadcast");
+                Log.d("test" + TAG, "sending broadcast");
                 LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction("android.intent.action.VIDEO_COMMAND_ACTION"));
                 break;
         }

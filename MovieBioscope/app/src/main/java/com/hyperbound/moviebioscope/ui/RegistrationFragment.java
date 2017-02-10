@@ -72,7 +72,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.submit_button:
-                if (NetworkUtil.isInternetAvailable(getActivity())) {
+                //if (NetworkUtil.isInternetAvailable(getActivity())) {
                     String lRegNumber = mRegNumber.getText().toString().trim();
                     if (!TextUtils.isEmpty(lRegNumber)) {
                         moveToNextPage();
@@ -83,9 +83,9 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
                     } else {
                         mRegNumber.setError(getString(R.string.empty_reg_text));
                     }
-                } else {
+               /* } else {
                     Toast.makeText(getActivity(), getString(R.string.no_internet_text), Toast.LENGTH_LONG).show();
-                }
+                }*/
                 break;
         }
     }
@@ -103,7 +103,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
 
     private void moveToNextPage() {
         FragmentTransaction lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        lTransaction.add(R.id.container, HomeFragment.newInstance());
+        lTransaction.replace(R.id.container, HomeFragment.newInstance());
         lTransaction.commit();
     }
 

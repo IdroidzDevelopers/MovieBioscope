@@ -17,8 +17,8 @@ public class VideoData {
     public static Data getRandomMovieUri(Context aContext) {
         Data lData = new Data();
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.MOVIE};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -46,8 +46,8 @@ public class VideoData {
     public static Data getRandomAdUri(Context aContext) {
         Data lData = new Data();
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {

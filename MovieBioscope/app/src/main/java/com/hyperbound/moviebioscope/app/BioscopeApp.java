@@ -68,13 +68,15 @@ public class BioscopeApp extends Application {
         lValues1.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
         lValues1.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/movie_1.mp4");
         lValues1.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues1);
 
         ContentValues lValues2 = new ContentValues();
         lValues2.put(VideoProvider.VIDEO_COLUMNS.NAME, "Raja Rani");
         lValues2.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
-        lValues2.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/movie_2.avi");
+        lValues2.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/movie_2.mp4");
         lValues2.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValues2.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues2);
 
         ContentValues lValue3 = new ContentValues();
@@ -82,6 +84,7 @@ public class BioscopeApp extends Application {
         lValue3.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
         lValue3.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/ad_1.mp4");
         lValue3.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValue3.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue3);
 
         ContentValues lValue4 = new ContentValues();
@@ -89,6 +92,7 @@ public class BioscopeApp extends Application {
         lValue4.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
         lValue4.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/ad_2.mp4");
         lValue4.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValue4.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue4);
 
         ContentValues lValue5 = new ContentValues();
@@ -96,6 +100,7 @@ public class BioscopeApp extends Application {
         lValue5.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
         lValue5.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/ad_3.mp4");
         lValue5.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValue5.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue5);
 
     }

@@ -24,11 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private void addLayout() {
         setContentView(R.layout.main_layout);
         FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        if (BusUtil.isRegistrationNumberAvailable(this)) {
-            lTransaction.add(R.id.container, HomeFragment.newInstance());
-        } else {
-            lTransaction.add(R.id.container, RegistrationFragment.newInstance());
-        }
+        lTransaction.add(R.id.container, SplashFragment.newInstance());
         lTransaction.commit();
     }
 

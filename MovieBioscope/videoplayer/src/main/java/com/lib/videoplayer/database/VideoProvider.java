@@ -47,6 +47,12 @@ public class VideoProvider extends ContentProvider {
         String BREAKING_NEWS = "breaking_news";
     }
 
+    public interface DOWNLOAD_STATUS {
+        String DOWNLOADED = "downloaded";
+        String DOWNLOADING = "downloading";
+        String FAILED = "failed";
+    }
+
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"

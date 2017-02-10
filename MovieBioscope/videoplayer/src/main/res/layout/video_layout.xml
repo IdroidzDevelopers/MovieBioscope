@@ -8,13 +8,13 @@
 
     <include
         android:id="@+id/top_banner_video"
-        layout="@layout/top_banner"
-        android:visibility="gone" />
+        layout="@layout/top_banner_video"
+        android:visibility="invisible" />
 
     <include
         android:id="@+id/bottom_banner_video"
-        layout="@layout/bottom_banner"
-        android:visibility="gone" />
+        layout="@layout/bottom_banner_video"
+        android:visibility="invisible" />
 
     <include
         android:id="@+id/news_feed_layout"

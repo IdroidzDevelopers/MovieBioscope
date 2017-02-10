@@ -1,18 +1,22 @@
 package com.lib.videoplayer.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -20,6 +24,8 @@ import android.widget.VideoView;
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.VideoData;
+
+import java.io.File;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
@@ -78,7 +84,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int HIDE_NEWS_FEED = 8;
 
     }
-
     ;
 
     public int getVideoState() {
@@ -192,7 +197,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private void startMovie() {
         Data lData = VideoData.getRandomMovieUri(mContext);
         String lPath = lData.getPath();
-        if (null != lPath) {
+        if (null != lPath && isFileExist(lPath)) {
             mMovieView.setVisibility(View.VISIBLE);
             mMovieView.setVideoURI(Uri.parse(lPath));
             mMovieView.setMediaController(null);
@@ -203,6 +208,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         } else {
             mNoContentView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private boolean isFileExist(String lPath){
+        File lFile=new File(lPath);
+        return lFile.exists();
     }
 
     /**

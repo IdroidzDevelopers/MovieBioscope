@@ -67,19 +67,28 @@
 
     <ImageView
         android:id="@+id/bioscope_img"
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="60dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:src="@mipmap/bioscope" />
+        android:src="@mipmap/company_logo_with_white_bg" />
 
     <ImageView
         android:id="@+id/vrl_img"
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="60dp"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@+id/bioscope_img"
-        android:src="@mipmap/vrl_image" />
+        android:src="@mipmap/vrl_logistics" />
+
+    <ImageView
+        android:id="@+id/route"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:layout_toLeftOf="@+id/vrl_img"
+        android:src="@mipmap/route" />
 </RelativeLayout>

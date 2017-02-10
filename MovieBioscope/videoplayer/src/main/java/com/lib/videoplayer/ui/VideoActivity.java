@@ -1,35 +1,35 @@
 package com.lib.videoplayer.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.util.TimeUtil;
 import com.lib.videoplayer.util.VideoData;
 
 import java.io.File;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
-    private static final long BANNER_TIMEOUT = 3 * 1000;//3 secs
+    private static final long BANNER_TIMEOUT = 5 * 1000;//5 secs
     private Context mContext;
     private VideoView mMovieView;
     private VideoView mAdvView;
@@ -44,6 +44,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private RelativeLayout mNewFeedLayout;
     private TextView mNewsTextView;
 
+
+    //Header and footer
+    private TextView mTimeView;
+    private MinuteReceiver mReceiver;
 
     /******************
      * Listeners
@@ -84,6 +88,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int HIDE_NEWS_FEED = 8;
 
     }
+
     ;
 
     public int getVideoState() {
@@ -132,6 +137,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mNewFeedLayout.bringToFront();
         mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
         mNewsTextView.setSelected(true);
+
+        //Header and footer
+        mTimeView = (TextView) findViewById(R.id.current_time);
     }
 
     @Override
@@ -150,6 +158,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mAdvView.setOnPreparedListener(mAdPrepareListener);
             }
         }
+        mReceiver = new MinuteReceiver();
+        IntentFilter lFilter = new IntentFilter();
+        lFilter.addAction(Intent.ACTION_TIME_TICK);
+        registerReceiver(mReceiver, lFilter);
+        mTimeView.setText(TimeUtil.getTime());
     }
 
     @Override
@@ -210,8 +223,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    private boolean isFileExist(String lPath){
-        File lFile=new File(lPath);
+    private boolean isFileExist(String lPath) {
+        File lFile = new File(lPath);
         return lFile.exists();
     }
 
@@ -405,6 +418,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         @Override
         public void onSeekComplete(MediaPlayer mediaPlayer) {
             hideLoadingIcon();
+        }
+    }
+
+    private class MinuteReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive() :: time changed");
+            mTimeView.setText(TimeUtil.getTime());
         }
     }
 

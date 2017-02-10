@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="146km"
+            android:text="980km"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
     </LinearLayout>
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="3:45 hr"
+            android:text="14:11 hr"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
     </LinearLayout>
@@ -74,21 +74,13 @@
         android:layout_gravity="center"
         android:src="@mipmap/company_logo_with_white_bg" />
 
+
     <ImageView
-        android:id="@+id/vrl_img"
-        android:layout_width="150dp"
+        android:id="@+id/route"
+        android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@+id/bioscope_img"
-        android:src="@mipmap/vrl_logistics" />
-
-    <ImageView
-        android:id="@+id/route"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:layout_toLeftOf="@+id/vrl_img"
         android:src="@mipmap/route" />
 </RelativeLayout>

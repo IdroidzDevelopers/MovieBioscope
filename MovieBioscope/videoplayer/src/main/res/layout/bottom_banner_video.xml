@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="Mysore"
+            android:text="Mumbai"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
 
@@ -86,7 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="146km"
+            android:text="980km"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
@@ -103,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="3.10hr"
+            android:text="14.11hr"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
     </LinearLayout>

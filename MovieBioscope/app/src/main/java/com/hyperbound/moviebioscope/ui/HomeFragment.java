@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,9 +43,11 @@ import com.lib.videoplayer.ui.VideoActivity;
 public class HomeFragment extends Fragment implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final long WAITING_TIME = 30 * 1000;
     private ImageButton mPlayBottom;
     private View mRootView;
-
+    private Handler mHandler;
+    private StartVideoRunnable mRunnable;
     //Header and Footer
     private TextView mCurrentTime;
     private ImageView mRoute;
@@ -102,6 +105,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
         mReceiver = new MinuteReceiver();
         mRoute = (ImageView) mRootView.findViewById(R.id.route);
         mRoute.setOnClickListener(this);
+        mHandler = new Handler();
+        mRunnable = new StartVideoRunnable();
     }
 
     protected void createLocationRequest() {
@@ -137,6 +142,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
         IntentFilter lFilter = new IntentFilter();
         lFilter.addAction(Intent.ACTION_TIME_TICK);
         getActivity().registerReceiver(mReceiver, lFilter);
+        StartVideoTimer();
     }
 
     protected void startLocationUpdates() {
@@ -175,6 +181,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
+        mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
@@ -236,6 +243,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
         AlertDialog lDialog = builderSingle.create();
         lDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent_color)));
         lDialog.show();
+    }
+
+    private void StartVideoTimer() {
+        mHandler.postDelayed(mRunnable, WAITING_TIME);
+    }
+
+    private class StartVideoRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            startActivity(new Intent(getActivity(), VideoActivity.class));
+        }
     }
 
 }

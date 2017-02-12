@@ -62,8 +62,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     /*****************
      * Video state constants
      ****************/
-
-
     public interface VIDEO_STATE {
         int NONE = -1;
         int MOVIE = 0;
@@ -288,7 +286,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieView.seekTo(mVideoSeekTime);
         mMovieView.start();
         setVideoState(VIDEO_STATE.MOVIE);
-
     }
 
     /**

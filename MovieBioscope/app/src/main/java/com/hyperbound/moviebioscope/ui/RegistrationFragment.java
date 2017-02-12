@@ -1,6 +1,5 @@
 package com.hyperbound.moviebioscope.ui;
 
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -11,13 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.hyperbound.moviebioscope.R;
-import com.hyperbound.moviebioscope.database.BusProvider;
-import com.hyperbound.moviebioscope.util.BusUtil;
-import com.hyperbound.moviebioscope.util.NetworkUtil;
-import com.hyperbound.moviebioscope.util.TaskHandler;
+import com.hyperbound.moviebioscope.util.AppTaskHandler;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,11 +88,11 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private void saveDataInBackgroundThread(String lRegNumber) {
         if (null != lRegNumber) {
             Message lMessage = new Message();
-            lMessage.what = TaskHandler.TASK.SAVE_BUS_DATA;
+            lMessage.what = AppTaskHandler.TASK.SAVE_BUS_DATA;
             Bundle lBundle = new Bundle();
-            lBundle.putString(TaskHandler.KEY.REG_NUMBER, lRegNumber);
+            lBundle.putString(AppTaskHandler.KEY.REG_NUMBER, lRegNumber);
             lMessage.setData(lBundle);
-            TaskHandler.getInstance().sendMessage(lMessage);
+            AppTaskHandler.getInstance().sendMessage(lMessage);
         }
     }
 

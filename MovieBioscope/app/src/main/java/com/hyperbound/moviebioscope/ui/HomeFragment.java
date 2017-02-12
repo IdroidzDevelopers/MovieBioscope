@@ -1,5 +1,6 @@
 package com.hyperbound.moviebioscope.ui;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +24,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,8 +31,13 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.objects.Route;
+import com.hyperbound.moviebioscope.util.AppTaskHandler;
+import com.hyperbound.moviebioscope.util.RouteUtil;
 import com.hyperbound.moviebioscope.util.TimeUtil;
 import com.lib.videoplayer.ui.VideoActivity;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,6 +64,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
     private Location mLocation;
     private LocationRequest mLocationRequest;
     private MinuteReceiver mReceiver;
+    private Dialog lRouteDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -107,6 +114,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
         mRoute.setOnClickListener(this);
         mHandler = new Handler();
         mRunnable = new StartVideoRunnable();
+
+        //GoogleMapDistanceMatrix.requestForData(getActivity(),"Bangalore","Mumbai");
     }
 
     protected void createLocationRequest() {
@@ -130,6 +139,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
         super.onStop();
         Log.d(TAG, "mGoogleApiClient " + mGoogleApiClient);
         mGoogleApiClient.disconnect();
+        if (null != lRouteDialog) {
+            lRouteDialog.dismiss();
+        }
     }
 
     @Override
@@ -161,8 +173,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
                 LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction("android.intent.action.VIDEO_COMMAND_ACTION"));
                 break;
             case R.id.route:
-                Toast.makeText(getActivity(), "in progress ", Toast.LENGTH_SHORT).show();
-                //showDialog();
+                showDialog();
                 break;
         }
     }
@@ -209,40 +220,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 
     private void showDialog() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
-        builderSingle.setTitle("Select One Routr:-");
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.route_row);
-        arrayAdapter.add("Hardik");
-        arrayAdapter.add("Archit");
-        arrayAdapter.add("Jignesh");
-        arrayAdapter.add("Umang");
-        arrayAdapter.add("Gatti");
-
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        List<Route> lRouteList = RouteUtil.getRoutes(getActivity());
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.route_row, R.id.route_text);
+        for (Route route : lRouteList) {
+            arrayAdapter.add(route.getRouteName());
+        }
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String strName = arrayAdapter.getItem(which);
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getActivity());
-                builderInner.setMessage(strName);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
+                String lRoute = arrayAdapter.getItem(which);
+                Log.d(TAG, "onClick() " + lRoute);
+                updateDefaultRoute(lRoute);
             }
         });
-        AlertDialog lDialog = builderSingle.create();
-        lDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent_color)));
-        lDialog.show();
+        lRouteDialog = builderSingle.create();
+        lRouteDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent_color)));
+        lRouteDialog.show();
+    }
+
+    private void updateDefaultRoute(String lRouteName) {
+        if (null != lRouteName) {
+            Message lMessage = new Message();
+            lMessage.what = AppTaskHandler.TASK.UPDATE_DEFAULT_ROUTE;
+            Bundle lBundle = new Bundle();
+            lBundle.putString(AppTaskHandler.KEY.ROUTE_NAME, lRouteName);
+            lMessage.setData(lBundle);
+            AppTaskHandler.getInstance().sendMessage(lMessage);
+        }
     }
 
     private void StartVideoTimer() {

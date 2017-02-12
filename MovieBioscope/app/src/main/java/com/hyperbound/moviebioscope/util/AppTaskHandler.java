@@ -9,32 +9,34 @@ import android.os.Message;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
 
 
-public class TaskHandler extends Handler {
-    private static final String TAG = TaskHandler.class.getSimpleName();
+public class AppTaskHandler extends Handler {
+    private static final String TAG = AppTaskHandler.class.getSimpleName();
 
     public interface TASK {
         int SAVE_BUS_DATA = 0;
         int SEND_BUS_DATA_TO_CLOUD = 2;
+        int UPDATE_DEFAULT_ROUTE = 3;
     }
 
     public interface KEY {
         String REG_NUMBER = "reg_number";
+        String ROUTE_NAME = "route_name";
     }
 
-    private static TaskHandler sInstance;
+    private static AppTaskHandler sInstance;
 
 
-    private TaskHandler(Looper looper) {
+    private AppTaskHandler(Looper looper) {
         super(looper);
     }
 
-    public static TaskHandler getInstance() {
+    public static AppTaskHandler getInstance() {
         if (null == sInstance) {
-            synchronized (TaskHandler.class) {
+            synchronized (AppTaskHandler.class) {
                 if (null == sInstance) {
                     HandlerThread lThread = new HandlerThread(TAG);
                     lThread.start();
-                    sInstance = new TaskHandler(lThread.getLooper());
+                    sInstance = new AppTaskHandler(lThread.getLooper());
                 }
             }
         }
@@ -50,6 +52,12 @@ public class TaskHandler extends Handler {
                 if (null != lBundle) {
                     String lRegNumber = (String) lBundle.get(KEY.REG_NUMBER);
                     BusUtil.saveRegistrationDetail(BioscopeApp.getContext(), lRegNumber);
+                }
+                break;
+            case TASK.UPDATE_DEFAULT_ROUTE:
+                if (null != lBundle) {
+                    String lRouteName = (String) lBundle.get(KEY.ROUTE_NAME);
+                    RouteUtil.updateDefaultRoute(BioscopeApp.getContext(), lRouteName);
                 }
                 break;
         }

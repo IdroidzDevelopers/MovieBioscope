@@ -2,21 +2,14 @@ package com.hyperbound.moviebioscope.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.BusUtil;
-import com.hyperbound.moviebioscope.util.NetworkUtil;
-import com.hyperbound.moviebioscope.util.TaskHandler;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.database.BusProvider;
+import com.hyperbound.moviebioscope.database.RouteProvider;
 import com.lib.cloud.databases.CloudProvider;
 import com.lib.location.databases.LocationProvider;
 import com.lib.videoplayer.database.VideoProvider;
@@ -35,6 +36,7 @@ public class BioscopeApp extends Application {
         registerVideoCommand();
         putClouddata();
         putLocationData();
+        putRouteData();
     }
 
     public static Context getContext() {
@@ -121,6 +123,21 @@ public class BioscopeApp extends Application {
         ContentValues lValue5 = new ContentValues();
         lValue5.put(LocationProvider.LOCATION_COLUMNS.SOURCE, "Bangalore");
         getContentResolver().insert(LocationProvider.CONTENT_URI_LOCATION_TABLE, lValue5);
+    }
+
+    private void putRouteData() {
+        ContentValues lValue5 = new ContentValues();
+        lValue5.put(RouteProvider.COLUMNS.NAME, "Bangalore - Mumbai");
+        lValue5.put(RouteProvider.COLUMNS.CURRENT_SELECTION, 1);
+        getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue5);
+
+        ContentValues lValue6 = new ContentValues();
+        lValue6.put(RouteProvider.COLUMNS.NAME, "Bangalore - Mysore");
+        getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue6);
+
+        ContentValues lValue7 = new ContentValues();
+        lValue7.put(RouteProvider.COLUMNS.NAME, "Bangalore - Chennai");
+        getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue7);
     }
 
     private void registerVideoCommand() {

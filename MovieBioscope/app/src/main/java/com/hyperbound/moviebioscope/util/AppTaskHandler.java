@@ -57,7 +57,7 @@ public class AppTaskHandler extends Handler {
             case TASK.UPDATE_DEFAULT_ROUTE:
                 if (null != lBundle) {
                     String lRouteName = (String) lBundle.get(KEY.ROUTE_NAME);
-                    RouteUtil.updateDefaultRoute(BioscopeApp.getContext(), lRouteName);
+                    RouteUtil.updateCurrentRoute(BioscopeApp.getContext(), lRouteName);
                 }
                 break;
         }

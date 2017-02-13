@@ -99,6 +99,8 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private void moveToNextPage() {
         FragmentTransaction lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         lTransaction.replace(R.id.container, HomeFragment.newInstance());
+        lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance());
+        lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
         lTransaction.commit();
     }
 

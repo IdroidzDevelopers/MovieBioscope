@@ -65,6 +65,8 @@ public class SplashFragment extends Fragment {
         FragmentTransaction lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         if (BusUtil.isRegistrationNumberAvailable(getActivity())) {
             lTransaction.replace(R.id.container, HomeFragment.newInstance());
+            lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
+            lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance());
         } else {
             lTransaction.replace(R.id.container, RegistrationFragment.newInstance());
         }

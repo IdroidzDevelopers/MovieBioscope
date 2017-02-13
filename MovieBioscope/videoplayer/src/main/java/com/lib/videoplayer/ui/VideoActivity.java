@@ -1,15 +1,14 @@
 package com.lib.videoplayer.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -22,7 +21,6 @@ import android.widget.VideoView;
 
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
-import com.lib.videoplayer.util.TimeUtil;
 import com.lib.videoplayer.util.VideoData;
 
 import java.io.File;
@@ -35,8 +33,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private VideoView mAdvView;
     private TextView mNoContentView;
     private int mVideoSeekTime;
-    private RelativeLayout mHeader;
-    private RelativeLayout mFooter;
     private Handler mHandler;
     private View mLoading;
     private int mVideoState = VIDEO_STATE.NONE;
@@ -44,10 +40,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private RelativeLayout mNewFeedLayout;
     private TextView mNewsTextView;
 
-
-    //Header and footer
-    private TextView mTimeView;
-    private MinuteReceiver mReceiver;
+    //Header and Footer
+    private Fragment mTopBannerFragment;
+    private Fragment mBottomBannerFragment;
 
     /******************
      * Listeners
@@ -113,8 +108,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private void initView() {
         setContentView(R.layout.video_layout);
         mContext = this;
-        mHeader = (RelativeLayout) findViewById(R.id.top_banner_video);
-        mFooter = (RelativeLayout) findViewById(R.id.bottom_banner_video);
         mMovieView = (VideoView) findViewById(R.id.movie_view);
         mAdvView = (VideoView) findViewById(R.id.ad_video);
         mNoContentView = (TextView) findViewById(R.id.no_content);
@@ -136,8 +129,12 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
         mNewsTextView.setSelected(true);
 
-        //Header and footer
-        mTimeView = (TextView) findViewById(R.id.current_time);
+        initLocationFragment();
+    }
+
+    private void initLocationFragment() {
+        mTopBannerFragment = TopBannerFragment.newInstance();
+        mBottomBannerFragment = BottomBannerFragment.newInstance();
     }
 
     @Override
@@ -156,11 +153,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mAdvView.setOnPreparedListener(mAdPrepareListener);
             }
         }
-        mReceiver = new MinuteReceiver();
-        IntentFilter lFilter = new IntentFilter();
-        lFilter.addAction(Intent.ACTION_TIME_TICK);
-        registerReceiver(mReceiver, lFilter);
-        mTimeView.setText(TimeUtil.getTime());
     }
 
     @Override
@@ -179,7 +171,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     public boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mHeader.getVisibility() != View.VISIBLE && View.VISIBLE != mFooter.getVisibility()) {
+                if (!isLocationInfoVisible()) {
                     mHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
                     mHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
                 } else {
@@ -190,6 +182,16 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
         }
         return false;
+    }
+
+    private boolean isLocationInfoVisible() {
+        TopBannerFragment lFragment = (TopBannerFragment) getSupportFragmentManager().findFragmentByTag(TopBannerFragment.TAG);
+        if (null != lFragment) {
+            Log.d(TAG, "lFragment.isVisible() " + lFragment.isVisible());
+            return lFragment.isVisible();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -300,18 +302,20 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * show location information from screen
      */
     private void showLocationInfo() {
-        mHeader.setVisibility(View.VISIBLE);
-        mFooter.setVisibility(View.VISIBLE);
-        mHeader.bringToFront();
-        mFooter.bringToFront();
+        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+        lTransaction.replace(R.id.bottom_container, mBottomBannerFragment, BottomBannerFragment.TAG);
+        lTransaction.replace(R.id.top_container, mTopBannerFragment, TopBannerFragment.TAG);
+        lTransaction.commit();
     }
 
     /**
      * Hide location information from screen
      */
     private void hideLocationInfo() {
-        mHeader.setVisibility(View.GONE);
-        mFooter.setVisibility(View.GONE);
+        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+        lTransaction.remove(mBottomBannerFragment);
+        lTransaction.remove(mTopBannerFragment);
+        lTransaction.commit();
     }
 
     private void hideNewsFeed() {
@@ -417,13 +421,4 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             hideLoadingIcon();
         }
     }
-
-    private class MinuteReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive() :: time changed");
-            mTimeView.setText(TimeUtil.getTime());
-        }
-    }
-
 }

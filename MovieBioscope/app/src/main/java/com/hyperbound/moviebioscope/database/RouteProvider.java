@@ -31,6 +31,7 @@ public class RouteProvider extends ContentProvider {
 
     public interface COLUMNS {
         String ID = "_id";
+        String ROUTE_ID = "route_id";
         String NAME = "name";
         String CURRENT_SELECTION = "current_selection";
     }
@@ -38,7 +39,7 @@ public class RouteProvider extends ContentProvider {
 
     private static final String CREATE_ROUTE_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_ROUTE + "(" + COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + COLUMNS.NAME + " TEXT, " + COLUMNS.CURRENT_SELECTION + " INTEGER DEFAULT 0" +")";
+            + COLUMNS.ROUTE_ID + " TEXT, " + COLUMNS.NAME + " TEXT, " + COLUMNS.CURRENT_SELECTION + " INTEGER DEFAULT 0" + ")";
 
     private static final int CASE_ROUTE_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

@@ -10,10 +10,6 @@
     tools:context="com.hyperbound.moviebioscope.ui.MainActivity"
     tools:showIn="@layout/landing_fragment_layout">
 
-    <include layout="@layout/top_banner" />
-
-    <include layout="@layout/bottom_banner" />
-
     <ImageButton
         android:id="@+id/play"
         android:layout_width="100dp"

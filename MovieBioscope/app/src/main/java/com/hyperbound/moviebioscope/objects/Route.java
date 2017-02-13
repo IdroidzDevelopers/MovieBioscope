@@ -2,14 +2,14 @@ package com.hyperbound.moviebioscope.objects;
 
 
 public class Route {
-    private int mId;
+    private String mRouteId;
 
-    public int getId() {
-        return mId;
+    public String getRouteId() {
+        return mRouteId;
     }
 
-    public void setId(int mId) {
-        this.mId = mId;
+    public void setRouteId(String mId) {
+        this.mRouteId = mId;
     }
 
     private String mRouteName;

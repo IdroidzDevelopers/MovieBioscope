@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="Bangalore"
+            android:text="--"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
 
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="Mumbai"
+            android:text="--"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
 

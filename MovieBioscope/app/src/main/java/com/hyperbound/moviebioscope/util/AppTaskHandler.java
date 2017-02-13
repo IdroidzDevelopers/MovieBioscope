@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.hyperbound.moviebioscope.app.BioscopeApp;
+import com.lib.route.util.RouteUtil;
 
 
 public class AppTaskHandler extends Handler {
@@ -14,13 +15,10 @@ public class AppTaskHandler extends Handler {
 
     public interface TASK {
         int SAVE_BUS_DATA = 0;
-        int SEND_BUS_DATA_TO_CLOUD = 2;
-        int UPDATE_DEFAULT_ROUTE = 3;
     }
 
     public interface KEY {
         String REG_NUMBER = "reg_number";
-        String ROUTE_NAME = "route_name";
     }
 
     private static AppTaskHandler sInstance;
@@ -52,12 +50,6 @@ public class AppTaskHandler extends Handler {
                 if (null != lBundle) {
                     String lRegNumber = (String) lBundle.get(KEY.REG_NUMBER);
                     BusUtil.saveRegistrationDetail(BioscopeApp.getContext(), lRegNumber);
-                }
-                break;
-            case TASK.UPDATE_DEFAULT_ROUTE:
-                if (null != lBundle) {
-                    String lRouteName = (String) lBundle.get(KEY.ROUTE_NAME);
-                    RouteUtil.updateCurrentRoute(BioscopeApp.getContext(), lRouteName);
                 }
                 break;
         }

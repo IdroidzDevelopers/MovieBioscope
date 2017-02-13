@@ -1,4 +1,4 @@
-package com.hyperbound.moviebioscope.util;
+package com.lib.route.util;
 
 
 import android.content.ContentValues;
@@ -6,8 +6,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.hyperbound.moviebioscope.database.RouteProvider;
-import com.hyperbound.moviebioscope.objects.Route;
+import com.lib.route.database.RouteProvider;
+import com.lib.route.objects.Route;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class RouteUtil {
     private static final String TAG = RouteUtil.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    public static synchronized void updateCurrentRoute(Context aContext, String aRoute) {
+    public static synchronized boolean updateCurrentRoute(Context aContext, String aRoute) {
         String lSelection = RouteProvider.COLUMNS.NAME + " = ?";
         String[] lSelectionArg = new String[]{"" + aRoute};
         ContentValues lResetContent = new ContentValues();
@@ -29,6 +29,7 @@ public class RouteUtil {
         lSelectContent.put(RouteProvider.COLUMNS.CURRENT_SELECTION, 1);
         count = aContext.getContentResolver().update(RouteProvider.CONTENT_URI_ROUTE_TABLE, lSelectContent, lSelection, lSelectionArg);
         if (DEBUG) Log.d(TAG, "updateCurrentRoute :: updated the new default route" + count);
+        return count >= 0 ? true : false;
     }
 
     public static List<Route> getRoutes(Context aContext) {

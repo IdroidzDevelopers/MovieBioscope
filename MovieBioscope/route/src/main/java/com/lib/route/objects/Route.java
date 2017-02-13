@@ -1,4 +1,4 @@
-package com.hyperbound.moviebioscope.objects;
+package com.lib.route.objects;
 
 
 public class Route {

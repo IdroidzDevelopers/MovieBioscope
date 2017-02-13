@@ -10,9 +10,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.database.BusProvider;
-import com.hyperbound.moviebioscope.database.RouteProvider;
 import com.lib.cloud.databases.CloudProvider;
 import com.lib.location.databases.LocationProvider;
+import com.lib.route.database.RouteProvider;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
 
@@ -128,7 +128,6 @@ public class BioscopeApp extends Application {
     private void putRouteData() {
         ContentValues lValue5 = new ContentValues();
         lValue5.put(RouteProvider.COLUMNS.NAME, "Bangalore - Mumbai");
-        lValue5.put(RouteProvider.COLUMNS.CURRENT_SELECTION, 1);
         getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue5);
 
         ContentValues lValue6 = new ContentValues();

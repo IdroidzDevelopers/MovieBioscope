@@ -1,30 +1,16 @@
 package com.hyperbound.moviebioscope.ui;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.hyperbound.moviebioscope.R;
-import com.hyperbound.moviebioscope.objects.Route;
-import com.hyperbound.moviebioscope.util.AppTaskHandler;
-import com.hyperbound.moviebioscope.util.RouteUtil;
 import com.lib.videoplayer.ui.VideoActivity;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.

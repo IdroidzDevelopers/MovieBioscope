@@ -13,6 +13,8 @@ import android.widget.EditText;
 
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
+import com.lib.location.ui.BottomBannerFragment;
+import com.lib.location.ui.TopBannerFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,7 +101,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private void moveToNextPage() {
         FragmentTransaction lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         lTransaction.replace(R.id.container, HomeFragment.newInstance());
-        lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance());
+        lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance(TopBannerFragment.TYPE.NORMAL_TYPE));
         lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
         lTransaction.commit();
     }

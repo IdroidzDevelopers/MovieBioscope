@@ -1,15 +1,25 @@
-package com.lib.videoplayer.ui;
+package com.lib.location.ui;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.lib.videoplayer.R;
+import com.lib.location.R;
+import com.lib.route.objects.Route;
+import com.lib.route.util.RouteTaskHandler;
+import com.lib.route.util.RouteUtil;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,14 +32,27 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     public static final String TAG = TopBannerFragment.class.getSimpleName();
     private View mRootView;
     private ImageView mRoute;
+    private ImageView mHome;
+    private static final String ARG_PARAM1 = "param1";
     private Dialog mRouteDialog;
+    private String mType;
 
-    public TopBannerFragment() {
-        super();
+    public interface TYPE {
+        String HOME_ICON_TYPE = "home_icon_type";
+        String NORMAL_TYPE = "normal_type";
+
     }
 
-    public static Fragment newInstance() {
+    ;
+
+    public TopBannerFragment() {
+    }
+
+    public static Fragment newInstance(String aType) {
         TopBannerFragment fragment = new TopBannerFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, aType);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -41,7 +64,14 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.top_banner_video, container, false);
+        if (getArguments() != null) {
+            mType = getArguments().getString(ARG_PARAM1);
+        }
+        if (TYPE.HOME_ICON_TYPE.equals(mType)) {
+            mRootView = inflater.inflate(R.layout.top_banner_video, container, false);
+        } else {
+            mRootView = inflater.inflate(R.layout.top_banner, container, false);
+        }
         initView();
         return mRootView;
     }
@@ -49,6 +79,10 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     private void initView() {
         mRoute = (ImageView) mRootView.findViewById(R.id.route);
         mRoute.setOnClickListener(this);
+        if (mType.equals(TYPE.HOME_ICON_TYPE)) {
+            mHome = (ImageView) mRootView.findViewById(R.id.home);
+            mHome.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -69,12 +103,13 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     public void onClick(View view) {
         int i = view.getId();
         if (i == R.id.route) {
-            Toast.makeText(getActivity(), "onClick called", Toast.LENGTH_LONG).show();
-
+            showDialog();
+        } else if (i == R.id.home) {
+            getActivity().finish();
         }
     }
 
-   /* private void showDialog() {
+    private void showDialog() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
         List<Route> lRouteList = RouteUtil.getRoutes(getActivity());
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.route_row, R.id.route_text);
@@ -98,11 +133,11 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     private void updateDefaultRoute(String lRouteName) {
         if (null != lRouteName) {
             Message lMessage = new Message();
-            lMessage.what = AppTaskHandler.TASK.UPDATE_DEFAULT_ROUTE;
+            lMessage.what = RouteTaskHandler.TASK.UPDATE_DEFAULT_ROUTE;
             Bundle lBundle = new Bundle();
-            lBundle.putString(AppTaskHandler.KEY.ROUTE_NAME, lRouteName);
+            lBundle.putString(RouteTaskHandler.KEY.ROUTE_NAME, lRouteName);
             lMessage.setData(lBundle);
-            AppTaskHandler.getInstance().sendMessage(lMessage);
+            RouteTaskHandler.getInstance(getActivity()).sendMessage(lMessage);
         }
-    }*/
+    }
 }

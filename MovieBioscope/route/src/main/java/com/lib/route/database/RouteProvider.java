@@ -1,4 +1,4 @@
-package com.hyperbound.moviebioscope.database;
+package com.lib.route.database;
 
 
 import android.content.ContentProvider;
@@ -22,7 +22,7 @@ public class RouteProvider extends ContentProvider {
     public static final String TABLE_ROUTE = "route_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.hyperbound.moviebioscope.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.lib.route.contentprovider.database.VideoProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri CONTENT_URI_ROUTE_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_ROUTE);
     public DatabaseHelper mDbHelper;

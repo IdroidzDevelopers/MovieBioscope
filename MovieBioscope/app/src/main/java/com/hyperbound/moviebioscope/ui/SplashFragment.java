@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.BusUtil;
+import com.lib.location.ui.BottomBannerFragment;
+import com.lib.location.ui.TopBannerFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,7 +68,7 @@ public class SplashFragment extends Fragment {
         if (BusUtil.isRegistrationNumberAvailable(getActivity())) {
             lTransaction.replace(R.id.container, HomeFragment.newInstance());
             lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
-            lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance());
+            lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance(TopBannerFragment.TYPE.NORMAL_TYPE));
         } else {
             lTransaction.replace(R.id.container, RegistrationFragment.newInstance());
         }

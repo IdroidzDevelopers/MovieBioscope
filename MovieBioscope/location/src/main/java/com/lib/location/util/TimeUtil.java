@@ -1,4 +1,4 @@
-package com.hyperbound.moviebioscope.util;
+package com.lib.location.util;
 
 
 import android.text.format.DateFormat;

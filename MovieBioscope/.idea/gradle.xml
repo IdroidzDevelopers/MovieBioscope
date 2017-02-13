@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/cloud" />
             <option value="$PROJECT_DIR$/location" />
+            <option value="$PROJECT_DIR$/route" />
             <option value="$PROJECT_DIR$/videoplayer" />
           </set>
         </option>

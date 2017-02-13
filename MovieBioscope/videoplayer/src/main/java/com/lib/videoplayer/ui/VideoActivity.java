@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.lib.location.ui.BottomBannerFragment;
+import com.lib.location.ui.TopBannerFragment;
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.VideoData;
@@ -133,7 +135,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private void initLocationFragment() {
-        mTopBannerFragment = TopBannerFragment.newInstance();
+        mTopBannerFragment = TopBannerFragment.newInstance(TopBannerFragment.TYPE.HOME_ICON_TYPE);
         mBottomBannerFragment = BottomBannerFragment.newInstance();
     }
 
@@ -158,7 +160,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     @Override
     protected void onPause() {
         super.onPause();
-        mHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+        if (null != mHandler) {
+            mHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
+            mHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+        }
         mStopTime = (getVideoState() == VIDEO_STATE.MOVIE) ? mMovieView.getCurrentPosition() : mAdvView.getCurrentPosition();
         if (getVideoState() == VIDEO_STATE.MOVIE) {
             mMovieView.pause();
@@ -183,6 +188,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
         return false;
     }
+
 
     private boolean isLocationInfoVisible() {
         TopBannerFragment lFragment = (TopBannerFragment) getSupportFragmentManager().findFragmentByTag(TopBannerFragment.TAG);
@@ -315,7 +321,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
         lTransaction.remove(mBottomBannerFragment);
         lTransaction.remove(mTopBannerFragment);
-        lTransaction.commit();
+        lTransaction.commitAllowingStateLoss();
     }
 
     private void hideNewsFeed() {

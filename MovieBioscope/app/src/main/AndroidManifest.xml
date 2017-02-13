@@ -30,9 +30,6 @@
         <provider
             android:name=".database.BusProvider"
             android:authorities="com.hyperbound.moviebioscope.contentprovider.database.BusProvider" />
-        <provider
-            android:name=".database.RouteProvider"
-            android:authorities="com.hyperbound.moviebioscope.contentprovider.database.VideoProvider" />
     </application>
 
 </manifest>

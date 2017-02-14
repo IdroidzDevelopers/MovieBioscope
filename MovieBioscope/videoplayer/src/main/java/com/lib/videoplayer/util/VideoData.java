@@ -72,6 +72,66 @@ public class VideoData {
         return lData;
     }
 
+
+    public static Data getTravellerUri(Context aContext) {
+        Data lData = new Data();
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
+                    lData.setId(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getTravellerUri() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return lData;
+    }
+
+
+    public static Data getSafetyUri(Context aContext) {
+        Data lData = new Data();
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.SAFETY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
+                    lData.setId(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getSafetyUri() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return lData;
+    }
+
     public static long getNextAdTime() {
         return 60 * 1000;//1 min :: static
     }

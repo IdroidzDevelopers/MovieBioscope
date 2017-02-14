@@ -105,6 +105,22 @@ public class BioscopeApp extends Application {
         lValue5.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue5);
 
+        ContentValues lValue6 = new ContentValues();
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.NAME, "Traveller");
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO);
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/traveller.mp4");
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
+        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue6);
+
+        ContentValues lValue7 = new ContentValues();
+        lValue7.put(VideoProvider.VIDEO_COLUMNS.NAME, "Safety");
+        lValue7.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO);
+        lValue7.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/safety.mp4");
+        lValue7.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValue7.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
+        getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue7);
+
     }
 
     private void putBusDetail() {

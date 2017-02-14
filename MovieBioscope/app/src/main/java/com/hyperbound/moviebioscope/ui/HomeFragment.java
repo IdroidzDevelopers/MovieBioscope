@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
 import com.lib.videoplayer.ui.VideoActivity;
+import com.lib.videoplayer.util.StateMachine;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +23,7 @@ import com.lib.videoplayer.ui.VideoActivity;
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final long WAITING_TIME = 30 * 1000;
+    private static final String ARG_VIDEO_STATE = "video_state";
     private ImageButton mPlayBottom;
     private View mRootView;
     private Handler mHandler;
@@ -79,7 +81,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.play:
-                startActivity(new Intent(getActivity(), VideoActivity.class));
+                Intent lIntent = new Intent(getActivity(), VideoActivity.class);
+                Bundle lBundle = new Bundle();
+                lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
+                lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
+                startActivity(lIntent);
                 break;
         }
     }
@@ -99,7 +105,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            startActivity(new Intent(getActivity(), VideoActivity.class));
+            Intent lIntent = new Intent(getActivity(), VideoActivity.class);
+            Bundle lBundle = new Bundle();
+            lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
+            lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
+            startActivity(lIntent);
         }
     }
 

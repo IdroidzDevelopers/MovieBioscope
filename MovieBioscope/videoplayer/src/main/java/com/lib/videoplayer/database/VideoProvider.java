@@ -42,9 +42,12 @@ public class VideoProvider extends ContentProvider {
     }
 
     public interface VIDEO_TYPE {
+        String TRAVELLER_VIDEO = "traveller";
+        String SAFETY_VIDEO = "safety";
         String MOVIE = "movie";
         String ADV = "adv";
-        String BREAKING_NEWS = "breaking_news";
+        String BREAKING_VIDEO = "breaking_video";
+        String BREAKING_TEXT = "breaking_text";
     }
 
     public interface DOWNLOAD_STATUS {

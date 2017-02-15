@@ -1,5 +1,6 @@
 package com.lib.location.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,7 +14,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lib.location.R;
+import com.lib.location.model.LocationInfo;
+import com.lib.location.util.LocationInterface;
+import com.lib.location.util.LocationUtil;
 import com.lib.location.util.TimeUtil;
+import com.lib.location.volley.VolleyUtil;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
@@ -31,6 +36,11 @@ public class BottomBannerFragment extends Fragment {
     private View mRootView;
     private TextView mSource;
     private TextView mDestination;
+    private TextView mCurrentLocation;
+    private TextView mDistanceToSource;
+    private TextView mDistanceToDest;
+    private TextView mTimeToDest;
+
 
     private TextView mCurrentTime;
     private BroadcastReceiver mReceiver;
@@ -58,9 +68,13 @@ public class BottomBannerFragment extends Fragment {
 
     private void initView() {
         mCurrentTime = (TextView) mRootView.findViewById(R.id.current_time);
-        mReceiver = new BroadcastReceiver();
+        mReceiver = new Receiver();
         mSource = (TextView) mRootView.findViewById(R.id.source);
         mDestination = (TextView) mRootView.findViewById(R.id.destination);
+        mCurrentLocation = (TextView) mRootView.findViewById(R.id.current_location);
+        mDistanceToSource = (TextView) mRootView.findViewById(R.id.source_distance);
+        mDistanceToDest = (TextView) mRootView.findViewById(R.id.destination_distance);
+        mTimeToDest = (TextView) mRootView.findViewById(R.id.time_left);
     }
 
     @Override
@@ -71,14 +85,16 @@ public class BottomBannerFragment extends Fragment {
         getActivity().registerReceiver(mReceiver, lFilter);
 
         IntentFilter lLocalFilter = new IntentFilter();
-        lLocalFilter.addAction(RouteTaskHandler.INTENT_LOCATION_CHANGED);
+        lLocalFilter.addAction(RouteTaskHandler.INTENT_ROUTE_CHANGED);
+        lLocalFilter.addAction(LocationInterface.ACTION_CURRENT_LOCATION_CHANGED);
+        lLocalFilter.addAction(LocationInterface.ACTION_LOCATION_INFO_CHANGED);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, lLocalFilter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateView();
+        updateRouteInfo();
         mCurrentTime.setText(TimeUtil.getTime());
     }
 
@@ -89,22 +105,45 @@ public class BottomBannerFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
     }
 
-    private class BroadcastReceiver extends android.content.BroadcastReceiver {
+    private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
                 if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: time changed");
                     mCurrentTime.setText(TimeUtil.getTime());
-                } else if (RouteTaskHandler.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
+                } else if (RouteTaskHandler.INTENT_ROUTE_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: route changed");
-                    updateView();
+                    updateRouteInfo();
+                } else if (LocationInterface.ACTION_LOCATION_INFO_CHANGED.equals(intent.getAction())) {
+                    Log.d(TAG, "onReceive() :: location info changed");
+                    updateLocationInfo();
+                } else if (LocationInterface.ACTION_CURRENT_LOCATION_CHANGED.equals(intent.getAction())) {
+                    Log.d(TAG, "onReceive() :: ACTION_CURRENT_LOCATION_CHANGED");
+                    updateCurrentLocation();
                 }
+
             }
         }
     }
 
-    private void updateView() {
+    private void updateLocationInfo() {
+        LocationInfo locationInfo = LocationUtil.getLocationInfo();
+        if (null != locationInfo) {
+            mDistanceToSource.setText(locationInfo.getDistanceToSource());
+            mDistanceToDest.setText(locationInfo.getDistanceToDestination());
+            mTimeToDest.setText(locationInfo.getTimeToDestination());
+        }
+    }
+
+    private void updateCurrentLocation() {
+        LocationInfo locationInfo = LocationUtil.getCurrentLocation();
+        if (null != locationInfo) {
+            mCurrentLocation.setText(locationInfo.getCurrentLocation());
+        }
+    }
+
+    private void updateRouteInfo() {
         Route lRoute = RouteUtil.getCurrentRoute(getActivity());
         String[] arr = null;
         if (null != lRoute && null != lRoute.getRouteName()) {
@@ -113,6 +152,11 @@ public class BottomBannerFragment extends Fragment {
         if (null != arr && arr.length > 1) {
             mSource.setText(arr[0].trim());
             mDestination.setText(arr[1].trim());
+            LocationUtil.insertOrUpdateRouteInfo(arr[0].trim(), arr[1].trim());
+            com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
+            lm.getCurrentLocation();
+            VolleyUtil.getTravelInfo(arr[0].trim(), arr[1].trim());
+//ask
         }
     }
 }

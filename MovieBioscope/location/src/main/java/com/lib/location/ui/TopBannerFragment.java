@@ -1,11 +1,16 @@
 package com.lib.location.ui;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,8 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.lib.location.R;
+import com.lib.location.model.LocationInfo;
+import com.lib.location.util.LocationInterface;
+import com.lib.location.util.LocationUtil;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
@@ -36,6 +45,10 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     private static final String ARG_PARAM1 = "param1";
     private Dialog mRouteDialog;
     private String mType;
+    private BroadcastReceiver mReceiver;
+
+    private TextView mJourneyTime;
+    private TextView mJourneyDistance;
 
     public interface TYPE {
         String HOME_ICON_TYPE = "home_icon_type";
@@ -77,12 +90,23 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     }
 
     private void initView() {
+        mReceiver = new Receiver();
         mRoute = (ImageView) mRootView.findViewById(R.id.route);
+        mJourneyTime = (TextView) mRootView.findViewById(R.id.journey_hours);
+        mJourneyDistance = (TextView) mRootView.findViewById(R.id.total_distance);
         mRoute.setOnClickListener(this);
         if (mType.equals(TYPE.HOME_ICON_TYPE)) {
             mHome = (ImageView) mRootView.findViewById(R.id.home);
             mHome.setOnClickListener(this);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter lLocalFilter = new IntentFilter();
+        lLocalFilter.addAction(LocationInterface.ACTION_JOURNEY_INFO_CHANGED);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, lLocalFilter);
     }
 
     @Override
@@ -94,6 +118,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onStop() {
         super.onStop();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
         if (null != mRouteDialog) {
             mRouteDialog.dismiss();
         }
@@ -138,6 +163,27 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
             lBundle.putString(RouteTaskHandler.KEY.ROUTE_NAME, lRouteName);
             lMessage.setData(lBundle);
             RouteTaskHandler.getInstance(getActivity()).sendMessage(lMessage);
+        }
+    }
+
+    private class Receiver extends android.content.BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                if (LocationInterface.ACTION_JOURNEY_INFO_CHANGED.equals(intent.getAction())) {
+                    Log.d(TAG, "onReceive() :: ACTION_JOURNEY_INFO_CHANGED");
+                    updateJourneyInfoView();
+                }
+
+            }
+        }
+    }
+
+    private void updateJourneyInfoView() {
+        LocationInfo info = LocationUtil.getJourneyInfo();
+        if (null != info) {
+            mJourneyDistance.setText(info.getTotalDistance());
+            mJourneyTime.setText(info.getTotalJourneyTime());
         }
     }
 }

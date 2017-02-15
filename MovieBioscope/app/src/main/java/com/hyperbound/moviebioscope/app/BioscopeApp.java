@@ -9,8 +9,10 @@ import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+
 import com.hyperbound.moviebioscope.database.BusProvider;
 import com.lib.cloud.databases.CloudProvider;
+import com.lib.location.LocationApplication;
 import com.lib.location.databases.LocationProvider;
 import com.lib.route.database.RouteProvider;
 import com.lib.videoplayer.database.VideoProvider;
@@ -30,6 +32,7 @@ public class BioscopeApp extends Application {
     public void onCreate() {
         super.onCreate();
         sContext = this;
+        LocationApplication.setLocationContext(this);
         createFolderIfRequired();
         putDummyData();
         // putBusDetail();

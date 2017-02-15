@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:text="0km"
+            android:text="--km"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
@@ -90,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="980km"
+            android:text="--km"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
@@ -108,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="14.11hr"
+            android:text="--hr"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
     </LinearLayout>
@@ -136,7 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Kempegowda Bus Station"
+            android:text="--"
             android:textColor="@android:color/white"
             android:textSize="30sp" />
 

@@ -20,13 +20,11 @@ public class LocationProvider extends ContentProvider {
 
     public static final String DATABASE_NAME = "bioscope.db";
     public static final String TABLE_LOCATION = "location_table";
-    public static final String TABLE_LOCATION_INFO = "location_info_table";
     private static final int DATABASE_VERSION = 1;
 
     public static final String AUTHORITY = "com.lib.location.contentprovider.database.LocationProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri CONTENT_URI_LOCATION_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_LOCATION);
-    public static final Uri CONTENT_URI_LOCATION_INFO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_LOCATION_INFO);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
@@ -35,37 +33,26 @@ public class LocationProvider extends ContentProvider {
         String ID = "_id";
         String SOURCE = "source";
         String DESTINATION = "destination";
-        String DISTANCE_TO_SOURCE = "distance_to_source";
-        String TIME_TO_SOURCE = "time_to_source";
-        String DISTANCE_TO_DESTINATION = "distance_to_destination";
-        String TIME_TO_DESTINATION = "time_to_destination";
-        String CREATED_TIME = "created_time";
-    }
-
-    public interface LOCATION_INFO_COLUMNS {
-        String ID = "_id";
-        String SOURCE = "source";
-        String DESTINATION = "destination";
+        String CURRENT_LOCATION = "current_location";
         String TOTAL_DISTANCE = "total_distance";
         String TOTAL_TIME = "total_time";
+        String DISTANCE_TO_SOURCE = "distance_to_source";
+        String DISTANCE_TO_DESTINATION = "distance_to_destination";
+        String TIME_TO_DESTINATION = "time_to_destination";
+        String LAST_SYNC_TIME = "last_sync_time";
     }
 
     private static final String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_LOCATION + "(" + LOCATION_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + LOCATION_COLUMNS.SOURCE + " TEXT," + LOCATION_COLUMNS.DESTINATION + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_SOURCE + " TEXT," + LOCATION_COLUMNS.TIME_TO_SOURCE + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.TIME_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.CREATED_TIME + " TEXT" + ")";
+            + LOCATION_COLUMNS.SOURCE + " TEXT," + LOCATION_COLUMNS.DESTINATION + " TEXT," + LOCATION_COLUMNS.CURRENT_LOCATION + " TEXT," + LOCATION_COLUMNS.TOTAL_DISTANCE + " TEXT," + LOCATION_COLUMNS.TOTAL_TIME + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_SOURCE + " TEXT," + LOCATION_COLUMNS.DISTANCE_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.TIME_TO_DESTINATION + " TEXT," + LOCATION_COLUMNS.LAST_SYNC_TIME + " TEXT" + ")";
 
-    private static final String CREATE_LOCATION_INFO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_LOCATION_INFO + "(" + LOCATION_INFO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + LOCATION_INFO_COLUMNS.SOURCE + " TEXT," + LOCATION_INFO_COLUMNS.DESTINATION + " TEXT," + LOCATION_INFO_COLUMNS.TOTAL_DISTANCE + " TEXT," + LOCATION_INFO_COLUMNS.TOTAL_TIME + " TEXT" + ")";
 
     private static final int CASE_LOCATION_TABLE = 1;
-    private static final int CASE_LOCATION_INFO_TABLE = 2;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, TABLE_LOCATION, CASE_LOCATION_TABLE);
-        sUriMatcher.addURI(AUTHORITY, TABLE_LOCATION_INFO, CASE_LOCATION_INFO_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -76,8 +63,6 @@ public class LocationProvider extends ContentProvider {
         switch (match) {
             case CASE_LOCATION_TABLE:
                 return AUTHORITY + "/" + TABLE_LOCATION;
-            case CASE_LOCATION_INFO_TABLE:
-                return AUTHORITY + "/" + TABLE_LOCATION_INFO;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -91,7 +76,6 @@ public class LocationProvider extends ContentProvider {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.execSQL(CREATE_LOCATION_TABLE);
-        db.execSQL(CREATE_LOCATION_INFO_TABLE);
         return false;
     }
 
@@ -102,10 +86,6 @@ public class LocationProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_LOCATION_TABLE:
-                queryBuilder.setTables(uri.getLastPathSegment());
-                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case CASE_LOCATION_INFO_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -125,9 +105,7 @@ public class LocationProvider extends ContentProvider {
             case CASE_LOCATION_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
-            case CASE_LOCATION_INFO_TABLE:
-                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
-                break;
+
             default:
                 break;
         }
@@ -146,9 +124,6 @@ public class LocationProvider extends ContentProvider {
             case CASE_LOCATION_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
-            case CASE_LOCATION_INFO_TABLE:
-                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
-                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri);
         }
@@ -161,9 +136,6 @@ public class LocationProvider extends ContentProvider {
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_LOCATION_TABLE:
-                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
-                break;
-            case CASE_LOCATION_INFO_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

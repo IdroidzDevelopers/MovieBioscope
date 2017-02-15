@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -23,10 +22,9 @@ import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
-
-import java.io.File;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
@@ -42,8 +40,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private Handler mTaskHandler;
     private View mLoading;
     private int mOtherStopTime;
-    private RelativeLayout mNewFeedLayout;
-    private TextView mNewsTextView;
 
     //Header and Footer
     private Fragment mTopBannerFragment;
@@ -78,9 +74,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int DISPLAY_LOCATION_INFO = 0;
         int HIDE_LOCATION_INFO = 1;
         int PREPARE_FOR_NEXT_AD = 6;
-        int SHOW_NEWS_FEED = 7;
-        int HIDE_NEWS_FEED = 8;
-
     }
 
     @Override
@@ -96,7 +89,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void initState() {
         mStateMachine = StateMachine.getInstance();
-
+        mStateMachine.reset();
         if (null != getIntent() && null != getIntent().getBundleExtra(ARG_VIDEO_STATE)) {
             Bundle lData = getIntent().getBundleExtra(ARG_VIDEO_STATE);
             if (null != lData) {
@@ -116,6 +109,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mStateMachine.setVideoState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
         }
         mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+
     }
 
     /**
@@ -124,6 +118,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
     private void initView() {
         setContentView(R.layout.video_layout);
+        mTaskHandler = new TaskHandler();
         mContext = this;
         mMovieView = (VideoView) findViewById(R.id.movie_view);
         mOtherView = (VideoView) findViewById(R.id.ad_video);
@@ -131,7 +126,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mLoading = findViewById(R.id.loading);
         mMovieView.setOnTouchListener(this);
         mOtherView.setOnTouchListener(this);
-        mTaskHandler = new TaskHandler();
+        initListener();
+        initLocationFragment();
+    }
+
+    /**
+     * initialize the video player listener
+     */
+    private void initListener() {
         mMovieCompleteListener = new MovieCompleteListener();
         mAdsCompleteListener = new AdsCompleteListener();
         mMovieView.setOnCompletionListener(mMovieCompleteListener);
@@ -140,14 +142,12 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieSeekListener = new MovieSeekListener();
         mOtherPrepareListener = new OtherPrepareListener();
         mOtherSeekListener = new OtherSeekListener();
-        //news feed
-        mNewFeedLayout = (RelativeLayout) findViewById(R.id.news_feed_layout);
-        mNewFeedLayout.bringToFront();
-        mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
-        mNewsTextView.setSelected(true);
-        initLocationFragment();
+
     }
 
+    /**
+     * create the location related fragment
+     */
     private void initLocationFragment() {
         mTopBannerFragment = TopBannerFragment.newInstance(TopBannerFragment.TYPE.HOME_ICON_TYPE);
         mBottomBannerFragment = BottomBannerFragment.newInstance();
@@ -156,13 +156,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     @Override
     protected void onResume() {
         super.onResume();
-        //mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
         mState.sendEmptyMessage(EVENT.RESUME);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        //remove the handlers
         if (null != mTaskHandler) {
             mTaskHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
             mTaskHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
@@ -170,6 +170,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         pauseVideo();
     }
 
+    /**
+     * pause the running video and change the state
+     */
     private void pauseVideo() {
         if (mStateMachine.mCurrentState == StateMachine.PLAYING_STATE.MOVIE) {
             mMovieStopTime = mMovieView.getCurrentPosition();
@@ -199,7 +202,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         return false;
     }
 
-
+    /**
+     * Check if location information visible in the screen
+     *
+     * @return true or false
+     */
     private boolean isLocationInfoVisible() {
         TopBannerFragment lFragment = (TopBannerFragment) getSupportFragmentManager().findFragmentByTag(TopBannerFragment.TAG);
         if (null != lFragment) {
@@ -227,7 +234,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mOtherView.setVisibility(View.GONE);
         Data lData = VideoData.getRandomMovieUri(mContext);
         String lPath = lData.getPath();
-        if (null != lPath && isFileExist(lPath)) {
+        if (null != lPath && FileUtil.isFileExist(lPath)) {
             mMovieView.setVisibility(View.VISIBLE);
             mMovieView.setVideoURI(Uri.parse(lPath));
             mMovieView.setMediaController(null);
@@ -242,10 +249,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
-    private boolean isFileExist(String lPath) {
-        File lFile = new File(lPath);
-        return lFile.exists();
-    }
 
     /**
      * Method to hide the movie view
@@ -283,7 +286,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieView.setVisibility(View.GONE);
         Data lData = VideoData.getTravellerUri(mContext);
         String lPath = lData.getPath();
-        if (null != lPath && isFileExist(lPath)) {
+        if (null != lPath && FileUtil.isFileExist(lPath)) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
                 mOtherView.setVideoURI(Uri.parse(lPath));
@@ -306,7 +309,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieView.setVisibility(View.GONE);
         Data lData = VideoData.getSafetyUri(mContext);
         String lPath = lData.getPath();
-        if (null != lPath && isFileExist(lPath)) {
+        if (null != lPath && FileUtil.isFileExist(lPath)) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
                 mOtherView.setVideoURI(Uri.parse(lPath));
@@ -374,15 +377,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         lTransaction.commitAllowingStateLoss();
     }
 
-    private void hideNewsFeed() {
-        mNewFeedLayout.setVisibility(View.GONE);
-    }
-
-    private void showNewsFeed() {
-        mNewFeedLayout.setVisibility(View.VISIBLE);
-        mNewFeedLayout.bringToFront();
-    }
-
 
     public class TaskHandler extends Handler {
         @Override
@@ -397,12 +391,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
                 case TASK_EVENT.PREPARE_FOR_NEXT_AD:
                     initNextAdTiming();
-                    break;
-                case TASK_EVENT.SHOW_NEWS_FEED:
-                    showNewsFeed();
-                    break;
-                case TASK_EVENT.HIDE_NEWS_FEED:
-                    hideNewsFeed();
                     break;
                 default:
                     break;
@@ -573,7 +561,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.start();
             mMovieView.setOnPreparedListener(mMoviePrepareListener);
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-            //reset
+            //reset the value so that it wont resume from same place again
             mMovieStopTime = 0;
         } else {
             mMovieView.setVisibility(View.GONE);
@@ -581,7 +569,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mOtherView.seekTo(mOtherStopTime);
             mOtherView.start();
             mOtherView.setOnPreparedListener(mOtherPrepareListener);
-            //reset
+            //reset the value so that it wont resume from same place again
             mOtherStopTime = 0;
         }
         mStateMachine.changeState(mStateMachine.mCurrentState, mStateMachine.mPrevState);

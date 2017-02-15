@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.lib.videoplayer.ui.VideoActivity">
 
-    <include
-        android:id="@+id/news_feed_layout"
-        layout="@layout/new_feed_layout" />
 
     <TextView
         android:id="@+id/no_content"
@@ -59,4 +56,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"></FrameLayout>
 
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/company" />
 </RelativeLayout>

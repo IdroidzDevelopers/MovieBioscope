@@ -1,18 +1,25 @@
 package com.lib.videoplayer.util;
 
 
+import android.app.AlarmManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 
+import java.util.Random;
+
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
+    private static final int SLOT_PER_HOUR = 3;
+    /*1*60*60*1000*/
+    private static final long INTERVAL_FIVE_MINUTES = 5 * 60 * 1000;
+    private static final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
+    private static final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_FIVE_MINUTES;
+    private static final long MAX_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS + INTERVAL_FIVE_MINUTES;
 
     public static Data getRandomMovieUri(Context aContext) {
         Data lData = new Data();
@@ -133,7 +140,11 @@ public class VideoData {
     }
 
     public static long getNextAdTime() {
-        return 60 * 1000;//1 min :: static
+        Random lRandom = new Random();
+        long lRandomValue = MIN_TIME_IN_MILLIS +
+                (long) (lRandom.nextDouble() * (MAX_TIME_IN_MILLIS - MIN_TIME_IN_MILLIS));
+        Log.d(TAG, "--Test-- MIN_TIME_IN_MILLIS " + MIN_TIME_IN_MILLIS + " lRandomValue " + lRandomValue + " MAX_TIME_IN_MILLIS " + MAX_TIME_IN_MILLIS);
+        return lRandomValue;//1 min :: static
     }
 
     public static int updateVideoData(Context aContext, Data lData) {

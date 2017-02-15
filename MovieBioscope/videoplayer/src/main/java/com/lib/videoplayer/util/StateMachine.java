@@ -111,4 +111,9 @@ public class StateMachine {
         Log.d(TAG, "print :: mVideoState: " + mVideoState + " " + getStateName(mVideoState) + " mPrevState: " + mPrevState + " " + getName(mPrevState) + " mCurrentState: " + mCurrentState + " " + getName(mCurrentState));
     }
 
+    public void reset() {
+        mVideoState = VIDEO_STATE.NONE;
+        mPrevState = PLAYING_STATE.NONE;
+        mCurrentState = PLAYING_STATE.NONE;
+    }
 }

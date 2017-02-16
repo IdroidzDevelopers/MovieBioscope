@@ -31,13 +31,18 @@ public class VideoProvider extends ContentProvider {
 
     public interface VIDEO_COLUMNS {
         String ID = "_id";
+        String VIDEO_ID = "video_id";
         String NAME = "name";
-        String PATH = "path";
+        String DOWNLOAD_URL = "download_url";
         String TYPE = "type";
-        String LAST_PLAYED_TIME = "last_played_time";
-        String PLAY_COUNT = "play_count";
+        String LANGUAGE = "language";
+        String MESSAGE = "message";
+
         String DOWNLOADING_ID = "downloading_id";
         String DOWNLOAD_STATUS = "download_status";
+        String PATH = "path";
+        String LAST_PLAYED_TIME = "last_played_time";
+        String PLAY_COUNT = "play_count";
         String CLOUD_ID = "cloud_id";
     }
 
@@ -59,7 +64,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_VIDEO + "(" + VIDEO_COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
+            + VIDEO_COLUMNS.VIDEO_ID + " TEXT," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

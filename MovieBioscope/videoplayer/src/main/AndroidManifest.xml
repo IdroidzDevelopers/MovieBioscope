@@ -2,6 +2,10 @@
 
     package="com.lib.videoplayer">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
@@ -16,9 +20,16 @@
         <provider
             android:name="com.lib.videoplayer.database.VideoProvider"
             android:authorities="com.lib.videoplayer.contentprovider.database.VideoProvider" />
+
         <receiver android:name="com.lib.videoplayer.receivers.VideoCommandReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.VIDEO_COMMAND_ACTION"></action>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.lib.videoplayer.receivers.DownloadCompleteReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"></action>
             </intent-filter>
         </receiver>
     </application>

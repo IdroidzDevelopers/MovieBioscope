@@ -14,6 +14,7 @@ import com.hyperbound.moviebioscope.database.BusProvider;
 import com.lib.cloud.databases.CloudProvider;
 import com.lib.location.LocationApplication;
 import com.lib.location.databases.LocationProvider;
+import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
@@ -33,13 +34,14 @@ public class BioscopeApp extends Application {
         super.onCreate();
         sContext = this;
         LocationApplication.setLocationContext(this);
+        RouteApplication.setRouteContext(this);
         createFolderIfRequired();
         putDummyData();
         // putBusDetail();
         registerVideoCommand();
-        putClouddata();
-        putLocationData();
-        putRouteData();
+        //putClouddata();
+        //putLocationData();
+        //putRouteData();
     }
 
     public static Context getContext() {
@@ -128,7 +130,7 @@ public class BioscopeApp extends Application {
 
     private void putBusDetail() {
         ContentValues lValue5 = new ContentValues();
-        lValue5.put(BusProvider.COLUMNS.NUMBER, "OR07EA2352");
+        lValue5.put(BusProvider.COLUMNS.BUS_NUMBER, "OR07EA2352");
         getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lValue5);
     }
 
@@ -145,7 +147,7 @@ public class BioscopeApp extends Application {
     }
 
     private void putRouteData() {
-        ContentValues lValue5 = new ContentValues();
+        /*ContentValues lValue5 = new ContentValues();
         lValue5.put(RouteProvider.COLUMNS.NAME, "Bangalore - Mumbai");
         getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue5);
 
@@ -155,7 +157,7 @@ public class BioscopeApp extends Application {
 
         ContentValues lValue7 = new ContentValues();
         lValue7.put(RouteProvider.COLUMNS.NAME, "Bangalore - Chennai");
-        getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue7);
+        getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue7);*/
     }
 
     private void registerVideoCommand() {

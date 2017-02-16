@@ -19,34 +19,44 @@ public class RouteProvider extends ContentProvider {
     private static final boolean DEBUG = true;
 
     public static final String DATABASE_NAME = "bioscope.db";
-    public static final String TABLE_ROUTE = "route_table";
+    public static final String BUS_ROUTE_TABLE = "route_table";
     private static final int DATABASE_VERSION = 1;
 
     public static final String AUTHORITY = "com.lib.route.contentprovider.database.VideoProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    public static final Uri CONTENT_URI_ROUTE_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_ROUTE);
+    public static final Uri CONTENT_URI_BUS_ROUTE_TABLE = Uri.parse(CONTENT_URI + "/" + BUS_ROUTE_TABLE);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
 
-    public interface COLUMNS {
-        String ID = "_id";
+    public interface ROUTECOLUMNS {
         String ROUTE_ID = "route_id";
-        String NAME = "name";
+        String SOURCE = "source";
+        String DESTINATION = "destination";
+        String SOURCE_ADDRESS = "source_address";
+        String SOURCE_LATITUDE = "source_latitude";
+        String SOURCE_LONGITUDE = "source_longitude";
+        String DESTINATION_ADDRESS = "destination_address";
+        String DESTINATION_LATITUDE = "destination_latitude";
+        String DESTINATION_LONGITUDE = "destination_longitude";
         String CURRENT_SELECTION = "current_selection";
     }
 
 
-    private static final String CREATE_ROUTE_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_ROUTE + "(" + COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + COLUMNS.ROUTE_ID + " TEXT, " + COLUMNS.NAME + " TEXT, " + COLUMNS.CURRENT_SELECTION + " INTEGER DEFAULT 0" + ")";
+    private static final String CREATE_BUS_ROUTE_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + BUS_ROUTE_TABLE + "(" + ROUTECOLUMNS.ROUTE_ID + " TEXT PRIMARY KEY ,"
+            + ROUTECOLUMNS.SOURCE + " TEXT ,"+ ROUTECOLUMNS.SOURCE_ADDRESS+ " TEXT ,"
+            + ROUTECOLUMNS.SOURCE_LATITUDE + " TEXT ,"+ ROUTECOLUMNS.SOURCE_LONGITUDE+ " TEXT ,"
+            + ROUTECOLUMNS.DESTINATION + " TEXT ,"+ ROUTECOLUMNS.DESTINATION_ADDRESS+ " TEXT ,"
+            + ROUTECOLUMNS.DESTINATION_LATITUDE + " TEXT ,"+ ROUTECOLUMNS.DESTINATION_LONGITUDE+ " TEXT ,"
+            + ROUTECOLUMNS.CURRENT_SELECTION+ " INTEGER DEFAULT 0 " +")";
 
-    private static final int CASE_ROUTE_TABLE = 1;
+    private static final int CASE_BUS_ROUTE_TABLE = 1;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, TABLE_ROUTE, CASE_ROUTE_TABLE);
+        sUriMatcher.addURI(AUTHORITY, BUS_ROUTE_TABLE, CASE_BUS_ROUTE_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -55,8 +65,8 @@ public class RouteProvider extends ContentProvider {
     public String getType(Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CASE_ROUTE_TABLE:
-                return AUTHORITY + "/" + TABLE_ROUTE;
+            case CASE_BUS_ROUTE_TABLE:
+                return AUTHORITY + "/" + BUS_ROUTE_TABLE;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -69,7 +79,7 @@ public class RouteProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL(CREATE_ROUTE_TABLE);
+        db.execSQL(CREATE_BUS_ROUTE_TABLE);
         return false;
     }
 
@@ -79,7 +89,7 @@ public class RouteProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_ROUTE_TABLE:
+            case CASE_BUS_ROUTE_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -96,7 +106,7 @@ public class RouteProvider extends ContentProvider {
         Uri lInsertedUri = null;
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
-            case CASE_ROUTE_TABLE:
+            case CASE_BUS_ROUTE_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -114,7 +124,7 @@ public class RouteProvider extends ContentProvider {
         int count = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_ROUTE_TABLE:
+            case CASE_BUS_ROUTE_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
             default:
@@ -128,7 +138,7 @@ public class RouteProvider extends ContentProvider {
         int lCount = 0;
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_ROUTE_TABLE:
+            case CASE_BUS_ROUTE_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

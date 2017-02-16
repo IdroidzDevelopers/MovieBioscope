@@ -146,8 +146,8 @@ public class BottomBannerFragment extends Fragment {
     private void updateRouteInfo() {
         Route lRoute = RouteUtil.getCurrentRoute(getActivity());
         String[] arr = null;
-        if (null != lRoute && null != lRoute.getRouteName()) {
-            arr = lRoute.getRouteName().split("-");
+        if (null != lRoute && null != lRoute.getmRouteSource()) {
+            arr = lRoute.getmRouteSource().split("-");
         }
         if (null != arr && arr.length > 1) {
             mSource.setText(arr[0].trim());

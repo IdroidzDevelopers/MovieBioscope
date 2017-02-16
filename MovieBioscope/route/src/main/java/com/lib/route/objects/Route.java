@@ -3,39 +3,40 @@ package com.lib.route.objects;
 
 public class Route {
     private String mRouteId;
+    private String mRouteSource;
+    private String mRouteDestination;
+    private int mDefault;
 
-    public String getRouteId() {
+    public String getmRouteId() {
         return mRouteId;
     }
 
-    public void setRouteId(String mId) {
-        this.mRouteId = mId;
+    public void setmRouteId(String mRouteId) {
+        this.mRouteId = mRouteId;
     }
 
-    private String mRouteName;
-    private int mDefault;
-
-    public String getRouteName() {
-        return mRouteName;
+    public String getmRouteSource() {
+        return mRouteSource;
     }
 
-    public void setRouteName(String mRouteName) {
-        this.mRouteName = mRouteName;
+    public void setmRouteSource(String mRouteSource) {
+        this.mRouteSource = mRouteSource;
     }
 
-    public int getDefault() {
+    public String getmRouteDestination() {
+        return mRouteDestination;
+    }
+
+    public void setmRouteDestination(String mRouteDestination) {
+        this.mRouteDestination = mRouteDestination;
+    }
+
+    public int getmDefault() {
         return mDefault;
     }
 
-    public void setDefault(int mDefault) {
+    public void setmDefault(int mDefault) {
         this.mDefault = mDefault;
     }
 
-    @Override
-    public String toString() {
-        return "Route{" +
-                "mRouteName='" + mRouteName + '\'' +
-                ", mDefault=" + mDefault +
-                '}';
-    }
 }

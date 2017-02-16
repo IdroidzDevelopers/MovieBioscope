@@ -15,6 +15,7 @@ import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
+import com.hyperbound.moviebioscope.volley.VolleyUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,11 +71,12 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.submit_button:
                 //if (NetworkUtil.isInternetAvailable(getActivity())) {
-                    String lRegNumber = mRegNumber.getText().toString().trim();
+                    String lRegNumber = mRegNumber.getText().toString();
                     if (!TextUtils.isEmpty(lRegNumber)) {
+                        saveDataInBackgroundThread(lRegNumber);
+                        VolleyUtil.getBusDetails(lRegNumber);
                         moveToNextPage();
                         //put entry in the table and send it to cloud
-                        saveDataInBackgroundThread(lRegNumber);
                         //TODO: sending to cloud
 
                     } else {

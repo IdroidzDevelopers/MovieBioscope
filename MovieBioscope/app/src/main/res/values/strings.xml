@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MovieBioscope</string>
-    <string name="google_api_key">AIzaSyArjd9iDYCRZ-sv3CoDMFmbyRA-eVf4RC8</string>
+    <string name="google_maps_api_key">AIzaSyArjd9iDYCRZ-sv3CoDMFmbyRA-eVf4RC8</string>
     <string name="distance_matrix_api">https://maps.googleapis.com/maps/api/distancematrix/json?origins=</string>
     <string name="title_activity_landing">LandingActivity</string>
     <string name="total_distance_text">total distance</string>

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.BusProvider;
 
 public class BusUtil {
@@ -15,7 +16,7 @@ public class BusUtil {
 
     public static Uri saveRegistrationDetail(Context aContext, String aRegNumber) {
         ContentValues lValues = new ContentValues();
-        lValues.put(BusProvider.COLUMNS.NUMBER, aRegNumber);
+        lValues.put(BusProvider.COLUMNS.BUS_NUMBER, aRegNumber);
         Uri lUri = aContext.getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lValues);
         if (DEBUG) Log.d(TAG, "saveRegistrationDetail :: " + lUri);
         return lUri;
@@ -40,4 +41,17 @@ public class BusUtil {
         if (DEBUG) Log.d(TAG, "isRegistrationNumberAvailable() " + lValue);
         return lValue;
     }
+
+    public static synchronized void insertBusInfo(String busId, String busNumber,
+                                                  String comapanyId, String companyName) {
+        ContentValues lLocationContentValue = new ContentValues();
+        lLocationContentValue.put(BusProvider.COLUMNS.BUS_ID, busId);
+        lLocationContentValue.put(BusProvider.COLUMNS.BUS_NUMBER, busNumber);
+        lLocationContentValue.put(BusProvider.COLUMNS.COMPANY_ID, comapanyId);
+        lLocationContentValue.put(BusProvider.COLUMNS.COMPANY_NAME, companyName);
+        int count = BioscopeApp.getContext().getContentResolver().update(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lLocationContentValue, null, null);
+        if (DEBUG)
+            Log.d(TAG, "insertBusInfo() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
+    }
+
 }

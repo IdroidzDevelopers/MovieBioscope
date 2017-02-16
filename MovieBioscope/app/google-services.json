@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "408500113323",
+    "firebase_url": "https://moviebioscope-7d1f5.firebaseio.com",
+    "project_id": "moviebioscope-7d1f5",
+    "storage_bucket": "moviebioscope-7d1f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:408500113323:android:317109684ade3de0",
+        "android_client_info": {
+          "package_name": "com.hyperbound.moviebioscope"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "408500113323-j49uulbka5gi4b4grkjgr8soc89uact2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hyperbound.moviebioscope",
+            "certificate_hash": "4BC801382E8F36DB6D57605F5FB92B420E518C21"
+          }
+        },
+        {
+          "client_id": "408500113323-3qs5al9uu1kglt239dg5ua9a2rvh952r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd77rKluUd8uVTJcbaymy28dJtqF6tB0A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "408500113323-3qs5al9uu1kglt239dg5ua9a2rvh952r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

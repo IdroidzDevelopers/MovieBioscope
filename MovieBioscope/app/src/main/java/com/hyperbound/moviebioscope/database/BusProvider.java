@@ -30,13 +30,15 @@ public class BusProvider extends ContentProvider {
 
 
     public interface COLUMNS {
-        String ID = "bus_id";
-        String NUMBER = "bus_number";
+        String BUS_ID = "bus_id";
+        String BUS_NUMBER = "bus_number";
+        String COMPANY_ID = "company_id";
+        String COMPANY_NAME = "company_name";
     }
 
     private static final String CREATE_BUS_DETAIL_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + BUS_DETAIL_TABLE + "(" + COLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + COLUMNS.NUMBER+ " TEXT " +")";
+            + BUS_DETAIL_TABLE + "(" + COLUMNS.BUS_ID + " TEXT PRIMARY KEY ,"
+            + COLUMNS.BUS_NUMBER + " TEXT ,"+ COLUMNS.COMPANY_ID+ " TEXT ,"+ COLUMNS.COMPANY_NAME+ " TEXT " +")";
 
     private static final int CASE_BUS_DETAIL_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

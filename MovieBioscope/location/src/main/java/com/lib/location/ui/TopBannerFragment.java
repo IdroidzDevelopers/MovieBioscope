@@ -139,7 +139,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
         List<Route> lRouteList = RouteUtil.getRoutes(getActivity());
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.route_row, R.id.route_text);
         for (Route route : lRouteList) {
-            arrayAdapter.add(route.getRouteName());
+            arrayAdapter.add(route.getmRouteSource()+"-"+route.getmRouteDestination());
         }
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override

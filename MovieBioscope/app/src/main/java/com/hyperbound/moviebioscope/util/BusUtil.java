@@ -10,6 +10,9 @@ import android.util.Log;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.BusProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BusUtil {
     private static final String TAG = BusUtil.class.getSimpleName();
     private static final boolean DEBUG = true;
@@ -52,6 +55,39 @@ public class BusUtil {
         int count = BioscopeApp.getContext().getContentResolver().update(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lLocationContentValue, null, null);
         if (DEBUG)
             Log.d(TAG, "insertBusInfo() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
+    }
+
+    public static synchronized void insertFirebaseTopics(String topic) {
+        ContentValues lLocationContentValue = new ContentValues();
+        lLocationContentValue.put(BusProvider.FIREBASECOLUMNS.FIREBASE_TOPIC, topic);
+        int count = BioscopeApp.getContext().getContentResolver().update(BusProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, lLocationContentValue, null, null);
+        if (DEBUG)
+            Log.d(TAG, "insertFirebaseTopics() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
+    }
+
+    public static List<String> getAllFireBaseTopics() {
+        Cursor lCursor = null;
+        List<String> mTopicsList = new ArrayList<String>();
+        try {
+            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, null, null, null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    mTopicsList.add(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASECOLUMNS.FIREBASE_TOPIC)));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getRoutes() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getRoutes() " + mTopicsList);
+        return mTopicsList;
+    }
+
+    public static void deleteAllFirebaseTopics(){
+
     }
 
 }

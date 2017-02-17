@@ -9,12 +9,15 @@ import android.os.Message;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
+import com.hyperbound.moviebioscope.firebase.FireBaseManager;
 import com.hyperbound.moviebioscope.model.BusDetails;
 import com.hyperbound.moviebioscope.model.BusRegData;
 import com.hyperbound.moviebioscope.model.DestinationDetails;
 import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
 import com.lib.route.util.RouteUtil;
+
+import java.util.List;
 
 
 public class AppTaskHandler extends Handler {
@@ -72,6 +75,14 @@ public class AppTaskHandler extends Handler {
                                 BusUtil.insertBusInfo(busDetail.getFleetID(), busDetail.getRegNo(),
                                         busDetail.getCompany(), busDetail.getCompanyName());
                                 Routes busRoutes[] = busDetail.getRoutes();
+                                List<String> topicsList=busDetail.getTopics();
+                                if(null!=topicsList&&topicsList.size()>0) {
+                                    for(String topic:topicsList) {
+                                        BusUtil.insertFirebaseTopics(topic);
+                                    }
+                                }
+                                FireBaseManager.getFireBaseToken();
+                                FireBaseManager.subscribeFirebaseTopics();
                                 if (busRoutes.length > 0) {
                                     for (Routes route : busRoutes) {
                                         if (null != route) {

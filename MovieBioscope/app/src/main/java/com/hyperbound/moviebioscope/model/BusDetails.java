@@ -1,5 +1,7 @@
 package com.hyperbound.moviebioscope.model;
 
+import java.util.List;
+
 /**
  * Created by aarokiax on 2/16/2017.
  */
@@ -10,7 +12,7 @@ public class BusDetails {
     private String fleetID;
     private String company;
     private String companyName;
-    private String topics[];
+    private List<String> topics;
     private Routes routes[];
 
     public String getRegNo() {
@@ -45,11 +47,11 @@ public class BusDetails {
         this.companyName = companyName;
     }
 
-    public String[] getTopics() {
+    public List<String> getTopics() {
         return topics;
     }
 
-    public void setTopics(String[] topics) {
+    public void setTopics(List<String> topics) {
         this.topics = topics;
     }
 

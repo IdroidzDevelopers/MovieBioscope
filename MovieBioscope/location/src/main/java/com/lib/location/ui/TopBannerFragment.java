@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +23,7 @@ import com.lib.location.R;
 import com.lib.location.model.LocationInfo;
 import com.lib.location.util.LocationInterface;
 import com.lib.location.util.LocationUtil;
+import com.lib.location.util.RouteAdapter;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
@@ -137,16 +137,13 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     private void showDialog() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
         List<Route> lRouteList = RouteUtil.getRoutes(getActivity());
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.route_row, R.id.route_text);
-        for (Route route : lRouteList) {
-            arrayAdapter.add(route.getmRouteSource()+"-"+route.getmRouteDestination());
-        }
+        final RouteAdapter arrayAdapter = new RouteAdapter(getActivity(), R.layout.route_row, lRouteList);
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String lRoute = arrayAdapter.getItem(which);
-                Log.d(TAG, "onClick() " + lRoute);
-                updateDefaultRoute(lRoute);
+                Route lRoute = arrayAdapter.getItem(which);
+                Log.d(TAG, "onClick() " + lRoute.getmRouteId());
+                updateDefaultRoute(lRoute.getmRouteId());
             }
         });
         mRouteDialog = builderSingle.create();
@@ -155,12 +152,12 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     }
 
 
-    private void updateDefaultRoute(String lRouteName) {
-        if (null != lRouteName) {
+    private void updateDefaultRoute(String lRouteId) {
+        if (null != lRouteId) {
             Message lMessage = new Message();
             lMessage.what = RouteTaskHandler.TASK.UPDATE_DEFAULT_ROUTE;
             Bundle lBundle = new Bundle();
-            lBundle.putString(RouteTaskHandler.KEY.ROUTE_NAME, lRouteName);
+            lBundle.putString(RouteTaskHandler.KEY.ROUTE_ID, lRouteId);
             lMessage.setData(lBundle);
             RouteTaskHandler.getInstance(getActivity()).sendMessage(lMessage);
         }

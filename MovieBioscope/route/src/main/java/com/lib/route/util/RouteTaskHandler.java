@@ -20,7 +20,7 @@ public class RouteTaskHandler extends Handler {
     }
 
     public interface KEY {
-        String ROUTE_NAME = "route_name";
+        String ROUTE_ID = "route_id";
     }
 
     private static RouteTaskHandler sInstance;
@@ -51,8 +51,8 @@ public class RouteTaskHandler extends Handler {
         switch (msg.what) {
             case TASK.UPDATE_DEFAULT_ROUTE:
                 if (null != lBundle) {
-                    String lRouteName = (String) lBundle.get(KEY.ROUTE_NAME);
-                    RouteUtil.updateCurrentRoute(sContext, lRouteName);
+                    String lRouteId = (String) lBundle.get(KEY.ROUTE_ID);
+                    RouteUtil.updateCurrentRoute(sContext, lRouteId);
                     LocalBroadcastManager.getInstance(sContext).sendBroadcast(new Intent(INTENT_ROUTE_CHANGED));
                 }
                 break;

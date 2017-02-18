@@ -146,17 +146,13 @@ public class BottomBannerFragment extends Fragment {
     private void updateRouteInfo() {
         Route lRoute = RouteUtil.getCurrentRoute(getActivity());
         String[] arr = null;
-        if (null != lRoute && null != lRoute.getmRouteSource()) {
-            arr = lRoute.getmRouteSource().split("-");
-        }
-        if (null != arr && arr.length > 1) {
-            mSource.setText(arr[0].trim());
-            mDestination.setText(arr[1].trim());
-            LocationUtil.insertOrUpdateRouteInfo(arr[0].trim(), arr[1].trim());
+        if (null != lRoute && null != lRoute.getmRouteSource()&& null!=lRoute.getmRouteDestination()) {
+            mSource.setText(lRoute.getmRouteSource());
+            mDestination.setText(lRoute.getmRouteDestination());
+            LocationUtil.insertOrUpdateRouteInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
             com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
             lm.getCurrentLocation();
-            VolleyUtil.getTravelInfo(arr[0].trim(), arr[1].trim());
-//ask
+            VolleyUtil.getTravelInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
         }
     }
 }

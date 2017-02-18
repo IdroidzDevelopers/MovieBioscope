@@ -37,7 +37,7 @@
         </activity>
         <!-- [START firebase_service] -->
         <service
-            android:name=".firebase.MyFirebaseMessagingService">
+            android:name=".firebase.BusFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
@@ -45,7 +45,7 @@
         <!-- [END firebase_service] -->
         <!-- [START firebase_iid_service] -->
         <service
-            android:name=".firebase.MyFirebaseInstanceIDService">
+            android:name=".firebase.BusFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

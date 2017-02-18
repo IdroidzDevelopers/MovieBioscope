@@ -5,10 +5,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.BusProvider;
+import com.hyperbound.moviebioscope.firebase.FirebaseData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +62,9 @@ public class BusUtil {
     public static synchronized void insertFirebaseTopics(String topic) {
         ContentValues lLocationContentValue = new ContentValues();
         lLocationContentValue.put(BusProvider.FIREBASECOLUMNS.FIREBASE_TOPIC, topic);
-        int count = BioscopeApp.getContext().getContentResolver().update(BusProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, lLocationContentValue, null, null);
+        Uri lUri = BioscopeApp.getContext().getContentResolver().insert(BusProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, lLocationContentValue);
         if (DEBUG)
-            Log.d(TAG, "insertFirebaseTopics() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
+            Log.d(TAG, "insertFirebaseTopics() :: CONTENT_URI_BUS_DETAIL_TABLE " + lUri);
     }
 
     public static List<String> getAllFireBaseTopics() {
@@ -86,8 +88,45 @@ public class BusUtil {
         return mTopicsList;
     }
 
-    public static void deleteAllFirebaseTopics(){
+    public static void deleteAllFirebaseTopics() {
 
+    }
+
+    public static void insertFirebaseData(String transactionId, String data, long sentTime) {
+        ContentValues lLocationContentValue = new ContentValues();
+        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.TRANSACTION_ID, transactionId);
+        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.DATA, data);
+        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.SENT_TIME, sentTime);
+        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME, System.currentTimeMillis());
+        Uri lUri = BioscopeApp.getContext().getContentResolver().insert(BusProvider.CONTENT_URI_FIREBASE_DATA_TABLE, lLocationContentValue);
+        if (DEBUG)
+            Log.d(TAG, "insertFirebaseData() :: CONTENT_URI_BUS_DATA_TABLE " + lUri);
+    }
+
+    public static List<FirebaseData> getFireBaseData() {
+        Cursor lCursor = null;
+        List<FirebaseData> mDataList = new ArrayList<FirebaseData>();
+        try {
+            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, null, null, null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    FirebaseData data = new FirebaseData();
+                    data.setTransactionId(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.TRANSACTION_ID)));
+                    data.setData(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.DATA)));
+                    data.setSentTime(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.SENT_TIME)));
+                    data.setReceivedTime(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME)));
+                    mDataList.add(data);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getFireBaseData() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getFireBaseData() " + mDataList);
+        return mDataList;
     }
 
 }

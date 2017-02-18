@@ -1,4 +1,4 @@
-package com.hyperbound.moviebioscope.firebase;
+package com.hyperbound.moviebioscope.model;
 
 /**
  * Created by aarokiax on 2/17/2017.

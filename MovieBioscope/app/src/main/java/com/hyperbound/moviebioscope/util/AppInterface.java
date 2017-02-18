@@ -10,4 +10,7 @@ public interface AppInterface {
 
     String BUS_REG_NO_KEY="regNo";
     int HANDLE_BUS_DETAILS =1;
+    String ACTION_KEY="action";
+    String DATA_KEY="data";
+    String URL_KEY="urls";
 }

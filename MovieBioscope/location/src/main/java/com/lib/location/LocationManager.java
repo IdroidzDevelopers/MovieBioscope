@@ -20,6 +20,7 @@ import com.lib.location.model.LocationInfo;
 import com.lib.location.util.LocationInterface;
 import com.lib.location.util.LocationUtil;
 import com.lib.location.volley.VolleyUtil;
+import com.lib.utility.util.CustomIntent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
                         if (null != address) {
                             String subLocality = address.getSubLocality();
                             LocationUtil.updateCurentLocation(subLocality);
-                            LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(LocationInterface.ACTION_CURRENT_LOCATION_CHANGED));
+                            LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
                         }
                     }
                 } catch (IOException ioException) {

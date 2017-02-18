@@ -27,6 +27,7 @@ import com.lib.location.util.RouteAdapter;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
+import com.lib.utility.util.CustomIntent;
 
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     public void onStart() {
         super.onStart();
         IntentFilter lLocalFilter = new IntentFilter();
-        lLocalFilter.addAction(LocationInterface.ACTION_JOURNEY_INFO_CHANGED);
+        lLocalFilter.addAction(CustomIntent.ACTION_JOURNEY_INFO_CHANGED);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, lLocalFilter);
     }
 
@@ -167,7 +168,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                if (LocationInterface.ACTION_JOURNEY_INFO_CHANGED.equals(intent.getAction())) {
+                if (CustomIntent.ACTION_JOURNEY_INFO_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: ACTION_JOURNEY_INFO_CHANGED");
                     updateJourneyInfoView();
                 }

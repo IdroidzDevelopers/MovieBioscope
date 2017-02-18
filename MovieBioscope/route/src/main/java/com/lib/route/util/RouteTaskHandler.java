@@ -9,10 +9,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.lib.utility.util.CustomIntent;
+
 
 public class RouteTaskHandler extends Handler {
     private static final String TAG = RouteTaskHandler.class.getSimpleName();
-    public static final String INTENT_ROUTE_CHANGED = "com.lib.location.LOCATION_CHANGED";
     private static Context sContext;
 
     public interface TASK {
@@ -53,7 +54,7 @@ public class RouteTaskHandler extends Handler {
                 if (null != lBundle) {
                     String lRouteId = (String) lBundle.get(KEY.ROUTE_ID);
                     RouteUtil.updateCurrentRoute(sContext, lRouteId);
-                    LocalBroadcastManager.getInstance(sContext).sendBroadcast(new Intent(INTENT_ROUTE_CHANGED));
+                    LocalBroadcastManager.getInstance(sContext).sendBroadcast(new Intent(CustomIntent.ACTION_ROUTE_CHANGED));
                 }
                 break;
         }

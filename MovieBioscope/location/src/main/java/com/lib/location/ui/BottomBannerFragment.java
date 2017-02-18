@@ -22,6 +22,7 @@ import com.lib.location.volley.VolleyUtil;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
+import com.lib.utility.util.CustomIntent;
 
 
 /**
@@ -85,9 +86,9 @@ public class BottomBannerFragment extends Fragment {
         getActivity().registerReceiver(mReceiver, lFilter);
 
         IntentFilter lLocalFilter = new IntentFilter();
-        lLocalFilter.addAction(RouteTaskHandler.INTENT_ROUTE_CHANGED);
-        lLocalFilter.addAction(LocationInterface.ACTION_CURRENT_LOCATION_CHANGED);
-        lLocalFilter.addAction(LocationInterface.ACTION_LOCATION_INFO_CHANGED);
+        lLocalFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
+        lLocalFilter.addAction(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED);
+        lLocalFilter.addAction(CustomIntent.ACTION_LOCATION_INFO_CHANGED);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, lLocalFilter);
     }
 
@@ -112,13 +113,13 @@ public class BottomBannerFragment extends Fragment {
                 if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: time changed");
                     mCurrentTime.setText(TimeUtil.getTime());
-                } else if (RouteTaskHandler.INTENT_ROUTE_CHANGED.equals(intent.getAction())) {
+                } else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: route changed");
                     updateRouteInfo();
-                } else if (LocationInterface.ACTION_LOCATION_INFO_CHANGED.equals(intent.getAction())) {
+                } else if (CustomIntent.ACTION_LOCATION_INFO_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: location info changed");
                     updateLocationInfo();
-                } else if (LocationInterface.ACTION_CURRENT_LOCATION_CHANGED.equals(intent.getAction())) {
+                } else if (CustomIntent.ACTION_CURRENT_LOCATION_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: ACTION_CURRENT_LOCATION_CHANGED");
                     updateCurrentLocation();
                 }

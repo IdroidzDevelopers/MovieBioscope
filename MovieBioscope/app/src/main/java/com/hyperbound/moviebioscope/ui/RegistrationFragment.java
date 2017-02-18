@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
+import com.hyperbound.moviebioscope.util.NetworkUtil;
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
 import com.hyperbound.moviebioscope.volley.VolleyUtil;
@@ -70,21 +72,18 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.submit_button:
-                //if (NetworkUtil.isInternetAvailable(getActivity())) {
+                if (NetworkUtil.isInternetAvailable(getActivity())) {
                     String lRegNumber = mRegNumber.getText().toString();
                     if (!TextUtils.isEmpty(lRegNumber)) {
                         saveDataInBackgroundThread(lRegNumber);
                         VolleyUtil.getBusDetails(lRegNumber);
                         moveToNextPage();
-                        //put entry in the table and send it to cloud
-                        //TODO: sending to cloud
-
                     } else {
                         mRegNumber.setError(getString(R.string.empty_reg_text));
                     }
-               /* } else {
+                } else {
                     Toast.makeText(getActivity(), getString(R.string.no_internet_text), Toast.LENGTH_LONG).show();
-                }*/
+                }
                 break;
         }
     }

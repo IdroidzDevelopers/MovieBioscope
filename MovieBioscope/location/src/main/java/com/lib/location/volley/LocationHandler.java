@@ -16,6 +16,7 @@ import com.lib.location.model.Elements;
 import com.lib.location.model.Rows;
 import com.lib.location.util.LocationInterface;
 import com.lib.location.util.LocationUtil;
+import com.lib.utility.util.CustomIntent;
 
 /**
  * Created by Aron on 2/3/2017.
@@ -66,7 +67,7 @@ public class LocationHandler extends Handler {
                                     String destinationDistance = destinationData.getDistance().getText();
                                     String trafficTime = destinationData.getDuration_in_traffic().getText();
                                     LocationUtil.updateLocationInfo(sourceDistance,destinationDistance,trafficTime);
-                                    LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(LocationInterface.ACTION_LOCATION_INFO_CHANGED));
+                                    LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_LOCATION_INFO_CHANGED));
                                     Log.d(TAG, "Success");
                                 }
                             }
@@ -89,7 +90,7 @@ public class LocationHandler extends Handler {
                                     String totalDistance = sourceData.getDistance().getText();
                                     String totalTimeTraffic = sourceData.getDuration_in_traffic().getText();
                                     LocationUtil.updateJourneyInfo(totalDistance,totalTimeTraffic);
-                                    LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(LocationInterface.ACTION_JOURNEY_INFO_CHANGED));
+                                    LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_JOURNEY_INFO_CHANGED));
                                     Log.d(TAG, "Success");
                                 }
                             }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -16,13 +17,16 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.model.Url;
 import com.hyperbound.moviebioscope.ui.MainActivity;
 import com.hyperbound.moviebioscope.util.AppInterface;
+import com.hyperbound.moviebioscope.util.BusUtil;
+import com.lib.utility.util.CustomIntent;
 
 public class BusFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
+    private static final String TAG = "FirebaseService";
 
     /**
      * Called when message is received.
@@ -46,18 +50,22 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-            if (remoteMessage.getData().containsKey(AppInterface.DATA_KEY)) {
+            if (remoteMessage.getData().containsKey(AppInterface.APP_KEY)
+                    && remoteMessage.getData().containsKey(AppInterface.DATA_KEY)) {
+                String app = remoteMessage.getData().get(AppInterface.APP_KEY);
                 String data = remoteMessage.getData().get(AppInterface.DATA_KEY);
-                long sentTime=remoteMessage.getSentTime();
+                long sentTime = remoteMessage.getSentTime();
+                Uri uri=BusUtil.insertFirebaseData(app,data,sentTime);
+                LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY,uri));
             }
 
-            String urlList = remoteMessage.getData().get("urls");
+            /*String urlList = remoteMessage.getData().get("urls");
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             Url[] data = gson.fromJson(urlList, Url[].class);
             for (Url url : data) {
 
-            }
+            }*/
         }
 
         if (remoteMessage.getNotification() != null) {

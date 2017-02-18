@@ -45,7 +45,7 @@ public class BusProvider extends ContentProvider {
     }
 
     public interface FIREBASEDATACOLUMNS {
-        String TRANSACTION_ID = "transaction_id";
+        String APP_NAME = "APP_NAME";
         String DATA = "data";
         String SENT_TIME = "sent_time";
         String RECEIVED_TIME = "received_time";
@@ -59,7 +59,7 @@ public class BusProvider extends ContentProvider {
             + FIREBASE_TOPICS_TABLE + "(" + FIREBASECOLUMNS.FIREBASE_TOPIC+ " TEXT " +")";
 
     private static final String CREATE_FIREBASE_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.TRANSACTION_ID + " TEXT PRIMARY KEY ,"
+            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.APP_NAME + " TEXT ,"
             + FIREBASEDATACOLUMNS.DATA + " TEXT ,"+ FIREBASEDATACOLUMNS.SENT_TIME+ " INTEGER ,"+ FIREBASEDATACOLUMNS.RECEIVED_TIME+ " INTEGER " +")";
 
     private static final int CASE_BUS_DETAIL_TABLE = 1;

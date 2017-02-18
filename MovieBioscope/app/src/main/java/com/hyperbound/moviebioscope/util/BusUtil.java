@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.app.BioscopeApp;
@@ -92,15 +91,16 @@ public class BusUtil {
 
     }
 
-    public static void insertFirebaseData(String transactionId, String data, long sentTime) {
+    public static Uri insertFirebaseData(String appName, String data, long sentTime) {
         ContentValues lLocationContentValue = new ContentValues();
-        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.TRANSACTION_ID, transactionId);
+        lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.APP_NAME, appName);
         lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.DATA, data);
         lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.SENT_TIME, sentTime);
         lLocationContentValue.put(BusProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME, System.currentTimeMillis());
         Uri lUri = BioscopeApp.getContext().getContentResolver().insert(BusProvider.CONTENT_URI_FIREBASE_DATA_TABLE, lLocationContentValue);
         if (DEBUG)
             Log.d(TAG, "insertFirebaseData() :: CONTENT_URI_BUS_DATA_TABLE " + lUri);
+        return lUri;
     }
 
     public static List<FirebaseData> getFireBaseData() {
@@ -111,7 +111,7 @@ public class BusUtil {
             if (null != lCursor) {
                 while (lCursor.moveToNext()) {
                     FirebaseData data = new FirebaseData();
-                    data.setTransactionId(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.TRANSACTION_ID)));
+                    data.setTransactionId(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.APP_NAME)));
                     data.setData(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.DATA)));
                     data.setSentTime(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.SENT_TIME)));
                     data.setReceivedTime(lCursor.getString(lCursor.getColumnIndex(BusProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME)));

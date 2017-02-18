@@ -56,7 +56,11 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                 String data = remoteMessage.getData().get(AppInterface.DATA_KEY);
                 long sentTime = remoteMessage.getSentTime();
                 Uri uri=BusUtil.insertFirebaseData(app,data,sentTime);
-                LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY,uri));
+                switch (app){
+                    case AppInterface.TYPE_VIDEO:{
+                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY,uri));
+                    }
+                }
             }
 
             /*String urlList = remoteMessage.getData().get("urls");

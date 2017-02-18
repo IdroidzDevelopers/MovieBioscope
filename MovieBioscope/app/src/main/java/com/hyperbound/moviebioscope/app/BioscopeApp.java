@@ -79,9 +79,9 @@ public class BioscopeApp extends Application {
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues1);
 
         ContentValues lValues2 = new ContentValues();
-        lValues2.put(VideoProvider.VIDEO_COLUMNS.NAME, "Raja Rani");
-        lValues2.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.MOVIE);
-        lValues2.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/movie_2.mp4");
+        lValues2.put(VideoProvider.VIDEO_COLUMNS.NAME, "breaking news video");
+        lValues2.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO);
+        lValues2.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/breaking_video.mp4");
         lValues2.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
         lValues2.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues2);
@@ -103,9 +103,10 @@ public class BioscopeApp extends Application {
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue4);
 
         ContentValues lValue5 = new ContentValues();
-        lValue5.put(VideoProvider.VIDEO_COLUMNS.NAME, "Ad3");
-        lValue5.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.ADV);
-        lValue5.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/ad_3.mp4");
+        lValue5.put(VideoProvider.VIDEO_COLUMNS.NAME, "Breaking news");
+        lValue5.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.BREAKING_NEWS);
+        lValue5.put(VideoProvider.VIDEO_COLUMNS.MESSAGE, "Rs 500 and 1000 notes banned from Non 8th .This was announced today by PM Modi");
+        lValue5.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/breaking_image.jpg");
         lValue5.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
         lValue5.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
         getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValue5);

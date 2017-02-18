@@ -45,6 +45,11 @@
         android:visibility="gone" />
 
     <FrameLayout
+        android:id="@+id/breaking_news_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
+
+    <FrameLayout
         android:id="@+id/top_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,6 +62,7 @@
         android:layout_alignParentBottom="true"></FrameLayout>
 
     <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/company_logo"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_alignParentRight="true"

@@ -8,11 +8,20 @@ public class Data {
 
     private int mId;
     private String mName;
+    private String mMessage;
     private String mPath;
     private String mType;
 
     public String getType() {
         return mType;
+    }
+
+    public String getMessage() {
+        return mMessage;
+    }
+
+    public void setMessage(String mMessage) {
+        this.mMessage = mMessage;
     }
 
     public void setType(String mType) {

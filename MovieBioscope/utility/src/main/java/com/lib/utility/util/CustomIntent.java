@@ -9,4 +9,6 @@ public class CustomIntent {
     public static final String ACTION_ROUTE_RECEIVED = "com.android.action.ROUTE_RECEIVED";
     public static final String ACTION_INVALID_BUS_NUMBER = "com.android.action.INVALID_BUS_NUMBER";
     public static final String ACTION_VIDEO_DATA_RECEIVED = "com.android.action.VIDEO_DATA_RECEIVED";
+    public static final String ACTION_PLAY_BREAKING_VIDEO = "com.android.action.PLAY_BREAKING_VIDEO";
+    public static final String ACTION_PLAY_BREAKING_NEWS = "com.android.action.PLAY_BREAKING_NEWS";
 }

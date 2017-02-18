@@ -86,7 +86,7 @@ public class StateMachine {
             case PLAYING_STATE.BREAKING_VIDEO:
                 return "BREAKING_VIDEO";
             case PLAYING_STATE.BREAKING_TEXT:
-                return "BREAKING_TEXT";
+                return "BREAKING_NEWS";
             case PLAYING_STATE.PAUSED:
                 return "PAUSED";
             default:

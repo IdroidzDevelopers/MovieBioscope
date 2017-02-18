@@ -157,4 +157,70 @@ public class VideoData {
         Log.d(TAG, "updateVideoData() :: update count " + count);
         return count;
     }
+
+    public static Data getBreakingVideoUri(Context context) {
+        Data lData = new Data();
+        if (null != context) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
+                    lData.setId(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getRandomMovieUri() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return lData;
+    }
+
+    /**
+     * Method to get breaking news data
+     *
+     * @param context
+     * @return
+     */
+    public static Data getBreakingNews(Context context) {
+        Data lData = new Data();
+        if (null != context) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
+                    lData.setId(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    String lMessage = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.MESSAGE));
+                    lData.setMessage(lMessage);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getBreakingNews() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return lData;
+    }
 }

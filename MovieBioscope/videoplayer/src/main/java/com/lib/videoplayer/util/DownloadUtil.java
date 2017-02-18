@@ -113,7 +113,7 @@ public class DownloadUtil {
             case VideoProvider.VIDEO_TYPE.MOVIE:
             case VideoProvider.VIDEO_TYPE.ADV:
             case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
-            case VideoProvider.VIDEO_TYPE.BREAKING_TEXT:
+            case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
                 return "/storage/emulated/0/movie_bioscope";
 
         }

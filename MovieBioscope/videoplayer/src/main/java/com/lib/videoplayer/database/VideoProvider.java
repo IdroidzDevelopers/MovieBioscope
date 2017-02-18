@@ -52,7 +52,7 @@ public class VideoProvider extends ContentProvider {
         String MOVIE = "movie";
         String ADV = "adv";
         String BREAKING_VIDEO = "breaking_video";
-        String BREAKING_TEXT = "breaking_text";
+        String BREAKING_NEWS = "breaking_text";
     }
 
     public interface DOWNLOAD_STATUS {

@@ -1,6 +1,9 @@
 package com.lib.videoplayer.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
@@ -9,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,16 +24,20 @@ import android.widget.VideoView;
 
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
+import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 
+import pl.droidsonroids.gif.GifImageView;
+
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
     private static final long BANNER_TIMEOUT = 5 * 1000;//5 secs
     private static final String ARG_VIDEO_STATE = "video_state";
+    private static final long BREAKING_NEWS_DISPLAY_TIME = 30 * 1000;//30 secs
     private Handler mState;
     private StateMachine mStateMachine;
     private Context mContext;
@@ -38,12 +46,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private TextView mNoContentView;
     private int mMovieStopTime;
     private Handler mTaskHandler;
+    private BroadcastReceiver mReceiver;
     private View mLoading;
     private int mOtherStopTime;
 
-    //Header and Footer
+    //Header , Footer, breaking news
     private Fragment mTopBannerFragment;
     private Fragment mBottomBannerFragment;
+    private Fragment mBreakingNewsFragment;
 
     /******************
      * Listeners
@@ -55,11 +65,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private OtherPrepareListener mOtherPrepareListener;
     private OtherSeekListener mOtherSeekListener;
 
+    //testing
+    private GifImageView mGifImageView;
+
 
     public interface EVENT {
         int PLAY_NEXT = 0;
         int PLAY_BREAKING_VIDEO = 1;
-        int PLAY_BREAKING_TEXT = 2;
+        int PLAY_BREAKING_NEWS = 2;
         int RESUME = 3;
         int PLAY_ADV = 4;
 
@@ -73,7 +86,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     public interface TASK_EVENT {
         int DISPLAY_LOCATION_INFO = 0;
         int HIDE_LOCATION_INFO = 1;
-        int PREPARE_FOR_NEXT_AD = 6;
+        int PREPARE_FOR_NEXT_AD = 2;
+        int REMOVE_BREAKING_NEWS = 3;
     }
 
     @Override
@@ -82,6 +96,25 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         hideNotificationBar();
         initView();
         initState();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CustomIntent.ACTION_PLAY_BREAKING_VIDEO);
+        intentFilter.addAction(CustomIntent.ACTION_PLAY_BREAKING_NEWS);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        if (null != mTaskHandler) {
+            removeBreakingNews();
+            mTaskHandler.removeMessages(TASK_EVENT.REMOVE_BREAKING_NEWS);
+        }
     }
 
     /**
@@ -119,6 +152,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private void initView() {
         setContentView(R.layout.video_layout);
         mTaskHandler = new TaskHandler();
+        mReceiver = new Receiver();
         mContext = this;
         mMovieView = (VideoView) findViewById(R.id.movie_view);
         mOtherView = (VideoView) findViewById(R.id.ad_video);
@@ -127,7 +161,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieView.setOnTouchListener(this);
         mOtherView.setOnTouchListener(this);
         initListener();
-        initLocationFragment();
+        initFragments();
+        //testing
+        mGifImageView = (GifImageView) findViewById(R.id.company_logo);
+        mGifImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(new Intent(CustomIntent.ACTION_PLAY_BREAKING_NEWS));
+            }
+        });
     }
 
     /**
@@ -148,9 +190,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     /**
      * create the location related fragment
      */
-    private void initLocationFragment() {
+    private void initFragments() {
         mTopBannerFragment = TopBannerFragment.newInstance(TopBannerFragment.TYPE.HOME_ICON_TYPE);
         mBottomBannerFragment = BottomBannerFragment.newInstance();
+        mBreakingNewsFragment = BreakingNewsFragment.newInstance();
     }
 
     @Override
@@ -279,6 +322,23 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
+    private void startBreakingVideo() {
+        mMovieView.setVisibility(View.GONE);
+        Data lData = VideoData.getBreakingVideoUri(mContext);
+        String lPath = lData.getPath();
+        if (null != lPath) {
+            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
+                mOtherView.setVisibility(View.VISIBLE);
+                mOtherView.setVideoURI(Uri.parse(lPath));
+                mOtherView.requestFocus();
+                mOtherView.start();
+                hideLoadingIcon();
+                mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.BREAKING_VIDEO);
+                VideoData.updateVideoData(mContext, lData);
+            }
+        }
+    }
+
     /**
      * Method to start traveller view
      */
@@ -378,6 +438,25 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
 
+    /**
+     * show breaking news on the screen
+     */
+    private void showBreakingNews() {
+        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+        lTransaction.replace(R.id.breaking_news_container, mBreakingNewsFragment, BreakingNewsFragment.TAG);
+        lTransaction.commitAllowingStateLoss();
+    }
+
+    /**
+     * Hide breaking news from screen
+     */
+    private void removeBreakingNews() {
+        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+        lTransaction.remove(mBreakingNewsFragment);
+        lTransaction.commitAllowingStateLoss();
+    }
+
+
     public class TaskHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -392,6 +471,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case TASK_EVENT.PREPARE_FOR_NEXT_AD:
                     initNextAdTiming();
                     break;
+                case TASK_EVENT.REMOVE_BREAKING_NEWS:
+                    removeBreakingNews();
+                    resumeVideo();
+                    break;
+
                 default:
                     break;
 
@@ -475,10 +559,27 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             startAd();
                             break;
                     }
+                    break;
                 case EVENT.RESUME:
                     switch (mStateMachine.mCurrentState) {
                         case StateMachine.PLAYING_STATE.PAUSED:
                             resumeVideo();
+                            break;
+                    }
+                    break;
+                case EVENT.PLAY_BREAKING_VIDEO:
+                    switch (mStateMachine.mCurrentState) {
+                        case StateMachine.PLAYING_STATE.ADV:
+                            startBreakingVideo();
+                            break;
+                    }
+                    break;
+                case EVENT.PLAY_BREAKING_NEWS:
+                    switch (mStateMachine.mCurrentState) {
+                        case StateMachine.PLAYING_STATE.ADV:
+                            pauseVideo();
+                            showBreakingNews();
+                            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);
                             break;
                     }
                     break;
@@ -548,6 +649,38 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             break;
                     }
                     break;
+
+                case EVENT.PLAY_BREAKING_VIDEO:
+                    switch (mStateMachine.mCurrentState) {
+                        case StateMachine.PLAYING_STATE.NONE:
+                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
+                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
+                        case StateMachine.PLAYING_STATE.MOVIE:
+                        case StateMachine.PLAYING_STATE.ADV:
+                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
+                        case StateMachine.PLAYING_STATE.BREAKING_TEXT:
+                        case StateMachine.PLAYING_STATE.PAUSED:
+                            hideMovie();
+                            startBreakingVideo();
+                            break;
+                    }
+                    break;
+                case EVENT.PLAY_BREAKING_NEWS:
+                    switch (mStateMachine.mCurrentState) {
+                        case StateMachine.PLAYING_STATE.NONE:
+                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
+                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
+                        case StateMachine.PLAYING_STATE.MOVIE:
+                        case StateMachine.PLAYING_STATE.ADV:
+                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
+                        case StateMachine.PLAYING_STATE.BREAKING_TEXT:
+                        case StateMachine.PLAYING_STATE.PAUSED:
+                            pauseVideo();
+                            showBreakingNews();
+                            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);
+                            break;
+                    }
+                    break;
             }
         }
     }
@@ -560,6 +693,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.seekTo(mMovieStopTime);
             mMovieView.start();
             mMovieView.setOnPreparedListener(mMoviePrepareListener);
+            hideLoadingIcon();
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
             //reset the value so that it wont resume from same place again
             mMovieStopTime = 0;
@@ -569,9 +703,24 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mOtherView.seekTo(mOtherStopTime);
             mOtherView.start();
             mOtherView.setOnPreparedListener(mOtherPrepareListener);
+            hideLoadingIcon();
             //reset the value so that it wont resume from same place again
             mOtherStopTime = 0;
         }
         mStateMachine.changeState(mStateMachine.mCurrentState, mStateMachine.mPrevState);
+    }
+
+
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                if (CustomIntent.ACTION_PLAY_BREAKING_VIDEO.equals(intent.getAction())) {
+                    mState.sendEmptyMessage(EVENT.PLAY_BREAKING_VIDEO);
+                } else if (CustomIntent.ACTION_PLAY_BREAKING_NEWS.equals(intent.getAction())) {
+                    mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                }
+            }
+        }
     }
 }

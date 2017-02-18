@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="30dp"
+    android:layout_marginLeft="60dp"
+    android:layout_marginRight="60dp"
+    android:layout_marginTop="30dp"
+    android:background="@drawable/background_border_black"
+    tools:context="com.lib.videoplayer.ui.VideoActivity">
+
+    <TextView
+        android:id="@+id/breaking_text_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/breaking_news_border"
+        android:layout_marginRight="@dimen/breaking_news_border"
+        android:layout_marginTop="@dimen/breaking_news_border"
+        android:background="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:text="BREAKING NEWS"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:id="@+id/breaking_new_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/breaking_text_id"
+        android:layout_marginBottom="@dimen/breaking_news_border"
+        android:layout_marginLeft="@dimen/breaking_news_border"
+        android:layout_marginRight="@dimen/breaking_news_border"
+        android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/breaking_news_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/breaking_text_id"
+        android:layout_marginBottom="@dimen/breaking_news_border"
+        android:layout_marginLeft="@dimen/breaking_news_border"
+        android:layout_marginRight="@dimen/breaking_news_border"
+        android:layout_marginTop="150dp"
+        android:background="@color/transparent_color"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+</RelativeLayout>

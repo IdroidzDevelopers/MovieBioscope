@@ -1,10 +1,13 @@
 package com.hyperbound.moviebioscope.util;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,6 +19,7 @@ import com.hyperbound.moviebioscope.model.DestinationDetails;
 import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
 import com.lib.route.util.RouteUtil;
+import com.lib.utility.util.CustomIntent;
 
 import java.util.List;
 
@@ -98,6 +102,7 @@ public class AppTaskHandler extends Handler {
                                         }
 
                                     }
+                                    LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_ROUTE_RECEIVED));
                                 }
                             }
                         }

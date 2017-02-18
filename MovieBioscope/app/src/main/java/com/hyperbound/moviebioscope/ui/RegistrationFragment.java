@@ -1,23 +1,34 @@
 package com.hyperbound.moviebioscope.ui;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
 import com.hyperbound.moviebioscope.util.NetworkUtil;
+import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
-import com.hyperbound.moviebioscope.volley.VolleyUtil;
+import com.lib.utility.util.CustomIntent;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +42,10 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private View mRootView;
     private Button mSubmitButton;
     private EditText mRegNumber;
+    private Receiver mReceiver;
+    private String mRegistrationNumber;
+    private ProgressDialog mProgressDialog;
+    private Dialog mDialog;
 
     public RegistrationFragment() {
         // Required empty public constructor
@@ -62,10 +77,28 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         return mRootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CustomIntent.ACTION_ROUTE_RECEIVED);
+        intentFilter.addAction(CustomIntent.ACTION_INVALID_BUS_NUMBER);
+        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).unregisterReceiver(mReceiver);
+        dismissProgressDialog();
+        dismissDialog();
+    }
+
     private void initView() {
         mSubmitButton = (Button) mRootView.findViewById(R.id.submit_button);
         mSubmitButton.setOnClickListener(this);
         mRegNumber = (EditText) mRootView.findViewById(R.id.registration_number);
+        mReceiver = new Receiver();
     }
 
     @Override
@@ -73,16 +106,15 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         switch (view.getId()) {
             case R.id.submit_button:
                 if (NetworkUtil.isInternetAvailable(getActivity())) {
-                    String lRegNumber = mRegNumber.getText().toString();
-                    if (!TextUtils.isEmpty(lRegNumber)) {
-                        saveDataInBackgroundThread(lRegNumber);
-                        VolleyUtil.getBusDetails(lRegNumber);
-                        moveToNextPage();
+                    mRegistrationNumber = mRegNumber.getText().toString();
+                    if (!TextUtils.isEmpty(mRegistrationNumber)) {
+                        showProgressDialog();
+                        VolleyUtil.getBusDetails(mRegistrationNumber);
                     } else {
                         mRegNumber.setError(getString(R.string.empty_reg_text));
                     }
                 } else {
-                    Toast.makeText(getActivity(), getString(R.string.no_internet_text), Toast.LENGTH_LONG).show();
+                    showDialog(getString(R.string.no_internet_text), getString(R.string.ok_text));
                 }
                 break;
         }
@@ -107,5 +139,60 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         lTransaction.commit();
     }
 
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                if (CustomIntent.ACTION_ROUTE_RECEIVED.equals(intent.getAction())) {
+                    dismissProgressDialog();
+                    saveDataInBackgroundThread(mRegistrationNumber);
+                    moveToNextPage();
+                } else if (CustomIntent.ACTION_INVALID_BUS_NUMBER.equals(intent.getAction())) {
+                    dismissProgressDialog();
+                    showDialog(getString(R.string.invalid_bus_number_text), getString(R.string.ok_text));
+                }
+            }
+        }
+    }
+
+    private void showProgressDialog() {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setMessage(getString(R.string.validating_text));
+
+        // Set the progress dialog background color
+        mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFD4D9D0")));
+        mProgressDialog.setIndeterminate(false);
+        // Finally, show the progress dialog
+        mProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (null != mProgressDialog && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    private void showDialog(String message, String buttonText) {
+        mDialog = new Dialog(getActivity());
+        mDialog.setContentView(R.layout.dialog_layout);
+        TextView messageTextView = (TextView) mDialog.findViewById(R.id.message);
+        messageTextView.setText(message);
+        Button positiveButton = (Button) mDialog.findViewById(R.id.positive_button);
+        positiveButton.setText(buttonText);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismissDialog();
+            }
+        });
+        mDialog.show();
+    }
+
+    private void dismissDialog() {
+        if (null != mDialog && mDialog.isShowing()) {
+            mDialog.dismiss();
+        }
+    }
 
 }

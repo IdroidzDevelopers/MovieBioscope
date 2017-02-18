@@ -1,18 +1,22 @@
 package com.hyperbound.moviebioscope.volley;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.util.AppInterface;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
 import com.lib.location.LocationApplication;
 import com.lib.location.util.LocationInterface;
 import com.lib.location.volley.LocationHandler;
+import com.lib.utility.util.CustomIntent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,51 +26,55 @@ import org.json.JSONObject;
  */
 
 public class VolleyUtil {
-    private static final String TAG="VolleyUtil";
+    private static final String TAG = "VolleyUtil";
 
     /**
      * Method to get all the data with shopid
      */
     public static void getBusDetails(String busNo) {
-        String lUrl = AppInterface.BASE_URL+AppInterface.BUS_REGISTRATION_API;
+        String lUrl = AppInterface.BASE_URL + AppInterface.BUS_REGISTRATION_API;
         try {
-            JSONObject requestJson = new JSONObject();
+            final JSONObject requestJson = new JSONObject();
             requestJson.put(AppInterface.BUS_REG_NO_KEY, busNo);
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.POST, lUrl,requestJson , new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, "getBusDetails() :: onResponse() ::" + response);
-                        try {
-                            Bundle lBundle=new Bundle();
-                            lBundle.putString("data",response.toString());
-                            Message msg=Message.obtain();
-                            msg.what= AppInterface.HANDLE_BUS_DETAILS;
-                            msg.setData(lBundle);
-                            AppTaskHandler.getInstance().sendMessage(msg);
-                            Log.i(TAG, "Response : " + response.toString());
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.POST, lUrl, requestJson, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d(TAG, "getBusDetails() :: onResponse() ::" + response);
+                            try {
+                                String code = response.getString("code");
+                                if (null != code && code.equals("SUCC01")) {
+                                    Bundle lBundle = new Bundle();
+                                    lBundle.putString("data", response.toString());
+                                    Message msg = Message.obtain();
+                                    msg.what = AppInterface.HANDLE_BUS_DETAILS;
+                                    msg.setData(lBundle);
+                                    AppTaskHandler.getInstance().sendMessage(msg);
+                                } else {
+                                    LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_INVALID_BUS_NUMBER));
+                                }
+                                Log.i(TAG, "Response : " + response.toString());
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
+                            }
                         }
-                    }
-                }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "getBusDetails() :: onErrorResponse() ::" + error);
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "getBusDetails() :: onErrorResponse() ::" + error);
 
-
-                    }
-                });
-        VolleySingleton.getInstance(LocationApplication.getLocationContext()).addToRequestQueue(jsObjRequest);
-        }catch (JSONException je){
-            Log.e(TAG,"JsonException",je);
+                        }
+                    });
+            VolleySingleton.getInstance(LocationApplication.getLocationContext()).addToRequestQueue(jsObjRequest);
+        } catch (JSONException je) {
+            Log.e(TAG, "JsonException", je);
         }
     }
 
     public static void getTravelInfo(String source, String destination) {
-        String lUrl = LocationInterface.MATRIX_API_BASE_URL+LocationInterface.ORIGIN_KEY+source
-                +LocationInterface.DESTINATION_KEY+destination+LocationInterface.API_KEY+LocationInterface.DISTANCE_MATRIX_API_KEY;
+        String lUrl = LocationInterface.MATRIX_API_BASE_URL + LocationInterface.ORIGIN_KEY + source
+                + LocationInterface.DESTINATION_KEY + destination + LocationInterface.API_KEY + LocationInterface.DISTANCE_MATRIX_API_KEY;
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, lUrl, null, new Response.Listener<JSONObject>() {
@@ -75,10 +83,10 @@ public class VolleyUtil {
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "getLocationInfo() :: onResponse() ::" + response);
                         try {
-                            Bundle lBundle=new Bundle();
-                            lBundle.putString("data",response.toString());
-                            Message msg=Message.obtain();
-                            msg.what=LocationInterface.HANDLE_JOURNEY_INFO;
+                            Bundle lBundle = new Bundle();
+                            lBundle.putString("data", response.toString());
+                            Message msg = Message.obtain();
+                            msg.what = LocationInterface.HANDLE_JOURNEY_INFO;
                             msg.setData(lBundle);
                             LocationHandler.getInstance().sendMessage(msg);
                             Log.i(TAG, "Response : " + response.toString());

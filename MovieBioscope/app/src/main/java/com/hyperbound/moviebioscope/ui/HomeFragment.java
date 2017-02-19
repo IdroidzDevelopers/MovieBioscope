@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
 import com.lib.videoplayer.ui.VideoActivity;
+import com.lib.videoplayer.util.DownloadUtil;
 import com.lib.videoplayer.util.StateMachine;
 
 /**
@@ -57,6 +58,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mHandler = new Handler();
         mRunnable = new StartVideoRunnable();
 
+        //testing
+        DownloadUtil.beginDownload(getActivity(), "http:\\/\\/139.59.62.165\\/download\\/95b27ab225fd33f6c3137bcc07dac266", null, "Sample 2");
         //GoogleMapDistanceMatrix.requestForData(getActivity(),"Bangalore","Mumbai");
     }
 

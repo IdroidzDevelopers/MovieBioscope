@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.lib.location.util.NetworkUtil;
@@ -29,7 +30,8 @@ public class DownloadUtil {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri DownloadUri = Uri.parse(downlodUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
-            request.setDestinationInExternalPublicDir(directory, name);
+            request.setNotificationVisibility(1);
+            request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory() + "movie_bioscope", name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }

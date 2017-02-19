@@ -1,5 +1,7 @@
 package com.hyperbound.moviebioscope.model;
 
+import java.util.List;
+
 /**
  * Created by aarokiax on 2/16/2017.
  */
@@ -11,6 +13,7 @@ public class Routes {
     private SourceDetails sourceDetails;
     private String destination;
     private DestinationDetails destinationDetails;
+    private List<Images> images;
 
     public String getRouteID() {
         return routeID;
@@ -50,5 +53,13 @@ public class Routes {
 
     public void setDestinationDetails(DestinationDetails destinationDetails) {
         this.destinationDetails = destinationDetails;
+    }
+
+    public List<Images> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Images> images) {
+        this.images = images;
     }
 }

@@ -1,18 +1,27 @@
 package com.hyperbound.moviebioscope.ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.util.BusUtil;
+import com.hyperbound.moviebioscope.util.ImagePagerAdapter;
+import com.lib.route.util.RouteUtil;
 import com.lib.videoplayer.ui.VideoActivity;
 import com.lib.videoplayer.util.DownloadUtil;
 import com.lib.videoplayer.util.StateMachine;
+
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +38,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private View mRootView;
     private Handler mHandler;
     private StartVideoRunnable mRunnable;
+    private ViewPager mViewPager;
+    private ImagePagerAdapter mImagePagerAdapter;
+
+    private Handler mSlideHandler;
+    public static final int DELAY = 3 *1000;
+    private int page = 0;
+
+    Runnable mSlideRunnable = new Runnable() {
+        public void run() {
+            if (mImagePagerAdapter.getCount()-1 == page) {
+                page = 0;
+            } else {
+                page++;
+            }
+            Log.d(TAG,"Page :: "+page);
+            mViewPager.setCurrentItem(page, true);
+            mSlideHandler.postDelayed(this, DELAY);
+        }
+    };
 
     public HomeFragment() {
         // Required empty public constructor
@@ -53,9 +81,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initView() {
+        mImagePagerAdapter = new ImagePagerAdapter(getActivity(), RouteUtil.getAllRouteImages());
+        mViewPager = (ViewPager) mRootView.findViewById(R.id.pager);
+        mViewPager.setAdapter(mImagePagerAdapter);
         mPlayBottom = (ImageButton) mRootView.findViewById(R.id.play);
         mPlayBottom.setOnClickListener(this);
         mHandler = new Handler();
+        mSlideHandler=new Handler();
         mRunnable = new StartVideoRunnable();
 
         //testing
@@ -77,6 +109,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        mSlideHandler.postDelayed(mSlideRunnable, DELAY);
         StartVideoTimer();
     }
 
@@ -97,6 +130,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         mHandler.removeCallbacks(mRunnable);
+        mSlideHandler.removeCallbacks(mSlideRunnable);
     }
 
 

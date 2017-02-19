@@ -40,6 +40,7 @@ public class RouteProvider extends ContentProvider {
         String DESTINATION_LATITUDE = "destination_latitude";
         String DESTINATION_LONGITUDE = "destination_longitude";
         String CURRENT_SELECTION = "current_selection";
+        String ROUTE_IMAGE_PATHS = "route_image_path";
     }
 
 
@@ -49,7 +50,7 @@ public class RouteProvider extends ContentProvider {
             + ROUTECOLUMNS.SOURCE_LATITUDE + " TEXT ,"+ ROUTECOLUMNS.SOURCE_LONGITUDE+ " TEXT ,"
             + ROUTECOLUMNS.DESTINATION + " TEXT ,"+ ROUTECOLUMNS.DESTINATION_ADDRESS+ " TEXT ,"
             + ROUTECOLUMNS.DESTINATION_LATITUDE + " TEXT ,"+ ROUTECOLUMNS.DESTINATION_LONGITUDE+ " TEXT ,"
-            + ROUTECOLUMNS.CURRENT_SELECTION+ " INTEGER DEFAULT 0 " +")";
+            + ROUTECOLUMNS.ROUTE_IMAGE_PATHS+ " TEXT ,"+ ROUTECOLUMNS.CURRENT_SELECTION+ " INTEGER DEFAULT 0 " +")";
 
     private static final int CASE_BUS_ROUTE_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

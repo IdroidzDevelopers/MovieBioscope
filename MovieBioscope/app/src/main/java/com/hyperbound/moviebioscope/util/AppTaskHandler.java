@@ -16,8 +16,10 @@ import com.hyperbound.moviebioscope.firebase.FireBaseManager;
 import com.hyperbound.moviebioscope.model.BusDetails;
 import com.hyperbound.moviebioscope.model.BusRegData;
 import com.hyperbound.moviebioscope.model.DestinationDetails;
+import com.hyperbound.moviebioscope.model.Images;
 import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
+import com.hyperbound.moviebioscope.model.Url;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
 
@@ -78,18 +80,25 @@ public class AppTaskHandler extends Handler {
                             if (null != busDetail) {
                                 BusUtil.insertBusInfo(busDetail.getFleetID(), busDetail.getRegNo(),
                                         busDetail.getCompany(), busDetail.getCompanyName());
-                                Routes busRoutes[] = busDetail.getRoutes();
-                                List<String> topicsList=busDetail.getTopics();
-                                if(null!=topicsList&&topicsList.size()>0) {
-                                    for(String topic:topicsList) {
+                                List<Routes> busRoutes = busDetail.getRoutes();
+                                List<String> topicsList = busDetail.getTopics();
+                                if (null != topicsList && topicsList.size() > 0) {
+                                    for (String topic : topicsList) {
                                         BusUtil.insertFirebaseTopics(topic);
                                     }
                                 }
                                 FireBaseManager.getFireBaseToken();
                                 FireBaseManager.subscribeFirebaseTopics();
-                                if (busRoutes.length > 0) {
+                                if (busRoutes.size() > 0) {
                                     for (Routes route : busRoutes) {
                                         if (null != route) {
+                                            //TODO : handle image download and store path in DB
+                                            List<Images> imagesList = route.getImages();
+                                            for (Images image : imagesList) {
+                                                image.getName();
+                                                image.getUrl();
+                                            }
+                                            // end
                                             String routeId = route.getRouteID();
                                             String source = route.getSource();
                                             String destination = route.getDestination();

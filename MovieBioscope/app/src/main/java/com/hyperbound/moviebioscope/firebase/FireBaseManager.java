@@ -24,12 +24,12 @@ public class FireBaseManager {
 
     public static void subscribeFirebaseTopics() {
         FirebaseMessaging.getInstance().subscribeToTopic("TN11K5868");
-        /*List<String> topics = BusUtil.getAllFireBaseTopics();
+        List<String> topics = BusUtil.getAllFireBaseTopics();
         if (null != topics && topics.size() > 0) {
             for (String topic : topics) {
                 Log.d(TAG, "Subscribe to Firebaase :: " + topic);
-                FirebaseMessaging.getInstance().subscribeToTopic(topic.trim());
+                FirebaseMessaging.getInstance().subscribeToTopic(topic);
             }
-        }*/
+        }
     }
 }

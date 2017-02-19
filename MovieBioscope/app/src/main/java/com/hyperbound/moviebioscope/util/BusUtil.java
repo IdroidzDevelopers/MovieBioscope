@@ -4,6 +4,8 @@ package com.hyperbound.moviebioscope.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -11,6 +13,7 @@ import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.BusProvider;
 import com.hyperbound.moviebioscope.firebase.FirebaseData;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,5 +131,7 @@ public class BusUtil {
         if (DEBUG) Log.d(TAG, "getFireBaseData() " + mDataList);
         return mDataList;
     }
+
+
 
 }

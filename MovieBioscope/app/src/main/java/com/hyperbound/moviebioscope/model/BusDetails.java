@@ -13,7 +13,7 @@ public class BusDetails {
     private String company;
     private String companyName;
     private List<String> topics;
-    private Routes routes[];
+    private List<Routes> routes;
 
     public String getRegNo() {
         return regNo;
@@ -55,11 +55,11 @@ public class BusDetails {
         this.topics = topics;
     }
 
-    public Routes[] getRoutes() {
+    public List<Routes> getRoutes() {
         return routes;
     }
 
-    public void setRoutes(Routes[] routes) {
+    public void setRoutes(List<Routes> routes) {
         this.routes = routes;
     }
 }

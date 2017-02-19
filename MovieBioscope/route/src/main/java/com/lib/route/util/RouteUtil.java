@@ -4,6 +4,8 @@ package com.lib.route.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
@@ -11,6 +13,7 @@ import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
 import com.lib.route.objects.Route;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class RouteUtil {
         lLocationContentValue.put(RouteProvider.ROUTECOLUMNS.DESTINATION_ADDRESS, destinationAddress);
         lLocationContentValue.put(RouteProvider.ROUTECOLUMNS.DESTINATION_LATITUDE, destinationLatitude);
         lLocationContentValue.put(RouteProvider.ROUTECOLUMNS.DESTINATION_LONGITUDE, destinationLongitude);
-        Uri lUri = RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_BUS_ROUTE_TABLE,lLocationContentValue);
+        Uri lUri = RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_BUS_ROUTE_TABLE, lLocationContentValue);
         if (DEBUG)
             Log.d(TAG, "insertRouteInfo() :: CONTENT_URI_BUS_ROUTE_TABLE rows count " + lUri);
     }
@@ -104,6 +107,41 @@ public class RouteUtil {
         }
         if (DEBUG) Log.d(TAG, "getCurrentRoute() " + lRoute);
         return lRoute;
+    }
+
+    public static List<Bitmap> getAllRouteImages() {
+        List<Bitmap> routeImages = new ArrayList<>();
+        /*File imageFile = new File("/sdcard/Pictures/mumbai_1.jpg");
+        File imageFile1 = new File("/sdcard/Pictures/mumbai_2.jpg");
+        File imageFile2 = new File("/sdcard/Pictures/mumbai_3.jpg");
+        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        Bitmap bitmap1 = BitmapFactory.decodeFile(imageFile1.getAbsolutePath());
+        Bitmap bitmap2 = BitmapFactory.decodeFile(imageFile2.getAbsolutePath());
+        routeImages.add(bitmap);
+        routeImages.add(bitmap1);
+        routeImages.add(bitmap2);*/
+        Cursor lCursor = null;
+        try {
+            lCursor = RouteApplication.getRouteContext().getContentResolver().query(RouteProvider.CONTENT_URI_BUS_ROUTE_TABLE, null, null, null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    String paths[] = lCursor.getString(lCursor.getColumnIndex(RouteProvider.ROUTECOLUMNS.ROUTE_IMAGE_PATHS)).split(RouteInterface.URL_DIVIDER);
+                    for (String path : paths) {
+                        File imageFile = new File(path);
+                        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                        routeImages.add(bitmap);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getAllRouteImages() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getAllRouteImages() " + routeImages);
+        return routeImages;
     }
 
 }

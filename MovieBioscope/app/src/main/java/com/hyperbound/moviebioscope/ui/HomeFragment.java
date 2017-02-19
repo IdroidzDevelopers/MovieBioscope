@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mRunnable = new StartVideoRunnable();
 
         //testing
-        DownloadUtil.beginDownload(getActivity(), "http:\\/\\/139.59.62.165\\/download\\/95b27ab225fd33f6c3137bcc07dac266", null, "Sample 2");
+        DownloadUtil.beginDownload(getActivity(), "http://139.59.62.165/download/95b27ab225fd33f6c3137bcc07dac266", null, "Sample 2");
         //GoogleMapDistanceMatrix.requestForData(getActivity(),"Bangalore","Mumbai");
     }
 

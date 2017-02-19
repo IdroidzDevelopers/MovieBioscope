@@ -16,6 +16,7 @@ import com.lib.location.LocationApplication;
 import com.lib.location.databases.LocationProvider;
 import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
+import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
 
@@ -163,7 +164,7 @@ public class BioscopeApp extends Application {
 
     private void registerVideoCommand() {
         IntentFilter lIntentFilter = new IntentFilter();
-        lIntentFilter.addAction("android.intent.action.VIDEO_COMMAND_ACTION");
+        lIntentFilter.addAction(CustomIntent.ACTION_VIDEO_DATA_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 }

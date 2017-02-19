@@ -1,4 +1,4 @@
-package com.lib.videoplayer.database;
+package com.lib.firebase.database;
 
 
 import android.content.ContentProvider;
@@ -13,64 +13,50 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-public class VideoProvider extends ContentProvider {
+public class FirebaseProvider extends ContentProvider {
 
-    private static final String TAG = VideoProvider.class.getSimpleName();
+    private static final String TAG = FirebaseProvider.class.getSimpleName();
     private static final boolean DEBUG = true;
 
     public static final String DATABASE_NAME = "bioscope.db";
-    public static final String TABLE_VIDEO = "video_table";
+    public static final String FIREBASE_TOPICS_TABLE = "firebase_topics_table";
+    public static final String FIREBASE_DATA_TABLE = "firebase_data_table";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
+    public static final String AUTHORITY = "com.lib.firebase.contentprovider.database.FirebaseProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
+    public static final Uri CONTENT_URI_FIREBASE_TOPICS_TABLE = Uri.parse(CONTENT_URI + "/" + FIREBASE_TOPICS_TABLE);
+    public static final Uri CONTENT_URI_FIREBASE_DATA_TABLE = Uri.parse(CONTENT_URI + "/" + FIREBASE_DATA_TABLE);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
 
-    public interface VIDEO_COLUMNS {
-        String VIDEO_ID = "video_id";
-        String NAME = "name";
-        String DOWNLOAD_URL = "download_url";
-        String TYPE = "type";
-        String LANGUAGE = "language";
-        String MESSAGE = "message";
-
-        String DOWNLOADING_ID = "downloading_id";
-        String DOWNLOAD_STATUS = "download_status";
-        String PATH = "path";
-        String LAST_PLAYED_TIME = "last_played_time";
-        String PLAY_COUNT = "play_count";
-        String CLOUD_ID = "cloud_id";
+    public interface FIREBASECOLUMNS {
+        String FIREBASE_TOPIC = "firebase_topic";
     }
 
-    public interface VIDEO_TYPE {
-        String TRAVELLER_VIDEO = "traveller";
-        String SAFETY_VIDEO = "safety";
-        String MOVIE = "movie";
-        String ADV = "adv";
-        String BREAKING_VIDEO = "breaking_video";
-        String BREAKING_NEWS = "breaking_text";
+    public interface FIREBASEDATACOLUMNS {
+        String APP_NAME = "APP_NAME";
+        String DATA = "data";
+        String SENT_TIME = "sent_time";
+        String RECEIVED_TIME = "received_time";
     }
 
-    public interface DOWNLOAD_STATUS {
-        String DOWNLOADED = "downloaded";
-        String DOWNLOADING = "downloading";
-        String FAILED = "failed";
-    }
+    private static final String CREATE_FIREBASE_TOPIC_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + FIREBASE_TOPICS_TABLE + "(" + FIREBASECOLUMNS.FIREBASE_TOPIC + " TEXT " + ")";
 
+    private static final String CREATE_FIREBASE_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.APP_NAME + " TEXT ,"
+            + FIREBASEDATACOLUMNS.DATA + " TEXT ," + FIREBASEDATACOLUMNS.SENT_TIME + " INTEGER ," + FIREBASEDATACOLUMNS.RECEIVED_TIME + " INTEGER " + ")";
 
-    private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_VIDEO + "("
-            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
-
-    private static final int CASE_VIDEO_TABLE = 1;
-    private static final int CASE_DEFAULT = 3;
+    private static final int CASE_FIREBASE_TOPIC_TABLE = 2;
+    private static final int CASE_FIREBASE_DATA_TABLE = 3;
+    private static final int CASE_DEFAULT = 5;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
+        sUriMatcher.addURI(AUTHORITY, FIREBASE_TOPICS_TABLE, CASE_FIREBASE_TOPIC_TABLE);
+        sUriMatcher.addURI(AUTHORITY, FIREBASE_DATA_TABLE, CASE_FIREBASE_DATA_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -79,8 +65,10 @@ public class VideoProvider extends ContentProvider {
     public String getType(Uri uri) {
         int match = sUriMatcher.match(uri);
         switch (match) {
-            case CASE_VIDEO_TABLE:
-                return AUTHORITY + "/" + TABLE_VIDEO;
+            case CASE_FIREBASE_TOPIC_TABLE:
+                return AUTHORITY + "/" + FIREBASE_TOPICS_TABLE;
+            case CASE_FIREBASE_DATA_TABLE:
+                return AUTHORITY + "/" + FIREBASE_DATA_TABLE;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -93,7 +81,8 @@ public class VideoProvider extends ContentProvider {
     public boolean onCreate() {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        db.execSQL(CREATE_VIDEO_TABLE);
+        db.execSQL(CREATE_FIREBASE_TOPIC_TABLE);
+        db.execSQL(CREATE_FIREBASE_DATA_TABLE);
         return false;
     }
 
@@ -103,7 +92,11 @@ public class VideoProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_FIREBASE_TOPIC_TABLE:
+                queryBuilder.setTables(uri.getLastPathSegment());
+                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case CASE_FIREBASE_DATA_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -120,7 +113,10 @@ public class VideoProvider extends ContentProvider {
         Uri lInsertedUri = null;
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_FIREBASE_TOPIC_TABLE:
+                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                break;
+            case CASE_FIREBASE_DATA_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -138,7 +134,10 @@ public class VideoProvider extends ContentProvider {
         int count = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_FIREBASE_TOPIC_TABLE:
+                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
+                break;
+            case CASE_FIREBASE_DATA_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
             default:
@@ -152,7 +151,10 @@ public class VideoProvider extends ContentProvider {
         int lCount = 0;
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
-            case CASE_VIDEO_TABLE:
+            case CASE_FIREBASE_TOPIC_TABLE:
+                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
+                break;
+            case CASE_FIREBASE_DATA_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

@@ -20,15 +20,11 @@ public class BusProvider extends ContentProvider {
 
     public static final String DATABASE_NAME = "bioscope.db";
     public static final String BUS_DETAIL_TABLE = "bus_details_table";
-    public static final String FIREBASE_TOPICS_TABLE = "firebase_topics_table";
-    public static final String FIREBASE_DATA_TABLE = "firebase_data_table";
     private static final int DATABASE_VERSION = 1;
 
     public static final String AUTHORITY = "com.hyperbound.moviebioscope.contentprovider.database.BusProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri CONTENT_URI_BUS_DETAIL_TABLE = Uri.parse(CONTENT_URI + "/" + BUS_DETAIL_TABLE);
-    public static final Uri CONTENT_URI_FIREBASE_TOPICS_TABLE = Uri.parse(CONTENT_URI + "/" + FIREBASE_TOPICS_TABLE);
-    public static final Uri CONTENT_URI_FIREBASE_DATA_TABLE = Uri.parse(CONTENT_URI + "/" + FIREBASE_DATA_TABLE);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
@@ -40,38 +36,18 @@ public class BusProvider extends ContentProvider {
         String COMPANY_NAME = "company_name";
     }
 
-    public interface FIREBASECOLUMNS {
-        String FIREBASE_TOPIC = "firebase_topic";
-    }
-
-    public interface FIREBASEDATACOLUMNS {
-        String APP_NAME = "APP_NAME";
-        String DATA = "data";
-        String SENT_TIME = "sent_time";
-        String RECEIVED_TIME = "received_time";
-    }
 
     private static final String CREATE_BUS_DETAIL_TABLE = "CREATE TABLE IF NOT EXISTS "
             + BUS_DETAIL_TABLE + "(" + COLUMNS.BUS_ID + " TEXT PRIMARY KEY ,"
             + COLUMNS.BUS_NUMBER + " TEXT ,"+ COLUMNS.COMPANY_ID+ " TEXT ,"+ COLUMNS.COMPANY_NAME+ " TEXT " +")";
 
-    private static final String CREATE_FIREBASE_TOPIC_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + FIREBASE_TOPICS_TABLE + "(" + FIREBASECOLUMNS.FIREBASE_TOPIC+ " TEXT " +")";
-
-    private static final String CREATE_FIREBASE_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.APP_NAME + " TEXT ,"
-            + FIREBASEDATACOLUMNS.DATA + " TEXT ,"+ FIREBASEDATACOLUMNS.SENT_TIME+ " INTEGER ,"+ FIREBASEDATACOLUMNS.RECEIVED_TIME+ " INTEGER " +")";
 
     private static final int CASE_BUS_DETAIL_TABLE = 1;
-    private static final int CASE_FIREBASE_TOPIC_TABLE = 2;
-    private static final int CASE_FIREBASE_DATA_TABLE = 3;
     private static final int CASE_DEFAULT = 5;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, BUS_DETAIL_TABLE, CASE_BUS_DETAIL_TABLE);
-        sUriMatcher.addURI(AUTHORITY, FIREBASE_TOPICS_TABLE, CASE_FIREBASE_TOPIC_TABLE);
-        sUriMatcher.addURI(AUTHORITY, FIREBASE_DATA_TABLE, CASE_FIREBASE_DATA_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -83,10 +59,6 @@ public class BusProvider extends ContentProvider {
         switch (match) {
             case CASE_BUS_DETAIL_TABLE:
                 return AUTHORITY + "/" + BUS_DETAIL_TABLE;
-            case CASE_FIREBASE_TOPIC_TABLE:
-                return AUTHORITY + "/" + FIREBASE_TOPICS_TABLE;
-            case CASE_FIREBASE_DATA_TABLE:
-                return AUTHORITY + "/" + FIREBASE_DATA_TABLE;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -100,8 +72,6 @@ public class BusProvider extends ContentProvider {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.execSQL(CREATE_BUS_DETAIL_TABLE);
-        db.execSQL(CREATE_FIREBASE_TOPIC_TABLE);
-        db.execSQL(CREATE_FIREBASE_DATA_TABLE);
         return false;
     }
 
@@ -112,14 +82,6 @@ public class BusProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_BUS_DETAIL_TABLE:
-                queryBuilder.setTables(uri.getLastPathSegment());
-                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case CASE_FIREBASE_TOPIC_TABLE:
-                queryBuilder.setTables(uri.getLastPathSegment());
-                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case CASE_FIREBASE_DATA_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -137,12 +99,6 @@ public class BusProvider extends ContentProvider {
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
             case CASE_BUS_DETAIL_TABLE:
-                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
-                break;
-            case CASE_FIREBASE_TOPIC_TABLE:
-                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
-                break;
-            case CASE_FIREBASE_DATA_TABLE:
                 lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 break;
             default:
@@ -163,12 +119,6 @@ public class BusProvider extends ContentProvider {
             case CASE_BUS_DETAIL_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
-            case CASE_FIREBASE_TOPIC_TABLE:
-                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
-                break;
-            case CASE_FIREBASE_DATA_TABLE:
-                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
-                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri);
         }
@@ -181,12 +131,6 @@ public class BusProvider extends ContentProvider {
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_BUS_DETAIL_TABLE:
-                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
-                break;
-            case CASE_FIREBASE_TOPIC_TABLE:
-                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
-                break;
-            case CASE_FIREBASE_DATA_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

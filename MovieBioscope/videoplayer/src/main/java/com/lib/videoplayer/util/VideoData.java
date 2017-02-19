@@ -10,7 +10,11 @@ import android.util.Log;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import static com.lib.videoplayer.BuildConfig.DEBUG;
 
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
@@ -31,8 +35,8 @@ public class VideoData {
             try {
                 lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
@@ -60,8 +64,8 @@ public class VideoData {
             try {
                 lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
@@ -90,8 +94,8 @@ public class VideoData {
             try {
                 lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
@@ -120,8 +124,8 @@ public class VideoData {
             try {
                 lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
@@ -148,8 +152,8 @@ public class VideoData {
     }
 
     public static int updateVideoData(Context aContext, Data lData) {
-        String lSelection = VideoProvider.VIDEO_COLUMNS.ID + "= ?";
-        String[] lSelectionArg = {"" + lData.getId()};
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + "= ?";
+        String[] lSelectionArg = {"" + lData.getVideoId()};
         ContentValues lValues = new ContentValues();
         lValues.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
         lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, lData.getCount() + 1);//incremented the play count
@@ -168,8 +172,8 @@ public class VideoData {
             try {
                 lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
@@ -203,8 +207,8 @@ public class VideoData {
             try {
                 lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
-                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.ID));
-                    lData.setId(lId);
+                    int lId = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setVideoId(lId);
                     String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     lData.setPath(lValue);
                     String lMessage = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.MESSAGE));
@@ -222,5 +226,14 @@ public class VideoData {
             }
         }
         return lData;
+    }
+
+    public static List<Data> createVideoData(Context context) {
+        List<Data> list = new ArrayList<Data>();
+        return list;
+    }
+
+    public static void insertOrUpdateVideoData(Data data) {
+
     }
 }

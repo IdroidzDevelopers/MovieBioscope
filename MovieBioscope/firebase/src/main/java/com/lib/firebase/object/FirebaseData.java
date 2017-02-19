@@ -1,8 +1,4 @@
-package com.hyperbound.moviebioscope.firebase;
-
-import com.hyperbound.moviebioscope.model.Url;
-
-import java.util.List;
+package com.lib.firebase.object;
 
 /**
  * Created by aarokiax on 2/17/2017.

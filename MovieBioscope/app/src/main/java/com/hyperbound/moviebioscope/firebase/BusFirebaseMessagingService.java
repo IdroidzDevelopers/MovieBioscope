@@ -22,6 +22,7 @@ import com.hyperbound.moviebioscope.model.Url;
 import com.hyperbound.moviebioscope.ui.MainActivity;
 import com.hyperbound.moviebioscope.util.AppInterface;
 import com.hyperbound.moviebioscope.util.BusUtil;
+import com.lib.firebase.util.FirebaseUtil;
 import com.lib.utility.util.CustomIntent;
 
 public class BusFirebaseMessagingService extends FirebaseMessagingService {
@@ -55,10 +56,10 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                 String app = remoteMessage.getData().get(AppInterface.APP_KEY);
                 String data = remoteMessage.getData().get(AppInterface.DATA_KEY);
                 long sentTime = remoteMessage.getSentTime();
-                Uri uri=BusUtil.insertFirebaseData(app,data,sentTime);
-                switch (app){
-                    case AppInterface.TYPE_VIDEO:{
-                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY,uri));
+                Uri uri = FirebaseUtil.insertFirebaseData(BioscopeApp.getContext(), app, data, sentTime);
+                switch (app) {
+                    case AppInterface.TYPE_VIDEO: {
+                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY, uri));
                     }
                 }
             }

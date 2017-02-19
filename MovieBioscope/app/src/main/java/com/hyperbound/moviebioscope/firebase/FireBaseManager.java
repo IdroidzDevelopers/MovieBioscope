@@ -5,7 +5,9 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.util.BusUtil;
+import com.lib.firebase.util.FirebaseUtil;
 
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class FireBaseManager {
 
     public static void subscribeFirebaseTopics() {
         FirebaseMessaging.getInstance().subscribeToTopic("TN11K5868");
-        List<String> topics = BusUtil.getAllFireBaseTopics();
+        List<String> topics = FirebaseUtil.getAllFireBaseTopics(BioscopeApp.getContext());
         if (null != topics && topics.size() > 0) {
             for (String topic : topics) {
                 Log.d(TAG, "Subscribe to Firebaase :: " + topic);

@@ -1,16 +1,63 @@
 package com.lib.videoplayer.object;
 
-/**
- * Created by Aron on 04-02-2017.
- */
 
 public class Data {
 
-    private int mId;
+    private int mVideoId;
     private String mName;
-    private String mMessage;
-    private String mPath;
+    private String mDownloadUrl;
     private String mType;
+    private String mLanguage;
+    private String mMessage;
+    private String mDownloadingId;
+    private String mDownloadStatus;
+    private String mPath;
+    private String mLastPlayedTime;
+    private int mCount;
+    private String mCloudId;
+
+    public String getDownloadUrl() {
+        return mDownloadUrl;
+    }
+
+    public void setDownloadUrl(String mDownloadUrl) {
+        this.mDownloadUrl = mDownloadUrl;
+    }
+
+    public String getLanguage() {
+        return mLanguage;
+    }
+
+    public void setLanguage(String mLanguage) {
+        this.mLanguage = mLanguage;
+    }
+
+
+    public String getDownloadingId() {
+        return mDownloadingId;
+    }
+
+    public void setDownloadingId(String mDownloadingId) {
+        this.mDownloadingId = mDownloadingId;
+    }
+
+    public String getDownloadStatus() {
+        return mDownloadStatus;
+    }
+
+    public void setDownloadStatus(String mDownloadStatus) {
+        this.mDownloadStatus = mDownloadStatus;
+    }
+
+
+    public String getCloudId() {
+        return mCloudId;
+    }
+
+    public void setCloudId(String mCloudId) {
+        this.mCloudId = mCloudId;
+    }
+
 
     public String getType() {
         return mType;
@@ -28,15 +75,13 @@ public class Data {
         this.mType = mType;
     }
 
-    private String mLastPlayedTime;
-    private int mCount;
 
-    public int getId() {
-        return mId;
+    public int getVideoId() {
+        return mVideoId;
     }
 
-    public void setId(int mId) {
-        this.mId = mId;
+    public void setVideoId(int mId) {
+        this.mVideoId = mId;
     }
 
     public String getName() {

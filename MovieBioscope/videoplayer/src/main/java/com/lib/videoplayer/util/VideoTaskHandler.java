@@ -6,6 +6,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
+import com.lib.firebase.util.FirebaseUtil;
+
 
 public class VideoTaskHandler extends Handler {
     private static final String TAG = VideoTaskHandler.class.getSimpleName();
@@ -41,7 +43,6 @@ public class VideoTaskHandler extends Handler {
         super.handleMessage(msg);
         switch (msg.what) {
             case TASK.INIT_VIDEO_DATA:
-
                 break;
         }
     }

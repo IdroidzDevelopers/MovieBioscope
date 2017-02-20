@@ -36,6 +36,7 @@ public class FirebaseProvider extends ContentProvider {
     }
 
     public interface FIREBASEDATACOLUMNS {
+        String ID = "id";
         String APP_NAME = "APP_NAME";
         String DATA = "data";
         String SENT_TIME = "sent_time";
@@ -46,7 +47,7 @@ public class FirebaseProvider extends ContentProvider {
             + FIREBASE_TOPICS_TABLE + "(" + FIREBASECOLUMNS.FIREBASE_TOPIC + " TEXT " + ")";
 
     private static final String CREATE_FIREBASE_DATA_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.APP_NAME + " TEXT ,"
+            + FIREBASE_DATA_TABLE + "(" + FIREBASEDATACOLUMNS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + FIREBASEDATACOLUMNS.APP_NAME + " TEXT ,"
             + FIREBASEDATACOLUMNS.DATA + " TEXT ," + FIREBASEDATACOLUMNS.SENT_TIME + " INTEGER ," + FIREBASEDATACOLUMNS.RECEIVED_TIME + " INTEGER " + ")";
 
     private static final int CASE_FIREBASE_TOPIC_TABLE = 2;

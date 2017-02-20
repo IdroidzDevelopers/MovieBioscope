@@ -62,19 +62,21 @@ public class FirebaseUtil {
         return lUri;
     }
 
-    public static List<FirebaseData> getFireBaseData(Context context) {
+    public static FirebaseData getFireBaseData(Context context, String rowId) {
         Cursor lCursor = null;
-        List<FirebaseData> mDataList = new ArrayList<FirebaseData>();
+        FirebaseData data = null;
+        String selection = FirebaseProvider.FIREBASEDATACOLUMNS.ID + " = ?";
+        String[] selectionArg = new String[]{"" + rowId};
         try {
-            lCursor = context.getContentResolver().query(FirebaseProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, null, null, null, null);
+            lCursor = context.getContentResolver().query(FirebaseProvider.CONTENT_URI_FIREBASE_DATA_TABLE, null, selection, selectionArg, null);
             if (null != lCursor) {
                 while (lCursor.moveToNext()) {
-                    FirebaseData data = new FirebaseData();
+                    data = new FirebaseData();
                     data.setTransactionId(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.APP_NAME)));
                     data.setData(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.DATA)));
                     data.setSentTime(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.SENT_TIME)));
                     data.setReceivedTime(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME)));
-                    mDataList.add(data);
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -84,7 +86,7 @@ public class FirebaseUtil {
                 lCursor.close();
             }
         }
-        if (DEBUG) Log.d(TAG, "getFireBaseData() " + mDataList);
-        return mDataList;
+        if (DEBUG) Log.d(TAG, "getFireBaseData() " + data);
+        return data;
     }
 }

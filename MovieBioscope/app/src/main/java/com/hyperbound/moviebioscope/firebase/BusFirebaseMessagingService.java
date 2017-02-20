@@ -59,7 +59,7 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                 Uri uri = FirebaseUtil.insertFirebaseData(BioscopeApp.getContext(), app, data, sentTime);
                 switch (app) {
                     case AppInterface.TYPE_VIDEO: {
-                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(AppInterface.URI_KEY, uri));
+                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
                     }
                 }
             }

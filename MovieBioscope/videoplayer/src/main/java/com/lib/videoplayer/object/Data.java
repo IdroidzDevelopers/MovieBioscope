@@ -2,12 +2,11 @@ package com.lib.videoplayer.object;
 
 
 public class Data {
-
-    private int mVideoId;
-    private String mName;
-    private String mDownloadUrl;
-    private String mType;
-    private String mLanguage;
+    private String assetID;
+    private String name;
+    private String url;
+    private String type;
+    private String language;
     private String mMessage;
     private String mDownloadingId;
     private String mDownloadStatus;
@@ -16,20 +15,36 @@ public class Data {
     private int mCount;
     private String mCloudId;
 
+    public String getAssetID() {
+        return assetID;
+    }
+
+    public void setAssetID(String assetID) {
+        this.assetID = assetID;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getDownloadUrl() {
-        return mDownloadUrl;
+        return url;
     }
 
     public void setDownloadUrl(String mDownloadUrl) {
-        this.mDownloadUrl = mDownloadUrl;
+        this.url = mDownloadUrl;
     }
 
     public String getLanguage() {
-        return mLanguage;
+        return language;
     }
 
     public void setLanguage(String mLanguage) {
-        this.mLanguage = mLanguage;
+        this.language = mLanguage;
     }
 
 
@@ -60,7 +75,7 @@ public class Data {
 
 
     public String getType() {
-        return mType;
+        return type;
     }
 
     public String getMessage() {
@@ -72,24 +87,15 @@ public class Data {
     }
 
     public void setType(String mType) {
-        this.mType = mType;
-    }
-
-
-    public int getVideoId() {
-        return mVideoId;
-    }
-
-    public void setVideoId(int mId) {
-        this.mVideoId = mId;
+        this.type = mType;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String mName) {
-        this.mName = mName;
+        this.name = mName;
     }
 
     public String getPath() {
@@ -102,6 +108,24 @@ public class Data {
 
     public String getLastPlayedTime() {
         return mLastPlayedTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "assetID='" + assetID + '\'' +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", type='" + type + '\'' +
+                ", language='" + language + '\'' +
+                ", mMessage='" + mMessage + '\'' +
+                ", mDownloadingId='" + mDownloadingId + '\'' +
+                ", mDownloadStatus='" + mDownloadStatus + '\'' +
+                ", mPath='" + mPath + '\'' +
+                ", mLastPlayedTime='" + mLastPlayedTime + '\'' +
+                ", mCount=" + mCount +
+                ", mCloudId='" + mCloudId + '\'' +
+                '}';
     }
 
     public void setLastPlayedTime(String mLastPlayedTime) {

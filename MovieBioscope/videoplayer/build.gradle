@@ -30,4 +30,5 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.5'
     testCompile 'junit:junit:4.12'
     compile project(path: ':location')
+    compile project(path: ':firebase')
 }

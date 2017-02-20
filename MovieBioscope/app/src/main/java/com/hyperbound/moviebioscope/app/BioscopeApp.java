@@ -37,7 +37,7 @@ public class BioscopeApp extends Application {
         LocationApplication.setLocationContext(this);
         RouteApplication.setRouteContext(this);
         createFolderIfRequired();
-        putDummyData();
+        //putDummyData();
         // putBusDetail();
         registerVideoCommand();
         //putClouddata();

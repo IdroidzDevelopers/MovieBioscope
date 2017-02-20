@@ -9,7 +9,9 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.lib.location.util.NetworkUtil;
+import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.DownloadData;
 
 public class DownloadUtil {
     private static final String TAG = DownloadUtil.class.getSimpleName();
@@ -19,19 +21,18 @@ public class DownloadUtil {
      * Method to start download
      *
      * @param context
-     * @param downlodUri
-     * @param directory
+     * @param downloadUri
      * @param name
      * @return
      */
-    public static long beginDownload(Context context, String downlodUri, String directory, String name) {
+    public static long beginDownload(Context context, String downloadUri, String name) {
         long downloadId = -1;
         if (NetworkUtil.isInternetAvailable(context)) {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-            Uri DownloadUri = Uri.parse(downlodUri);
+            Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory() + "movie_bioscope", name);
+            request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory() + "/movie_bioscope", name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }
@@ -75,30 +76,30 @@ public class DownloadUtil {
      * @param downloadId
      * @return
      */
-    public static String getDownloadedFilePath(Context context, long downloadId) {
+    public static DownloadData getDownloadedFileData(Context context, long downloadId) {
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Query myDownloadQuery = new DownloadManager.Query();
         myDownloadQuery.setFilterById(downloadId);
         Cursor cursor = null;
-        String downloadedPath = null;
+        DownloadData data = null;
         try {
             cursor = downloadManager.query(myDownloadQuery);
             if (null != cursor) {
                 while (cursor.moveToNext()) {
-                    downloadedPath = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    String downloadedPath = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                     int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    Log.d(TAG, "getDownloadedFilePath downloadStatus " + downloadStatus);
+                    Logger.debug(TAG, "getDownloadedFileData downloadStatus " + downloadStatus + " downloadedPath " + downloadedPath);
+                    data = new DownloadData(downloadedPath, downloadStatus);
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception getDownloadedFilePath ", e);
+            Log.e(TAG, "Exception getDownloadedFileData ", e);
         } finally {
             if (null != cursor && !cursor.isClosed()) {
                 cursor.close();
             }
         }
-        Log.d(TAG, "getDownloadedFilePath downloadedPath " + downloadedPath);
-        return downloadedPath;
+        return data;
     }
 
     /**

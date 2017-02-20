@@ -25,7 +25,9 @@ import android.widget.VideoView;
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 import com.lib.videoplayer.R;
+import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.StateMachine;
@@ -102,8 +104,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     protected void onStart() {
         super.onStart();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(CustomIntent.ACTION_PLAY_BREAKING_VIDEO);
-        intentFilter.addAction(CustomIntent.ACTION_PLAY_BREAKING_NEWS);
+        intentFilter.addAction(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, intentFilter);
     }
 
@@ -275,11 +276,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startMovie() {
         mOtherView.setVisibility(View.GONE);
-        Data lData = VideoData.getRandomMovieUri(mContext);
-        String lPath = lData.getPath();
-        if (null != lPath && FileUtil.isFileExist(lPath)) {
+        Data lData = VideoData.getRandomMovie(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             mMovieView.setVisibility(View.VISIBLE);
-            mMovieView.setVideoURI(Uri.parse(lPath));
+            mMovieView.setVideoURI(Uri.parse(lData.getPath()));
             mMovieView.setMediaController(null);
             mMovieView.requestFocus();
             mMovieView.start();
@@ -288,6 +288,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             VideoData.updateVideoData(mContext, lData);
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
         } else {
+            hideLoadingIcon();
             mNoContentView.setVisibility(View.VISIBLE);
         }
     }
@@ -307,12 +308,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startAd() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getRandomAdUri(mContext);
-        String lPath = lData.getPath();
-        if (null != lPath) {
+        Data lData = VideoData.getRandomAd(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lPath));
+                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
@@ -324,7 +324,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
     private void startBreakingVideo() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getBreakingVideoUri(mContext);
+        Data lData = VideoData.getBreakingVideo(mContext);
         String lPath = lData.getPath();
         if (null != lPath) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
@@ -344,12 +344,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startTravellerVideo() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getTravellerUri(mContext);
-        String lPath = lData.getPath();
-        if (null != lPath && FileUtil.isFileExist(lPath)) {
+        Data lData = VideoData.getTravellerVideo(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lPath));
+                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
@@ -357,7 +356,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 VideoData.updateVideoData(mContext, lData);
             }
         } else {
-            mNoContentView.setVisibility(View.VISIBLE);
+            //still the change the change and process
+            mStateMachine.mCurrentState = StateMachine.PLAYING_STATE.TRAVEL_VIDEO;
+            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.SAFETY_VIDEO);
+            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
         }
     }
 
@@ -367,12 +369,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startSafetyVideo() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getSafetyUri(mContext);
-        String lPath = lData.getPath();
-        if (null != lPath && FileUtil.isFileExist(lPath)) {
+        Data lData = VideoData.getSafetyVideo(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lPath));
+                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
@@ -380,7 +381,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 VideoData.updateVideoData(mContext, lData);
             }
         } else {
-            mNoContentView.setVisibility(View.VISIBLE);
+            //still the change the change and process
+            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.MOVIE);
+            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
         }
     }
 
@@ -633,22 +636,27 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     }
                     break;
                 case EVENT.PLAY_ADV:
-                    switch (mStateMachine.mCurrentState) {
-                        case StateMachine.PLAYING_STATE.MOVIE:
-                            hideMovie();
-                            startAd();
-                            break;
-                        case StateMachine.PLAYING_STATE.NONE:
-                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
-                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
-                        case StateMachine.PLAYING_STATE.ADV:
-                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
-                        case StateMachine.PLAYING_STATE.BREAKING_TEXT:
-                            //schedule the next advertisement
-                            mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-                            break;
+                    if (VideoData.isAdvExist(mContext)) {
+                        switch (mStateMachine.mCurrentState) {
+                            case StateMachine.PLAYING_STATE.MOVIE:
+                                hideMovie();
+                                startAd();
+                                break;
+                            case StateMachine.PLAYING_STATE.NONE:
+                            case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
+                            case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
+                            case StateMachine.PLAYING_STATE.ADV:
+                            case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
+                            case StateMachine.PLAYING_STATE.BREAKING_TEXT:
+                                //schedule the next advertisement
+                                mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+                                break;
+                        }
+                        break;
+                    } else {
+                        //advertisement video not present still schdule for future may be we will get later
+                        mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
                     }
-                    break;
 
                 case EVENT.PLAY_BREAKING_VIDEO:
                     switch (mStateMachine.mCurrentState) {
@@ -715,10 +723,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         @Override
         public void onReceive(Context context, Intent intent) {
             if (null != intent) {
-                if (CustomIntent.ACTION_PLAY_BREAKING_VIDEO.equals(intent.getAction())) {
-                    mState.sendEmptyMessage(EVENT.PLAY_BREAKING_VIDEO);
-                } else if (CustomIntent.ACTION_PLAY_BREAKING_NEWS.equals(intent.getAction())) {
-                    mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                if (CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
+                    String videoId = intent.getStringExtra(CustomIntent.EXTRAS.VIDEO_ID);
+                    String type = intent.getStringExtra(CustomIntent.EXTRAS.TYPE);
+                    Logger.debug(TAG, "onReceive() :: videoId " + videoId + " type " + type);
+                    if (VideoProvider.VIDEO_TYPE.BREAKING_VIDEO.equals(type)) {
+                        mState.sendEmptyMessage(EVENT.PLAY_BREAKING_VIDEO);
+                    } else if (VideoProvider.VIDEO_TYPE.BREAKING_NEWS.equals(type)) {
+                        mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                    }
                 }
             }
         }

@@ -3,11 +3,12 @@ package com.lib.videoplayer.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.object.Data;
-import com.lib.videoplayer.util.VideoData;
+import com.lib.videoplayer.util.VideoTaskHandler;
 
 
 public class VideoCommandReceiver extends BroadcastReceiver {
@@ -25,10 +26,12 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                     if (content.length > 0) {
                         String rowId = content[content.length - 1];
                         Logger.debug(TAG, "rowId " + rowId);
-                        Data[] dataArr = VideoData.createVideoData(context, rowId);
-                        for (Data data : dataArr) {
-                            VideoData.insertOrUpdateVideoData(context, data);
-                        }
+                        Message lMessage = new Message();
+                        lMessage.what = VideoTaskHandler.TASK.INIT_VIDEO_DATA;
+                        Bundle lBundle = new Bundle();
+                        lBundle.putString(VideoTaskHandler.KEY.ROW_ID, rowId);
+                        lMessage.setData(lBundle);
+                        VideoTaskHandler.getInstance(context).sendMessage(lMessage);
                     }
                 }
             }

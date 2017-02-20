@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
+
 public class VideoProvider extends ContentProvider {
 
     private static final String TAG = VideoProvider.class.getSimpleName();
@@ -49,21 +50,22 @@ public class VideoProvider extends ContentProvider {
         String TRAVELLER_VIDEO = "traveller";
         String SAFETY_VIDEO = "safety";
         String MOVIE = "movie";
-        String ADV = "adv";
+        String ADV = "ads";
         String BREAKING_VIDEO = "breaking_video";
-        String BREAKING_NEWS = "breaking_text";
+        String BREAKING_NEWS = "breaking_news";
     }
 
     public interface DOWNLOAD_STATUS {
-        String DOWNLOADED = "downloaded";
+        String DOWNLOAD = "download";
         String DOWNLOADING = "downloading";
+        String DOWNLOADED = "downloaded";
         String FAILED = "failed";
     }
 
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_VIDEO + "("
-            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
+            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_DEFAULT = 3;
@@ -121,7 +123,11 @@ public class VideoProvider extends ContentProvider {
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
             case CASE_VIDEO_TABLE:
-                lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                try {
+                    lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                } catch (Exception e) {
+
+                }
                 break;
             default:
                 break;

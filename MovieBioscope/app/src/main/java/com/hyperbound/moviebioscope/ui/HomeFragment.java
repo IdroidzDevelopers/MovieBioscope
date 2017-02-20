@@ -1,8 +1,6 @@
 package com.hyperbound.moviebioscope.ui;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -14,14 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
-import com.hyperbound.moviebioscope.util.BusUtil;
 import com.hyperbound.moviebioscope.util.ImagePagerAdapter;
 import com.lib.route.util.RouteUtil;
 import com.lib.videoplayer.ui.VideoActivity;
-import com.lib.videoplayer.util.DownloadUtil;
 import com.lib.videoplayer.util.StateMachine;
-
-import java.io.File;
+import com.lib.videoplayer.util.VideoData;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,17 +37,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ImagePagerAdapter mImagePagerAdapter;
 
     private Handler mSlideHandler;
-    public static final int DELAY = 3 *1000;
+    public static final int DELAY = 3 * 1000;
     private int page = 0;
 
     Runnable mSlideRunnable = new Runnable() {
         public void run() {
-            if (mImagePagerAdapter.getCount()-1 == page) {
+            if (mImagePagerAdapter.getCount() - 1 == page) {
                 page = 0;
             } else {
                 page++;
             }
-            Log.d(TAG,"Page :: "+page);
+            Log.d(TAG, "Page :: " + page);
             mViewPager.setCurrentItem(page, true);
             mSlideHandler.postDelayed(this, DELAY);
         }
@@ -87,7 +82,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mPlayBottom = (ImageButton) mRootView.findViewById(R.id.play);
         mPlayBottom.setOnClickListener(this);
         mHandler = new Handler();
-        mSlideHandler=new Handler();
+        mSlideHandler = new Handler();
         mRunnable = new StartVideoRunnable();
 
         //testing
@@ -142,11 +137,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            Intent lIntent = new Intent(getActivity(), VideoActivity.class);
-            Bundle lBundle = new Bundle();
-            lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
-            lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
-            startActivity(lIntent);
+            if (VideoData.isAdvExist(getActivity())) {
+                Intent lIntent = new Intent(getActivity(), VideoActivity.class);
+                Bundle lBundle = new Bundle();
+                lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
+                lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
+                startActivity(lIntent);
+            }
         }
     }
 

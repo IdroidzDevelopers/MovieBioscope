@@ -300,13 +300,15 @@ public class VideoData {
         Logger.debug(TAG, "data is " + firebase.getData());
         JSONObject jsonObject = null;
         Data[] dataArray = null;
-        try {
-            jsonObject = new JSONObject(firebase.getData());
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            dataArray = gson.fromJson(jsonObject.getString("assets"), Data[].class);
-        } catch (JSONException e) {
-            Logger.error(TAG, "Exception createVideoData() ", e);
+        if(null!=firebase) {
+            try {
+                jsonObject = new JSONObject(firebase.getData());
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                dataArray = gson.fromJson(jsonObject.getString("assets"), Data[].class);
+            } catch (JSONException e) {
+                Logger.error(TAG, "Exception createVideoData() ", e);
+            }
         }
         return dataArray;
     }

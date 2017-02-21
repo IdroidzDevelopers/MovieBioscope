@@ -25,7 +25,6 @@ public class FireBaseManager {
     }
 
     public static void subscribeFirebaseTopics() {
-        FirebaseMessaging.getInstance().subscribeToTopic("TN11K5868");
         List<String> topics = FirebaseUtil.getAllFireBaseTopics(BioscopeApp.getContext());
         if (null != topics && topics.size() > 0) {
             for (String topic : topics) {

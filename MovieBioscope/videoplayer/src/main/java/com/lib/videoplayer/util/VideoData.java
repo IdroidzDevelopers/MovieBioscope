@@ -297,10 +297,10 @@ public class VideoData {
 
     public static Data[] createVideoData(Context context, String rowId) {
         FirebaseData firebase = FirebaseUtil.getFireBaseData(context, rowId);
-        Logger.debug(TAG, "data is " + firebase.getData());
         JSONObject jsonObject = null;
         Data[] dataArray = null;
-        if(null!=firebase) {
+        if (null != firebase) {
+            Logger.debug(TAG, "data is " + firebase.getData());
             try {
                 jsonObject = new JSONObject(firebase.getData());
                 GsonBuilder gsonBuilder = new GsonBuilder();

@@ -10,6 +10,12 @@
         <provider
             android:name="com.lib.route.database.RouteProvider"
             android:authorities="com.lib.route.contentprovider.database.VideoProvider" />
+
+        <receiver android:name="com.lib.route.receiver.DownloadCompleteReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -9,13 +9,13 @@ public class CustomIntent {
     public static final String ACTION_ROUTE_RECEIVED = "com.android.action.ROUTE_RECEIVED";
     public static final String ACTION_INVALID_BUS_NUMBER = "com.android.action.INVALID_BUS_NUMBER";
     public static final String ACTION_VIDEO_DATA_RECEIVED = "com.android.action.VIDEO_DATA_RECEIVED";
-    public static final String ACTION_PLAY_BREAKING_VIDEO = "com.android.action.PLAY_BREAKING_VIDEO";
-    public static final String ACTION_PLAY_BREAKING_NEWS = "com.android.action.PLAY_BREAKING_NEWS";
     public static final String ACTION_MEDIA_DOWNLOAD_COMPLETE = "com.android.action.MEDIA_DOWNLOAD_COMPLETE";
+    public static final String ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE = "com.android.action.ROUTE_IMAGE_DOWNLOAD_COMPLETE";
 
     public interface EXTRAS {
         String URI_KEY = "uri";
         String VIDEO_ID = "video_id";
         String TYPE = "type";
+        String ROUTE_ID = "route_id";
     }
 }

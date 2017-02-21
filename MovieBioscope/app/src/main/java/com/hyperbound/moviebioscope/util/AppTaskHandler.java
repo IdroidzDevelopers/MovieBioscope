@@ -1,5 +1,6 @@
 package com.hyperbound.moviebioscope.util;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,9 +16,13 @@ import com.hyperbound.moviebioscope.firebase.FireBaseManager;
 import com.hyperbound.moviebioscope.model.BusDetails;
 import com.hyperbound.moviebioscope.model.BusRegData;
 import com.hyperbound.moviebioscope.model.DestinationDetails;
+import com.hyperbound.moviebioscope.model.Images;
 import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
 import com.lib.firebase.util.FirebaseUtil;
+import com.lib.route.RouteApplication;
+import com.lib.route.database.RouteProvider;
+import com.lib.route.util.DownloadUtil;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
 
@@ -99,6 +104,16 @@ public class AppTaskHandler extends Handler {
                                                     sourceInfo.getLatitude(), sourceInfo.getLongitude(),
                                                     destination, destinationInfo.getFormatted_address(),
                                                     destinationInfo.getLatitude(), destinationInfo.getLongitude());
+                                            //inserting download details to route image provider to route image
+                                            for (Images image : route.getImages()) {
+                                                long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), image.getUrl(), image.getName());
+                                                ContentValues value = new ContentValues();
+                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, image.getUrl());
+                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
+                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, routeId);
+                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
+                                                RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
+                                            }
                                         }
 
                                     }

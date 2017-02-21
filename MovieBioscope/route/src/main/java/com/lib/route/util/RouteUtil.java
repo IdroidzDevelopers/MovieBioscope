@@ -12,6 +12,7 @@ import android.util.Log;
 import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
 import com.lib.route.objects.Route;
+import com.lib.utility.util.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -142,6 +143,30 @@ public class RouteUtil {
         }
         if (DEBUG) Log.d(TAG, "getAllRouteImages() " + routeImages);
         return routeImages;
+    }
+
+    public static String getRouteFrom(Context context, String downloadId) {
+        String routeId = null;
+        if (null != context) {
+            String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID + "= ? ";
+            String[] lSelectionArg = {"" + downloadId};
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    routeId = lCursor.getString(lCursor.getColumnIndex(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID));
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getRouteFrom() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        Logger.debug(TAG, "getRouteFrom " + routeId);
+        return routeId;
     }
 
 }

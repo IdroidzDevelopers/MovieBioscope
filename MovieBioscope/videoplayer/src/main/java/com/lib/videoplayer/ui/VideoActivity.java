@@ -168,7 +168,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mGifImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LocalBroadcastManager.getInstance(mContext).sendBroadcast(new Intent(CustomIntent.ACTION_PLAY_BREAKING_NEWS));
+                mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
             }
         });
     }

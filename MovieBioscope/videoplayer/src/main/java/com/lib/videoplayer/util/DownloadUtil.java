@@ -32,7 +32,7 @@ public class DownloadUtil {
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory() + "/movie_bioscope", name);
+            request.setDestinationInExternalPublicDir("/movie_bioscope", name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }
@@ -86,7 +86,7 @@ public class DownloadUtil {
             cursor = downloadManager.query(myDownloadQuery);
             if (null != cursor) {
                 while (cursor.moveToNext()) {
-                    String downloadedPath = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    String downloadedPath = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
                     int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     Logger.debug(TAG, "getDownloadedFileData downloadStatus " + downloadStatus + " downloadedPath " + downloadedPath);
                     data = new DownloadData(downloadedPath, downloadStatus);

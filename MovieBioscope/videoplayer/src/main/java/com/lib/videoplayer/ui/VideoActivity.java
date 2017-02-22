@@ -504,7 +504,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+            if (!isFinishing()) {
+                finish();
+            }
         }
     }
 

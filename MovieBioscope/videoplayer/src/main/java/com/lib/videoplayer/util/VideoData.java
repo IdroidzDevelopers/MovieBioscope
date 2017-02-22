@@ -362,9 +362,9 @@ public class VideoData {
         return action;
     }
 
-    public static void insertOrUpdateVideoData(Context context, Data data, String selectionColumn, String selectionArgValue) {
-        String selection = selectionColumn + " = ?";
-        String[] selectionArg = new String[]{"" + selectionArgValue};
+    public static void insertOrUpdateVideoData(Context context, Data data) {
+        String selection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] selectionArg = new String[]{"" + data.getAssetID()};
         ContentValues value = new ContentValues();
         if (null != data.getAssetID()) {
             value.put(VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
@@ -404,7 +404,16 @@ public class VideoData {
         }
         int count = context.getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, value, selection, selectionArg);
         Logger.debug(TAG, "updated count is " + count);
+
         if (count == 0) {
+            if (data.getType().equals(VideoProvider.VIDEO_TYPE.BREAKING_NEWS) || data.getType().equals(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO)) {
+                //dirty logic
+                //at any time only one breaking new and video
+                selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
+                selectionArg = new String[]{"" + data.getType()};
+                count = context.getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
+                Logger.debug(TAG, "deleted count is " + count);
+            }
             context.getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, value);
         }
     }

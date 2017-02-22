@@ -1,9 +1,13 @@
 package com.hyperbound.moviebioscope.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +17,8 @@ import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.ImagePagerAdapter;
+import com.lib.route.RouteApplication;
+import com.lib.route.objects.Route;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.ui.VideoActivity;
@@ -35,6 +41,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private StartVideoRunnable mRunnable;
     private ViewPager mViewPager;
     private ImagePagerAdapter mImagePagerAdapter;
+    private BroadcastReceiver mReceiver;
 
     private Handler mSlideHandler;
     public static final int DELAY = 3 * 1000;
@@ -76,7 +83,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initView() {
-        mImagePagerAdapter = new ImagePagerAdapter(getActivity(), RouteUtil.getAllRouteImages());
+        Route defaultRoute = RouteUtil.getCurrentRoute(RouteApplication.getRouteContext());
+        String routeId = null;
+        if (null != defaultRoute) {
+            routeId = defaultRoute.getmRouteId();
+        }
+        mImagePagerAdapter = new ImagePagerAdapter(getActivity(), RouteUtil.getImagesForRoute(routeId));
         mViewPager = (ViewPager) mRootView.findViewById(R.id.pager);
         mViewPager.setAdapter(mImagePagerAdapter);
         mPlayBottom = (ImageButton) mRootView.findViewById(R.id.play);
@@ -84,12 +96,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mHandler = new Handler();
         mSlideHandler = new Handler();
         mRunnable = new StartVideoRunnable();
-
-        //testing
-        //DownloadUtil.beginDownload(getActivity(), "http://139.59.62.165/api/file/download/95b27ab225fd33f6c3137bcc07dac266", null, "Sample 2");
-        //GoogleMapDistanceMatrix.requestForData(getActivity(),"Bangalore","Mumbai");
+        mReceiver = new Receiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CustomIntent.ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE);
+        intentFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+    }
 
     @Override
     public void onStart() {
@@ -144,6 +162,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 lIntent.putExtra(CustomIntent.EXTRAS.VIDEO_STATE, lBundle);
                 startActivity(lIntent);
             }
+        }
+    }
+
+    private class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent) {
+                switch (intent.getAction()) {
+                    case CustomIntent.ACTION_ROUTE_CHANGED:
+                        Route route = RouteUtil.getCurrentRoute(RouteApplication.getRouteContext());
+                        if (null != route) {
+                            mImagePagerAdapter = new ImagePagerAdapter(getActivity(), RouteUtil.getImagesForRoute(route.getmRouteId()));
+                            mViewPager.setAdapter(mImagePagerAdapter);
+                        }
+                        break;
+                    case CustomIntent.ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE:
+                        String newRoute = intent.getStringExtra(CustomIntent.EXTRAS.ROUTE_ID);
+                        Route defaultRoute = RouteUtil.getCurrentRoute(RouteApplication.getRouteContext());
+                        Log.d(TAG, "ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE :: newRoute " + newRoute + " defaultRouteId " + defaultRoute);
+                        if (null != defaultRoute && null != newRoute && newRoute.equals(defaultRoute.getmRouteId())) {
+                            mImagePagerAdapter = new ImagePagerAdapter(getActivity(), RouteUtil.getImagesForRoute(defaultRoute.getmRouteId()));
+                            mViewPager.setAdapter(mImagePagerAdapter);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
         }
     }
 

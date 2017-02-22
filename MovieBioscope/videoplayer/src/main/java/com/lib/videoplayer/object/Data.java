@@ -6,6 +6,7 @@ public class Data {
     private String name;
     private String url;
     private String type;
+
     private String language;
     private String mMessage;
     private String mDownloadingId;

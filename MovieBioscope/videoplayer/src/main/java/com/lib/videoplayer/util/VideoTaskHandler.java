@@ -80,10 +80,10 @@ public class VideoTaskHandler extends Handler {
                                 for (Data data : dataArr) {
                                     //check is there any entry with the same assert id then ignore it .may be its a duplicate message
                                     if (!VideoData.isAssetExist(sContext, data.getAssetID())) {
-                                        long lDownloadId = DownloadUtil.beginDownload(sContext, data.getDownloadUrl(), data.getName() + ".mp4");
+                                        long lDownloadId = DownloadUtil.beginDownload(sContext, data.getDownloadUrl(), data.getName());
                                         data.setDownloadingId(String.valueOf(lDownloadId));
                                         data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
-                                        VideoData.insertOrUpdateVideoData(sContext, data, VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
+                                        VideoData.insertOrUpdateVideoData(sContext, data);
                                     } else {
                                         Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + data.getAssetID());
                                     }
@@ -113,7 +113,7 @@ public class VideoTaskHandler extends Handler {
                             data.setPath(downloadData.getPath());
                             data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
                             data.setLastPlayedTime(String.valueOf(System.currentTimeMillis()));
-                            VideoData.insertOrUpdateVideoData(sContext, data, VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
+                            VideoData.insertOrUpdateVideoData(sContext, data);
                             Intent intent = new Intent(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
                             intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, data.getAssetID());
                             intent.putExtra(CustomIntent.EXTRAS.TYPE, data.getType());
@@ -125,7 +125,7 @@ public class VideoTaskHandler extends Handler {
                     Data data = VideoData.getVideoDataFrom(sContext, String.valueOf(downloadId));
                     if (null != data) {
                         data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.FAILED);
-                        VideoData.insertOrUpdateVideoData(sContext, data, VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
+                        VideoData.insertOrUpdateVideoData(sContext, data);
                     }
                 }
                 break;

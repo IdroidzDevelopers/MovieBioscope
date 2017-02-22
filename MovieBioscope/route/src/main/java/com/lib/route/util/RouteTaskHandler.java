@@ -61,7 +61,10 @@ public class RouteTaskHandler extends Handler {
                 if (null != lBundle) {
                     String lRouteId = (String) lBundle.get(KEY.ROUTE_ID);
                     RouteUtil.updateCurrentRoute(sContext, lRouteId);
-                    LocalBroadcastManager.getInstance(sContext).sendBroadcast(new Intent(CustomIntent.ACTION_ROUTE_CHANGED));
+                    Intent intent = new Intent();
+                    intent.putExtra(CustomIntent.EXTRAS.ROUTE_ID, lRouteId);
+                    intent.setAction(CustomIntent.ACTION_ROUTE_CHANGED);
+                    LocalBroadcastManager.getInstance(sContext).sendBroadcast(intent);
                 }
                 break;
             case TASK.HANDLE_DOWNLOADED_VIDEO:

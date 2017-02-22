@@ -1,5 +1,7 @@
 package com.lib.videoplayer.receivers;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,8 @@ import android.os.Message;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
+import com.lib.videoplayer.ui.MovieDialog;
+import com.lib.videoplayer.ui.VideoActivity;
 import com.lib.videoplayer.util.VideoTaskHandler;
 
 
@@ -34,6 +38,9 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                         VideoTaskHandler.getInstance(context).sendMessage(lMessage);
                     }
                 }
+            }else if(CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())){
+                /*MovieDialog fragment1 = new MovieDialog();
+                fragment1.show(fm, "");*/
             }
         }
     }

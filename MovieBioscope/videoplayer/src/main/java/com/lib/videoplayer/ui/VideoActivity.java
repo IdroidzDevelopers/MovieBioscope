@@ -1,5 +1,7 @@
 package com.lib.videoplayer.ui;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

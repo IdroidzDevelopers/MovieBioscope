@@ -173,6 +173,7 @@ public class BioscopeApp extends Application {
     private void registerVideoCommand() {
         IntentFilter lIntentFilter = new IntentFilter();
         lIntentFilter.addAction(CustomIntent.ACTION_VIDEO_DATA_RECEIVED);
+        lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_LIST);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 }

@@ -31,4 +31,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(path: ':location')
     compile project(path: ':firebase')
+    compile 'com.android.support:recyclerview-v7:24.2.1'
 }

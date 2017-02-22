@@ -38,10 +38,11 @@ import pl.droidsonroids.gif.GifImageView;
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
     private static final long BANNER_TIMEOUT = 5 * 1000;//5 secs
-    private static final String ARG_VIDEO_STATE = "video_state";
+    private static final String ARG_VIDEO_ID = "video_id";
     private static final long BREAKING_NEWS_DISPLAY_TIME = 30 * 1000;//30 secs
     private Handler mState;
     private StateMachine mStateMachine;
+    private String mSelectedVideoId;
     private Context mContext;
     private VideoView mMovieView;
     private VideoView mOtherView;
@@ -124,10 +125,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private void initState() {
         mStateMachine = StateMachine.getInstance();
         mStateMachine.reset();
-        if (null != getIntent() && null != getIntent().getBundleExtra(ARG_VIDEO_STATE)) {
-            Bundle lData = getIntent().getBundleExtra(ARG_VIDEO_STATE);
+        if (null != getIntent() && null != getIntent().getBundleExtra(CustomIntent.EXTRAS.VIDEO_STATE)) {
+            Bundle lData = getIntent().getBundleExtra(CustomIntent.EXTRAS.VIDEO_STATE);
             if (null != lData) {
-                int lVideoState = lData.getInt(ARG_VIDEO_STATE, -1);
+                int lVideoState = lData.getInt(CustomIntent.EXTRAS.VIDEO_STATE, -1);
+                mSelectedVideoId = lData.getString(CustomIntent.EXTRAS.VIDEO_ID, null);
                 if (lVideoState == StateMachine.VIDEO_STATE.ONLY_ADV) {
                     mState = new OnlyAdvState();
                     mStateMachine.setVideoState(StateMachine.VIDEO_STATE.ONLY_ADV);
@@ -276,7 +278,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startMovie() {
         mOtherView.setVisibility(View.GONE);
-        Data lData = VideoData.getRandomMovie(mContext);
+        Data lData = VideoData.getMovieData(mContext, mSelectedVideoId);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             mMovieView.setVisibility(View.VISIBLE);
             mMovieView.setVideoURI(Uri.parse(lData.getPath()));

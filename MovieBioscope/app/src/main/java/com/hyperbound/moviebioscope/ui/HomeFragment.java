@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.ImagePagerAdapter;
 import com.lib.route.util.RouteUtil;
+import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.ui.VideoActivity;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
@@ -28,7 +29,6 @@ import com.lib.videoplayer.util.VideoData;
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final long WAITING_TIME = 30 * 1000;
-    private static final String ARG_VIDEO_STATE = "video_state";
     private ImageButton mPlayBottom;
     private View mRootView;
     private Handler mHandler;
@@ -114,8 +114,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.play:
                 Intent lIntent = new Intent(getActivity(), VideoActivity.class);
                 Bundle lBundle = new Bundle();
-                lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
-                lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
+                lBundle.putInt(CustomIntent.EXTRAS.VIDEO_STATE, StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
+                lIntent.putExtra(CustomIntent.EXTRAS.VIDEO_STATE, lBundle);
                 startActivity(lIntent);
                 break;
         }
@@ -140,8 +140,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (VideoData.isAdvExist(getActivity())) {
                 Intent lIntent = new Intent(getActivity(), VideoActivity.class);
                 Bundle lBundle = new Bundle();
-                lBundle.putInt(ARG_VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
-                lIntent.putExtra(ARG_VIDEO_STATE, lBundle);
+                lBundle.putInt(CustomIntent.EXTRAS.VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
+                lIntent.putExtra(CustomIntent.EXTRAS.VIDEO_STATE, lBundle);
                 startActivity(lIntent);
             }
         }

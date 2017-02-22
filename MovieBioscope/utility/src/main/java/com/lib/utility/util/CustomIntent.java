@@ -14,6 +14,7 @@ public class CustomIntent {
 
     public interface EXTRAS {
         String URI_KEY = "uri";
+        String VIDEO_STATE = "video_state";
         String VIDEO_ID = "video_id";
         String TYPE = "type";
         String ROUTE_ID = "route_id";

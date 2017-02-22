@@ -29,12 +29,22 @@ public class VideoData {
     private static final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_FIVE_MINUTES;
     private static final long MAX_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS + INTERVAL_FIVE_MINUTES;
 
-    public static Data getRandomMovie(Context aContext) {
+    public static Data getMovieData(Context aContext, String videoId) {
         Data lData = null;
+        String lSelection;
+        String[] lSelectionArg;
+        String orderBy = null;
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            if (null == videoId) {
+                Logger.info(TAG, "get movie based on random logic");
+                lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                lSelectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            } else {
+                Logger.info(TAG, "get user selected movie with asset id " + videoId);
+                lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+                lSelectionArg = new String[]{"" + videoId};
+            }
             Cursor lCursor = null;
             try {
                 lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
@@ -49,7 +59,7 @@ public class VideoData {
                     break;
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Exception :: getRandomMovie() :: ", e);
+                Log.d(TAG, "Exception :: getMovieData() :: ", e);
             } finally {
                 if (null != lCursor && !lCursor.isClosed()) {
                     lCursor.close();
@@ -79,7 +89,7 @@ public class VideoData {
                     break;
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Exception :: getRandomMovie() :: ", e);
+                Log.d(TAG, "Exception :: getMovieData() :: ", e);
             } finally {
                 if (null != lCursor && !lCursor.isClosed()) {
                     lCursor.close();
@@ -236,7 +246,7 @@ public class VideoData {
                     break;
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Exception :: getRandomMovie() :: ", e);
+                Log.d(TAG, "Exception :: getMovieData() :: ", e);
             } finally {
                 if (null != lCursor && !lCursor.isClosed()) {
                     lCursor.close();
@@ -344,7 +354,7 @@ public class VideoData {
             Logger.debug(TAG, "data is " + firebase.getData());
             try {
                 jsonObject = new JSONObject(firebase.getData());
-                action=jsonObject.getString(VideoTaskHandler.CLOUD_JSON.ACTION);
+                action = jsonObject.getString(VideoTaskHandler.CLOUD_JSON.ACTION);
             } catch (JSONException e) {
                 Logger.error(TAG, "Exception getAction() ", e);
             }

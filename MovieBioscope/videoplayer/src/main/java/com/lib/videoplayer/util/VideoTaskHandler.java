@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.DownloadData;
@@ -25,8 +26,19 @@ public class VideoTaskHandler extends Handler {
         String DOWNLOAD_ID = "download_id";
     }
 
+    public interface CLOUD_JSON {
+        String ASSETS = "assets";
+        String ACTION = "action";
+    }
+
+    public interface JSON_ACTION {
+        String DOWNLOAD = "DOWNLOAD";
+        String UPDATE = "UPDATE";
+        String REFRESH = "REFRESH";
+    }
+
     public interface TASK {
-        int INIT_VIDEO_DATA = 1;
+        int HANDLE_VIDEO_DATA = 1;
         int HANDLE_DOWNLOADED_VIDEO = 2;
     }
 
@@ -56,16 +68,37 @@ public class VideoTaskHandler extends Handler {
         super.handleMessage(msg);
         Bundle lBundle = msg.getData();
         switch (msg.what) {
-            case TASK.INIT_VIDEO_DATA:
+            case TASK.HANDLE_VIDEO_DATA:
                 if (null != lBundle) {
                     String rowId = (String) lBundle.get(KEY.ROW_ID);
-                    Data[] dataArr = VideoData.createVideoData(sContext, rowId);
-                    for (Data data : dataArr) {
-                        long lDownloadId = DownloadUtil.beginDownload(sContext, data.getDownloadUrl(), data.getName()+".mp4");
-                        data.setDownloadingId(String.valueOf(lDownloadId));
-                        data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
-                        VideoData.insertOrUpdateVideoData(sContext, data, VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
+                    String action = VideoData.getAction(sContext, rowId);
+                    Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + action + " rowId " + rowId);
+                    if (null != action) {
+                        switch (action) {
+                            case JSON_ACTION.DOWNLOAD:
+                                Data[] dataArr = VideoData.createVideoData(sContext, rowId);
+                                for (Data data : dataArr) {
+                                    //check is there any entry with the same assert id then ignore it .may be its a duplicate message
+                                    if (!VideoData.isAssetExist(sContext, data.getAssetID())) {
+                                        long lDownloadId = DownloadUtil.beginDownload(sContext, data.getDownloadUrl(), data.getName() + ".mp4");
+                                        data.setDownloadingId(String.valueOf(lDownloadId));
+                                        data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
+                                        VideoData.insertOrUpdateVideoData(sContext, data, VideoProvider.VIDEO_COLUMNS.VIDEO_ID, data.getAssetID());
+                                    } else {
+                                        Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + data.getAssetID());
+                                    }
+                                }
+                                break;
+                            case JSON_ACTION.REFRESH:
+                                //TODO:
+                                break;
+                            case JSON_ACTION.UPDATE:
+                                //TODO:
+                                break;
+                        }
+                        break;
                     }
+
                 }
                 break;
             case TASK.HANDLE_DOWNLOADED_VIDEO:

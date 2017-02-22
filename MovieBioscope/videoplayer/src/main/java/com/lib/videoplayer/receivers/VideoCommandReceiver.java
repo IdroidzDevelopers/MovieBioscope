@@ -27,7 +27,7 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                         String rowId = content[content.length - 1];
                         Logger.debug(TAG, "rowId " + rowId);
                         Message lMessage = new Message();
-                        lMessage.what = VideoTaskHandler.TASK.INIT_VIDEO_DATA;
+                        lMessage.what = VideoTaskHandler.TASK.HANDLE_VIDEO_DATA;
                         Bundle lBundle = new Bundle();
                         lBundle.putString(VideoTaskHandler.KEY.ROW_ID, rowId);
                         lMessage.setData(lBundle);

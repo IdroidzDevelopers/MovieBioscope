@@ -113,6 +113,29 @@ public class VideoData {
         return flag;
     }
 
+    public static synchronized boolean isAssetExist(Context aContext, String assetId) {
+        boolean flag = false;
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + "= ? ";
+            String[] lSelectionArg = {"" + assetId};
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    flag = true;
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: isAdvExist() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return flag;
+    }
+
 
     public static Data getTravellerVideo(Context aContext) {
         Data lData = null;
@@ -305,12 +328,28 @@ public class VideoData {
                 jsonObject = new JSONObject(firebase.getData());
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
-                dataArray = gson.fromJson(jsonObject.getString("assets"), Data[].class);
+                dataArray = gson.fromJson(jsonObject.getString(VideoTaskHandler.CLOUD_JSON.ASSETS), Data[].class);
             } catch (JSONException e) {
                 Logger.error(TAG, "Exception createVideoData() ", e);
             }
         }
         return dataArray;
+    }
+
+    public static String getAction(Context context, String rowId) {
+        FirebaseData firebase = FirebaseUtil.getFireBaseData(context, rowId);
+        JSONObject jsonObject = null;
+        String action = null;
+        if (null != firebase) {
+            Logger.debug(TAG, "data is " + firebase.getData());
+            try {
+                jsonObject = new JSONObject(firebase.getData());
+                action=jsonObject.getString(VideoTaskHandler.CLOUD_JSON.ACTION);
+            } catch (JSONException e) {
+                Logger.error(TAG, "Exception getAction() ", e);
+            }
+        }
+        return action;
     }
 
     public static void insertOrUpdateVideoData(Context context, Data data, String selectionColumn, String selectionArgValue) {

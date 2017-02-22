@@ -14,6 +14,7 @@ import com.lib.firebase.util.FirebaseUtil;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.object.PushData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -328,22 +329,17 @@ public class VideoData {
         return data;
     }
 
-    public static Data[] createVideoData(Context context, String rowId) {
+    public static PushData createVideoData(Context context, String rowId) {
         FirebaseData firebase = FirebaseUtil.getFireBaseData(context, rowId);
-        JSONObject jsonObject = null;
-        Data[] dataArray = null;
+        PushData pushData = null;
         if (null != firebase) {
             Logger.debug(TAG, "data is " + firebase.getData());
-            try {
-                jsonObject = new JSONObject(firebase.getData());
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-                dataArray = gson.fromJson(jsonObject.getString(VideoTaskHandler.CLOUD_JSON.ASSETS), Data[].class);
-            } catch (JSONException e) {
-                Logger.error(TAG, "Exception createVideoData() ", e);
-            }
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            pushData = gson.fromJson(firebase.getData(), PushData.class);
+
         }
-        return dataArray;
+        return pushData;
     }
 
     public static String getAction(Context context, String rowId) {
@@ -372,8 +368,8 @@ public class VideoData {
         if (null != data.getName()) {
             value.put(VideoProvider.VIDEO_COLUMNS.NAME, data.getName());
         }
-        if (null != data.getDownloadUrl()) {
-            value.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_URL, data.getDownloadUrl());
+        if (null != data.getUrl()) {
+            value.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_URL, data.getUrl());
         }
         if (null != data.getType()) {
             value.put(VideoProvider.VIDEO_COLUMNS.TYPE, data.getType());

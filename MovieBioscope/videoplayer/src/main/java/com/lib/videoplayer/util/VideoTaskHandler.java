@@ -13,8 +13,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.DownloadData;
+import com.lib.videoplayer.object.PushData;
 
 
 public class VideoTaskHandler extends Handler {
@@ -27,6 +29,7 @@ public class VideoTaskHandler extends Handler {
     }
 
     public interface CLOUD_JSON {
+        String DATA = "data";
         String ASSETS = "assets";
         String ACTION = "action";
     }
@@ -71,21 +74,22 @@ public class VideoTaskHandler extends Handler {
             case TASK.HANDLE_VIDEO_DATA:
                 if (null != lBundle) {
                     String rowId = (String) lBundle.get(KEY.ROW_ID);
-                    String action = VideoData.getAction(sContext, rowId);
-                    Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + action + " rowId " + rowId);
-                    if (null != action) {
-                        switch (action) {
+                    PushData pushData = VideoData.createVideoData(sContext, rowId);
+                    if (null != pushData) {
+                        Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + pushData.getAction() + " rowId " + rowId);
+                        switch (pushData.getAction()) {
                             case JSON_ACTION.DOWNLOAD:
-                                Data[] dataArr = VideoData.createVideoData(sContext, rowId);
-                                for (Data data : dataArr) {
+                                for (Asset asset : pushData.getAssets()) {
                                     //check is there any entry with the same assert id then ignore it .may be its a duplicate message
-                                    if (!VideoData.isAssetExist(sContext, data.getAssetID())) {
-                                        long lDownloadId = DownloadUtil.beginDownload(sContext, data.getDownloadUrl(), data.getName());
+                                    if (!VideoData.isAssetExist(sContext, asset.getAssetID())) {
+                                        long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(), asset.getName());
+                                        Data data = copyAssetToData(asset);
+                                        data.setMessage(pushData.getContent());
                                         data.setDownloadingId(String.valueOf(lDownloadId));
                                         data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
                                         VideoData.insertOrUpdateVideoData(sContext, data);
                                     } else {
-                                        Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + data.getAssetID());
+                                        Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + asset.getAssetID());
                                     }
                                 }
                                 break;
@@ -98,7 +102,6 @@ public class VideoTaskHandler extends Handler {
                         }
                         break;
                     }
-
                 }
                 break;
             case TASK.HANDLE_DOWNLOADED_VIDEO:
@@ -130,5 +133,16 @@ public class VideoTaskHandler extends Handler {
                 }
                 break;
         }
+
+    }
+
+    private Data copyAssetToData(Asset asset) {
+        Data data = new Data();
+        data.setAssetID(asset.getAssetID());
+        data.setName(asset.getName());
+        data.setUrl(asset.getUrl());
+        data.setLanguage(asset.getLanguage());
+        data.setType(asset.getType());
+        return data;
     }
 }

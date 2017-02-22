@@ -6,7 +6,6 @@ public class Data {
     private String name;
     private String url;
     private String type;
-
     private String language;
     private String mMessage;
     private String mDownloadingId;
@@ -30,14 +29,6 @@ public class Data {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getDownloadUrl() {
-        return url;
-    }
-
-    public void setDownloadUrl(String mDownloadUrl) {
-        this.url = mDownloadUrl;
     }
 
     public String getLanguage() {

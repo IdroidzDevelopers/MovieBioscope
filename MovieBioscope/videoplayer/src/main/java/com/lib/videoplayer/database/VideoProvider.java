@@ -50,7 +50,7 @@ public class VideoProvider extends ContentProvider {
         String TRAVELLER_VIDEO = "traveller";
         String SAFETY_VIDEO = "safety";
         String MOVIE = "movie";
-        String ADV = "ads";
+        String ADV = "ad";
         String BREAKING_VIDEO = "news_video";
         String BREAKING_NEWS = "news_image";
     }

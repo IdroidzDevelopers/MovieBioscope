@@ -54,6 +54,7 @@ public class BreakingNewsFragment extends Fragment {
         Data data = VideoData.getBreakingNews(getActivity());
         if (null != data && null != data.getPath()) {
             mBreakingImage.setImageURI(Uri.parse(data.getPath()));
+            VideoData.updateVideoData(getActivity(), data);
         }
         if (null != data && null != data.getMessage()) {
             mBreakingMessage.setText(data.getMessage());

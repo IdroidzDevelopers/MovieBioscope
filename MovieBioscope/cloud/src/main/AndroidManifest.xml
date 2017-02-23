@@ -5,9 +5,6 @@
     <application android:allowBackup="true" android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <provider
-            android:name="com.lib.cloud.databases.CloudProvider"
-            android:authorities="com.lib.cloud.contentprovider.database.CloudProvider" />
 
     </application>
 

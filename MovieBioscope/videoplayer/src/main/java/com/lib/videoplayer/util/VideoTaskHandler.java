@@ -43,6 +43,7 @@ public class VideoTaskHandler extends Handler {
     public interface TASK {
         int HANDLE_VIDEO_DATA = 1;
         int HANDLE_DOWNLOADED_VIDEO = 2;
+        int BACK_GROUND_BREAKING_NEWS_SEARCH = 3;
     }
 
     private static VideoTaskHandler sInstance;
@@ -132,6 +133,10 @@ public class VideoTaskHandler extends Handler {
                     }
                 }
                 break;
+            case TASK.BACK_GROUND_BREAKING_NEWS_SEARCH:
+                VideoData.backgroundSearchForBreaking(sContext);
+                break;
+
         }
 
     }

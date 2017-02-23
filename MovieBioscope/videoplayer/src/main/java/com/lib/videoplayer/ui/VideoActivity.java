@@ -1,7 +1,5 @@
 package com.lib.videoplayer.ui;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +32,7 @@ import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
+import com.lib.videoplayer.util.VideoTaskHandler;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -506,9 +505,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            if (!isFinishing()) {
-                finish();
-            }
+            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
         }
     }
 
@@ -565,6 +562,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startAd();
                             break;
                     }
@@ -572,6 +570,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case EVENT.RESUME:
                     switch (mStateMachine.mCurrentState) {
                         case StateMachine.PLAYING_STATE.PAUSED:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             resumeVideo();
                             break;
                     }
@@ -609,18 +608,24 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case EVENT.PLAY_NEXT:
                     switch (mStateMachine.mCurrentState) {
                         case StateMachine.PLAYING_STATE.NONE:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startTravellerVideo();
                             break;
                         case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startSafetyVideo();
                             break;
                         case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startMovie();
                             break;
                         case StateMachine.PLAYING_STATE.MOVIE:
-                            //TODO: need to go back to home screen
+                            if (!isFinishing()) {
+                                finish();
+                            }
                             break;
                         case StateMachine.PLAYING_STATE.ADV:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
@@ -637,12 +642,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case EVENT.RESUME:
                     switch (mStateMachine.mCurrentState) {
                         case StateMachine.PLAYING_STATE.PAUSED:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             resumeVideo();
                             break;
                     }
                     break;
                 case EVENT.PLAY_ADV:
                     if (VideoData.isAdvExist(mContext)) {
+                        VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                         switch (mStateMachine.mCurrentState) {
                             case StateMachine.PLAYING_STATE.MOVIE:
                                 hideMovie();

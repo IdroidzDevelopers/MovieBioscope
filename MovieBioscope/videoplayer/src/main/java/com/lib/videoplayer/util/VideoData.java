@@ -4,13 +4,16 @@ package com.lib.videoplayer.util;
 import android.app.AlarmManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lib.firebase.object.FirebaseData;
 import com.lib.firebase.util.FirebaseUtil;
+import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
@@ -292,6 +295,41 @@ public class VideoData {
             }
         }
         return lData;
+    }
+
+
+    /**
+     * background search for pending breaking news and video
+     *
+     * @param context
+     * @return
+     */
+    public static synchronized void backgroundSearchForBreaking(Context context) {
+        if (null != context) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};//0 means never played
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    String type = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.TYPE));
+                    Logger.debug(TAG, "Dude some pending breaking new or video !!! finally time to show");
+                    //hacking
+                    Intent intent = new Intent(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
+                    intent.putExtra(CustomIntent.EXTRAS.TYPE, type);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    break;
+                }
+                Logger.debug(TAG, "backgroundSearchForBreaking() :: No more pending chill!!!");
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: backgroundSearchForBreaking() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
     }
 
 

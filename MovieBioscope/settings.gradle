@@ -1,1 +1,1 @@
-include ':app', ':location', ':videoplayer', ':cloud', ':route', ':utility', ':firebase'
+include ':app', ':location', ':videoplayer', ':route', ':utility', ':firebase'

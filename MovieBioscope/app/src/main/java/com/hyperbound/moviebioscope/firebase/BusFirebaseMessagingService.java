@@ -22,8 +22,12 @@ import com.hyperbound.moviebioscope.model.Url;
 import com.hyperbound.moviebioscope.ui.MainActivity;
 import com.hyperbound.moviebioscope.util.AppInterface;
 import com.hyperbound.moviebioscope.util.BusUtil;
+import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.firebase.util.FirebaseUtil;
+import com.lib.location.util.LocationUtil;
+import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
+import com.lib.videoplayer.util.VideoData;
 
 public class BusFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -60,17 +64,21 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                 switch (app) {
                     case AppInterface.TYPE_VIDEO: {
                         LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
+                        break;
+                    }
+                    case AppInterface.TYPE_REFRESH: {
+                        FirebaseUtil.deleteAllFirebaseData();
+                        FirebaseUtil.deleteAllFirebaseTopicsData();
+                        LocationUtil.deleteAllLocationData();
+                        RouteUtil.deleteAllRouteData();
+                        RouteUtil.deleteAllRouteImagesData();
+                        VideoData.deleteAllVideoData();
+                        if(null!=BusUtil.getBusNumber())
+                        VolleyUtil.getBusDetails(BusUtil.getBusNumber());
+                       break;
                     }
                 }
             }
-
-            /*String urlList = remoteMessage.getData().get("urls");
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            Url[] data = gson.fromJson(urlList, Url[].class);
-            for (Url url : data) {
-
-            }*/
         }
 
         if (remoteMessage.getNotification() != null) {

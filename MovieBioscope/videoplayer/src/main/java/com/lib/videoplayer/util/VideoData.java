@@ -15,6 +15,7 @@ import com.lib.firebase.object.FirebaseData;
 import com.lib.firebase.util.FirebaseUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
+import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.PushData;
@@ -449,6 +450,15 @@ public class VideoData {
                 Logger.debug(TAG, "deleted count is " + count);
             }
             context.getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, value);
+        }
+    }
+
+    public static void deleteAllVideoData(){
+        try {
+            int firebaseTopicDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, null);
+            Log.d(TAG, "Video data Delete Count :: "+firebaseTopicDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllVideoData() :: ", e);
         }
     }
 }

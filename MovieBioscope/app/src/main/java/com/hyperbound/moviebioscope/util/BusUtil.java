@@ -53,4 +53,27 @@ public class BusUtil {
         if (DEBUG)
             Log.d(TAG, "insertBusInfo() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
     }
+
+    public static synchronized String getBusNumber() {
+
+        Cursor lCursor = null;
+        String busNumber=null;
+        try {
+            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, null,null,null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    busNumber=lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_NUMBER));
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getBusNumber() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getBusNumber() " + busNumber);
+        return busNumber;
+    }
 }

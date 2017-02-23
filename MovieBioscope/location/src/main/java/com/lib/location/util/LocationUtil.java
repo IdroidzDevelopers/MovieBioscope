@@ -156,4 +156,13 @@ public class LocationUtil {
         if (DEBUG) Log.d(TAG, "locationInfo:: " + locationInfo);
         return locationInfo;
     }
+
+    public static void deleteAllLocationData(){
+        try {
+            int locationDeleteCount = LocationApplication.getLocationContext().getContentResolver().delete(LocationProvider.CONTENT_URI_LOCATION_TABLE, null, null);
+            Log.d(TAG, "Location Data Delete Count :: "+locationDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllLocationData() :: ", e);
+        }
+    }
 }

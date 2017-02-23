@@ -170,4 +170,22 @@ public class RouteUtil {
         return routeId;
     }
 
+    public static void deleteAllRouteData(){
+        try {
+            int routeDeleteCount = RouteApplication.getRouteContext().getContentResolver().delete(RouteProvider.CONTENT_URI_BUS_ROUTE_TABLE, null, null);
+            Log.d(TAG, "Route Delete Count :: "+routeDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllRouteData() :: ", e);
+        }
+    }
+
+    public static void deleteAllRouteImagesData(){
+        try {
+            int routeDeleteCount = RouteApplication.getRouteContext().getContentResolver().delete(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, null);
+            Log.d(TAG, "Route Images Delete Count :: "+routeDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllRouteImagesData() :: ", e);
+        }
+    }
+
 }

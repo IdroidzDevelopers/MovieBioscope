@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.lib.firebase.FireBaseApplication;
 import com.lib.firebase.database.FirebaseProvider;
 import com.lib.firebase.object.FirebaseData;
 
@@ -44,10 +45,6 @@ public class FirebaseUtil {
         }
         if (DEBUG) Log.d(TAG, "getRoutes() " + mTopicsList);
         return mTopicsList;
-    }
-
-    public static void deleteAllFirebaseTopics() {
-
     }
 
     public static Uri insertFirebaseData(Context context, String appName, String data, long sentTime) {
@@ -88,5 +85,23 @@ public class FirebaseUtil {
         }
         if (DEBUG) Log.d(TAG, "getFireBaseData() " + data);
         return data;
+    }
+
+    public static void deleteAllFirebaseData(){
+        try {
+            int firebaseDataDeleteCount = FireBaseApplication.getFirebaseContext().getContentResolver().delete(FirebaseProvider.CONTENT_URI_FIREBASE_DATA_TABLE, null, null);
+            Log.d(TAG, "Firebase Data Delete Count :: "+firebaseDataDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllFirebaseData() :: ", e);
+        }
+    }
+
+    public static void deleteAllFirebaseTopicsData(){
+        try {
+            int firebaseTopicDeleteCount = FireBaseApplication.getFirebaseContext().getContentResolver().delete(FirebaseProvider.CONTENT_URI_FIREBASE_TOPICS_TABLE, null, null);
+            Log.d(TAG, "Firebase Topics Delete Count :: "+firebaseTopicDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteAllFirebaseTopicsData() :: ", e);
+        }
     }
 }

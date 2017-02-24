@@ -24,5 +24,9 @@
     <string name="invalid_bus_number_text">Invalid Bus Number contact administrator</string>
     <string name="ok_text">Ok</string>
     <string name="validating_text">Validating.........</string>
+    <string name="internet_dialog_text">Internet is disabled in your device. Would you like to enable it?</string>
+    <string name="setting">Settings</string>
+    <string name="Cancel">Cancel</string>
+    <string name="gps_dialog_text">GPS is disabled in your device. Would you like to enable it?</string>
 
 </resources>

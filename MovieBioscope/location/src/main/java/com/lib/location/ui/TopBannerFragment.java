@@ -122,6 +122,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        updateJourneyInfoView();
     }
 
 

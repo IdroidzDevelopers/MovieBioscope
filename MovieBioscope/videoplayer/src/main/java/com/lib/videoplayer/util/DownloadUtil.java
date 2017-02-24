@@ -108,7 +108,7 @@ public class DownloadUtil {
      * @param videoType
      * @return
      */
-    public static String getDestinationPath(String videoType) {
+    public static String getDestinationDir(String videoType) {
         //TODO:
         switch (videoType) {
             case VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO:

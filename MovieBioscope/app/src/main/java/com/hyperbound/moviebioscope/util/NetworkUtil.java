@@ -1,6 +1,7 @@
 package com.hyperbound.moviebioscope.util;
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -22,5 +23,11 @@ public class NetworkUtil {
                 activeNetwork.isConnected();
         if (DEBUG) Log.d(TAG, "isInternetAvailable() " + isConnected);
         return isConnected;
+    }
+
+    public static boolean isGPSEnabled(Context mContext) {
+        LocationManager locationManager = (LocationManager)
+                mContext.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

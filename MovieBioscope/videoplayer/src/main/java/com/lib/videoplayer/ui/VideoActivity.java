@@ -236,6 +236,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     public boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
+
                 if (!isLocationInfoVisible()) {
                     mTaskHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
                     mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
@@ -620,12 +621,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             startMovie();
                             break;
                         case StateMachine.PLAYING_STATE.MOVIE:
+                            //once finished , move to home
                             if (!isFinishing()) {
                                 finish();
                             }
                             break;
                         case StateMachine.PLAYING_STATE.ADV:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
+                            //display location after advertisement
+                            if (!isLocationInfoVisible()) {
+                                mTaskHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
+                                mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
+                            }
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:

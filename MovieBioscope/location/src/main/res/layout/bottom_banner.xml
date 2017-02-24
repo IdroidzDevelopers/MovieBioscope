@@ -59,6 +59,31 @@
     </LinearLayout>
     <!--source layout end-->
 
+    <LinearLayout
+        android:id="@+id/internet_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@id/source_layout"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/no_internet" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Offline"
+            android:textSize="15sp"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
     <!--destination layout start-->
     <LinearLayout
         android:id="@+id/destination_layout"

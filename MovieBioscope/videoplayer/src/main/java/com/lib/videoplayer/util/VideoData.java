@@ -490,7 +490,7 @@ public class VideoData {
         Logger.debug(TAG, "updated count is " + count);
 
         if (count == 0) {
-            if (data.getType().equals(VideoProvider.VIDEO_TYPE.BREAKING_NEWS) || data.getType().equals(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO)) {
+            if (isSingleTonType(data.getType())) {
                 //dirty logic
                 //at any time only one breaking new and video
                 selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
@@ -502,11 +502,31 @@ public class VideoData {
         }
     }
 
-    public static void deleteAllVideoData(){
+    /**
+     * Method to check the video type is single existance
+     *
+     * @param type
+     * @return
+     */
+    private static boolean isSingleTonType(String type) {
+        switch (type) {
+            case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
+            case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
+            case VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO:
+            case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
+                return true;
+            default:
+                return false;
+
+
+        }
+    }
+
+    public static void deleteAllVideoData() {
         try {
             int firebaseTopicDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, null);
-            Log.d(TAG, "Video data Delete Count :: "+firebaseTopicDeleteCount);
-        }catch (Exception e){
+            Log.d(TAG, "Video data Delete Count :: " + firebaseTopicDeleteCount);
+        } catch (Exception e) {
             Log.d(TAG, "Exception :: deleteAllVideoData() :: ", e);
         }
     }

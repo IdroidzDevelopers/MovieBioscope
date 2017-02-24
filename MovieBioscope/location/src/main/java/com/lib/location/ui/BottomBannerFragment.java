@@ -11,18 +11,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.lib.location.R;
 import com.lib.location.model.LocationInfo;
-import com.lib.location.util.LocationInterface;
 import com.lib.location.util.LocationUtil;
+import com.lib.location.util.NetworkUtil;
 import com.lib.location.util.TimeUtil;
 import com.lib.location.volley.VolleyUtil;
 import com.lib.route.objects.Route;
-import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 
 
 /**
@@ -41,6 +42,7 @@ public class BottomBannerFragment extends Fragment {
     private TextView mDistanceToSource;
     private TextView mDistanceToDest;
     private TextView mTimeToDest;
+    private LinearLayout mInternetLayout;
 
 
     private TextView mCurrentTime;
@@ -76,6 +78,7 @@ public class BottomBannerFragment extends Fragment {
         mDistanceToSource = (TextView) mRootView.findViewById(R.id.source_distance);
         mDistanceToDest = (TextView) mRootView.findViewById(R.id.destination_distance);
         mTimeToDest = (TextView) mRootView.findViewById(R.id.time_left);
+        mInternetLayout = (LinearLayout) mRootView.findViewById(R.id.internet_layout);
     }
 
     @Override
@@ -95,8 +98,15 @@ public class BottomBannerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateRouteInfo();
         mCurrentTime.setText(TimeUtil.getTime());
+        updateRouteInfo();
+        updateCurrentLocation();
+        updateLocationInfo();
+        if (!NetworkUtil.isInternetAvailable(getActivity())) {
+            mInternetLayout.setVisibility(View.VISIBLE);
+        } else {
+            mInternetLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -146,13 +156,18 @@ public class BottomBannerFragment extends Fragment {
 
     private void updateRouteInfo() {
         Route lRoute = RouteUtil.getCurrentRoute(getActivity());
-        if (null != lRoute && null != lRoute.getmRouteSource()&& null!=lRoute.getmRouteDestination()) {
+        if (null != lRoute && null != lRoute.getmRouteSource() && null != lRoute.getmRouteDestination()) {
             mSource.setText(lRoute.getmRouteSource());
             mDestination.setText(lRoute.getmRouteDestination());
             LocationUtil.insertOrUpdateRouteInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
-            com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
-            lm.getCurrentLocation();
-            VolleyUtil.getTravelInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
+            if (NetworkUtil.isInternetAvailable(getActivity()) && NetworkUtil.isGPSEnabled(getActivity())) {
+                Logger.debug(TAG, "internet and gps on :: fetching location information");
+                com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
+                lm.getCurrentLocation();
+                VolleyUtil.getTravelInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
+            } else {
+                Logger.debug(TAG, "internet and gps off");
+            }
         }
     }
 }

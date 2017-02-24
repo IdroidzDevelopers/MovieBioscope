@@ -44,8 +44,8 @@ public class VideoProvider extends ContentProvider {
         String LAST_PLAYED_TIME = "last_played_time";
         String PLAY_COUNT = "play_count";
         String TRANSACTION_ID = "transaction_id";
-        String CLOUD_TIME = "cloud_id";
-        String RECEIVED_TIME = "received_id";
+        String CLOUD_TIME = "cloud_time";
+        String RECEIVED_TIME = "received_time";
     }
 
     public interface VIDEO_TYPE {

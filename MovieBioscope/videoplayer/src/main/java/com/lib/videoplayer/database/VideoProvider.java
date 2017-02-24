@@ -43,7 +43,9 @@ public class VideoProvider extends ContentProvider {
         String PATH = "path";
         String LAST_PLAYED_TIME = "last_played_time";
         String PLAY_COUNT = "play_count";
-        String CLOUD_ID = "cloud_id";
+        String TRANSACTION_ID = "transaction_id";
+        String CLOUD_TIME = "cloud_id";
+        String RECEIVED_TIME = "received_id";
     }
 
     public interface VIDEO_TYPE {
@@ -65,7 +67,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_VIDEO + "("
-            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.CLOUD_ID + " TEXT" + ")";
+            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.TRANSACTION_ID + " TEXT," + VIDEO_COLUMNS.CLOUD_TIME + " TEXT," + VIDEO_COLUMNS.RECEIVED_TIME + " TEXT" + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_DEFAULT = 3;

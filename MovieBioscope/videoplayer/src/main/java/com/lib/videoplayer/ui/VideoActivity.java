@@ -739,11 +739,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 if (CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
                     String videoId = intent.getStringExtra(CustomIntent.EXTRAS.VIDEO_ID);
                     String type = intent.getStringExtra(CustomIntent.EXTRAS.TYPE);
-                    Logger.debug(TAG, "onReceive() :: videoId " + videoId + " type " + type);
+                    Logger.debug(TAG, "onReceive() :: videoId " + videoId + " type " + type + " videoId " + videoId);
                     if (VideoProvider.VIDEO_TYPE.BREAKING_VIDEO.equals(type)) {
-                        mState.sendEmptyMessage(EVENT.PLAY_BREAKING_VIDEO);
+                        if (VideoData.isBreakingNewsStillValid(context, videoId)) {
+                            mState.sendEmptyMessage(EVENT.PLAY_BREAKING_VIDEO);
+                        }
                     } else if (VideoProvider.VIDEO_TYPE.BREAKING_NEWS.equals(type)) {
-                        mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                        if (VideoData.isBreakingNewsStillValid(context, videoId)) {
+                            mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                        }
                     }
                 }
             }

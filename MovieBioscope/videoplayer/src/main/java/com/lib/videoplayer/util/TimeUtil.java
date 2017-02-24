@@ -21,4 +21,12 @@ public class TimeUtil {
         if (DEBUG) Log.d(TAG, "getTime() " + lTime);
         return lTime;
     }
+
+    public static boolean isMoreThanIntervalTime(long startTime, long endTime, long interval) {
+        if (endTime - startTime > interval) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -315,11 +315,14 @@ public class VideoData {
                 lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
                 while (null != lCursor && lCursor.moveToNext()) {
                     String type = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.TYPE));
-                    Logger.debug(TAG, "Dude some pending breaking new or video !!! finally time to show");
+                    String id = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    Logger.debug(TAG, "backgroundSearchForBreaking() :: Dude some pending breaking new or video !!! finally time to show");
                     //hacking
                     Intent intent = new Intent(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
                     intent.putExtra(CustomIntent.EXTRAS.TYPE, type);
+                    intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, id);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
                     break;
                 }
                 Logger.debug(TAG, "backgroundSearchForBreaking() :: No more pending chill!!!");
@@ -331,6 +334,45 @@ public class VideoData {
                 }
             }
         }
+    }
+
+
+    /**
+     * background search for pending breaking news and video
+     *
+     * @param context
+     * @return
+     */
+    public static synchronized boolean isBreakingNewsStillValid(Context context, String videoId) {
+        if (null != context) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+            String[] lSelectionArg = {"" + videoId};
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    String receivedTime = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.RECEIVED_TIME));
+                    String cloudTime = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.CLOUD_TIME));
+                    if (null != receivedTime && null != cloudTime) {
+                        if (!TimeUtil.isMoreThanIntervalTime(Long.valueOf(cloudTime), Long.valueOf(receivedTime), AlarmManager.INTERVAL_HOUR)) {
+                            Logger.debug(TAG, "isBreakingNewsStillValid() :: yes still valid go ahead ");
+                            return true;
+                        } else {
+                            Logger.debug(TAG, "isBreakingNewsStillValid() :: u missed breaking news ");
+                            return false;
+                        }
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: backgroundSearchForBreaking() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -376,7 +418,8 @@ public class VideoData {
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             pushData = gson.fromJson(firebase.getData(), PushData.class);
-
+            pushData.setCloudTime(firebase.getSentTime());
+            pushData.setReceivedTime(firebase.getReceivedTime());
         }
         return pushData;
     }
@@ -434,8 +477,14 @@ public class VideoData {
         if (0 != data.getCount()) {
             value.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, data.getCount());
         }
-        if (null != data.getCloudId()) {
-            value.put(VideoProvider.VIDEO_COLUMNS.CLOUD_ID, data.getCloudId());
+        if (null != data.getTransactionId()) {
+            value.put(VideoProvider.VIDEO_COLUMNS.TRANSACTION_ID, data.getTransactionId());
+        }
+        if (null != data.getCloudTime()) {
+            value.put(VideoProvider.VIDEO_COLUMNS.CLOUD_TIME, data.getCloudTime());
+        }
+        if (null != data.getReceivedTime()) {
+            value.put(VideoProvider.VIDEO_COLUMNS.RECEIVED_TIME, data.getReceivedTime());
         }
         int count = context.getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, value, selection, selectionArg);
         Logger.debug(TAG, "updated count is " + count);

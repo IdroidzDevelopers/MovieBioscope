@@ -51,7 +51,7 @@ public class FirebaseUtil {
         ContentValues lLocationContentValue = new ContentValues();
         lLocationContentValue.put(FirebaseProvider.FIREBASEDATACOLUMNS.APP_NAME, appName);
         lLocationContentValue.put(FirebaseProvider.FIREBASEDATACOLUMNS.DATA, data);
-        lLocationContentValue.put(FirebaseProvider.FIREBASEDATACOLUMNS.SENT_TIME, sentTime);
+        lLocationContentValue.put(FirebaseProvider.FIREBASEDATACOLUMNS.CLOUD_TIME, sentTime);
         lLocationContentValue.put(FirebaseProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME, System.currentTimeMillis());
         Uri lUri = context.getContentResolver().insert(FirebaseProvider.CONTENT_URI_FIREBASE_DATA_TABLE, lLocationContentValue);
         if (DEBUG)
@@ -71,7 +71,7 @@ public class FirebaseUtil {
                     data = new FirebaseData();
                     data.setTransactionId(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.APP_NAME)));
                     data.setData(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.DATA)));
-                    data.setSentTime(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.SENT_TIME)));
+                    data.setSentTime(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.CLOUD_TIME)));
                     data.setReceivedTime(lCursor.getString(lCursor.getColumnIndex(FirebaseProvider.FIREBASEDATACOLUMNS.RECEIVED_TIME)));
                     break;
                 }

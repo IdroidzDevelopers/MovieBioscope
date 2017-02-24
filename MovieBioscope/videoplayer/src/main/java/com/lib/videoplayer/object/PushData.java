@@ -8,6 +8,24 @@ public class PushData {
     private String action;
     private String content;
     private String transactionID;
+    private String mCloudTime;
+    private String mReceivedTime;
+
+    public String getCloudTime() {
+        return mCloudTime;
+    }
+
+    public void setCloudTime(String mCloudTime) {
+        this.mCloudTime = mCloudTime;
+    }
+
+    public String getReceivedTime() {
+        return mReceivedTime;
+    }
+
+    public void setReceivedTime(String mReceivedTime) {
+        this.mReceivedTime = mReceivedTime;
+    }
 
     @Override
     public String toString() {

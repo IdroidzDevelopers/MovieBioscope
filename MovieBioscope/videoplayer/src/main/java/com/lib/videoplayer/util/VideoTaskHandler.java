@@ -88,6 +88,9 @@ public class VideoTaskHandler extends Handler {
                                         data.setMessage(pushData.getContent());
                                         data.setDownloadingId(String.valueOf(lDownloadId));
                                         data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
+                                        data.setTransactionId(pushData.getTransactionID());
+                                        data.setCloudTime(pushData.getCloudTime());
+                                        data.setReceivedTime(pushData.getReceivedTime());
                                         VideoData.insertOrUpdateVideoData(sContext, data);
                                     } else {
                                         Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + asset.getAssetID());

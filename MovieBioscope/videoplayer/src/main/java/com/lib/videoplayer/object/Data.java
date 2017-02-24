@@ -13,7 +13,26 @@ public class Data {
     private String mPath;
     private String mLastPlayedTime;
     private int mCount;
-    private String mCloudId;
+    private String mTransactionId;
+
+    public String getCloudTime() {
+        return mCloudTime;
+    }
+
+    public void setCloudTime(String mCloudTime) {
+        this.mCloudTime = mCloudTime;
+    }
+
+    public String getReceivedTime() {
+        return mReceivedTime;
+    }
+
+    public void setReceivedTime(String mReceivedTime) {
+        this.mReceivedTime = mReceivedTime;
+    }
+
+    private String mCloudTime;
+    private String mReceivedTime;
 
     public String getAssetID() {
         return assetID;
@@ -57,12 +76,12 @@ public class Data {
     }
 
 
-    public String getCloudId() {
-        return mCloudId;
+    public String getTransactionId() {
+        return mTransactionId;
     }
 
-    public void setCloudId(String mCloudId) {
-        this.mCloudId = mCloudId;
+    public void setTransactionId(String mTransactionId) {
+        this.mTransactionId = mTransactionId;
     }
 
 
@@ -116,7 +135,7 @@ public class Data {
                 ", mPath='" + mPath + '\'' +
                 ", mLastPlayedTime='" + mLastPlayedTime + '\'' +
                 ", mCount=" + mCount +
-                ", mCloudId='" + mCloudId + '\'' +
+                ", mTransactionId='" + mTransactionId + '\'' +
                 '}';
     }
 

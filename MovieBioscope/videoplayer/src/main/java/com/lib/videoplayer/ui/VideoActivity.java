@@ -171,7 +171,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mGifImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+               // mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
             }
         });
     }
@@ -361,8 +361,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             }
         } else {
             //still the change the change and process
-            mStateMachine.mCurrentState = StateMachine.PLAYING_STATE.TRAVEL_VIDEO;
-            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.SAFETY_VIDEO);
+            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.TRAVEL_VIDEO);
             mState.sendEmptyMessage(EVENT.PLAY_NEXT);
         }
     }
@@ -382,6 +381,29 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mOtherView.start();
                 hideLoadingIcon();
                 mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.SAFETY_VIDEO);
+                VideoData.updateVideoData(mContext, lData);
+            }
+        } else {
+            //still the change the change and process
+            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.SAFETY_VIDEO);
+            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+        }
+    }
+
+    /**
+     * Method to start safety view
+     */
+    private void startIntroVideo() {
+        mMovieView.setVisibility(View.GONE);
+        Data lData = VideoData.getIntroVideo(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
+            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
+                mOtherView.setVisibility(View.VISIBLE);
+                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
+                mOtherView.requestFocus();
+                mOtherView.start();
+                hideLoadingIcon();
+                mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.INTRO_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
             }
         } else {
@@ -617,6 +639,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             startSafetyVideo();
                             break;
                         case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
+                            VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
+                            startMovie();
+                            break;
+                        case StateMachine.PLAYING_STATE.INTRO_VIDEO:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startMovie();
                             break;

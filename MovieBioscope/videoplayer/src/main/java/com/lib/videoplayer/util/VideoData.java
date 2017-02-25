@@ -213,6 +213,36 @@ public class VideoData {
         return lData;
     }
 
+    public static Data getIntroVideo(Context aContext) {
+        Data lData = null;
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? ";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.INTRO_VIDEO};
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    lData = new Data();
+                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setAssetID(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getSafetyVideo() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return lData;
+    }
+
+
     public static long getNextAdTime() {
         Random lRandom = new Random();
         long lRandomValue = MIN_TIME_IN_MILLIS +
@@ -514,6 +544,7 @@ public class VideoData {
             case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
             case VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO:
             case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
+            case VideoProvider.VIDEO_TYPE.INTRO_VIDEO:
                 return true;
             default:
                 return false;

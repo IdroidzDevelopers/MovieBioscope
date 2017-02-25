@@ -67,5 +67,5 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/company" />
+        android:src="@drawable/tv_logo" />
 </RelativeLayout>

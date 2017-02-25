@@ -68,11 +68,12 @@
     <ImageView
         android:id="@+id/home"
         android:layout_width="100dp"
-        android:layout_height="60dp"
+        android:layout_height="45dp"
         android:layout_marginRight="150dp"
         android:layout_alignParentRight="true"
         android:layout_gravity="center"
-        android:src="@mipmap/home"
+        android:layout_centerVertical="true"
+        android:src="@drawable/home_bg"
         android:layout_alignBottom="@+id/route" />
 
     <ImageView
@@ -82,5 +83,5 @@
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@+id/home"
-        android:src="@mipmap/route" />
+        android:src="@drawable/route_bg" />
 </RelativeLayout>

@@ -34,6 +34,7 @@ public class StateMachine {
         int BREAKING_VIDEO = 5;
         int BREAKING_TEXT = 6;
         int PAUSED = 7;
+        int INTRO_VIDEO = 8;
     }
 
     private StateMachine() {

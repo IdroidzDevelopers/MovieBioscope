@@ -66,6 +66,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp"
         android:layout_alignParentTop="true"
         android:src="@drawable/tv_logo" />
 </RelativeLayout>

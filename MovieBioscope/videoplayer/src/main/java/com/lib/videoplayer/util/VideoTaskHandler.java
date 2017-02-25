@@ -4,11 +4,13 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
@@ -17,6 +19,8 @@ import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.DownloadData;
 import com.lib.videoplayer.object.PushData;
+
+import java.io.File;
 
 
 public class VideoTaskHandler extends Handler {
@@ -80,28 +84,21 @@ public class VideoTaskHandler extends Handler {
                         Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + pushData.getAction() + " rowId " + rowId);
                         switch (pushData.getAction()) {
                             case JSON_ACTION.DOWNLOAD:
-                                for (Asset asset : pushData.getAssets()) {
-                                    //check is there any entry with the same assert id then ignore it .may be its a duplicate message
-                                    if (!VideoData.isAssetExist(sContext, asset.getAssetID())) {
-                                        long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(), asset.getName());
-                                        Data data = copyAssetToData(asset);
-                                        data.setMessage(pushData.getContent());
-                                        data.setDownloadingId(String.valueOf(lDownloadId));
-                                        data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
-                                        data.setTransactionId(pushData.getTransactionID());
-                                        data.setCloudTime(pushData.getCloudTime());
-                                        data.setReceivedTime(pushData.getReceivedTime());
-                                        VideoData.insertOrUpdateVideoData(sContext, data);
-                                    } else {
-                                        Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + asset.getAssetID());
-                                    }
-                                }
+                                downloadContent(pushData);
                                 break;
                             case JSON_ACTION.REFRESH:
                                 //TODO:
                                 break;
                             case JSON_ACTION.UPDATE:
-                                //TODO:
+                                String sdcard=Environment.getExternalStorageDirectory().getAbsolutePath();
+                                Log.d(TAG,"SD CARD ::"+sdcard);
+                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE)+"/"));
+                                Log.d(TAG,"SD CARD ::"+sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE));
+                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.ADV)+"/"));
+                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_NEWS)+"/"));
+                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO)+"/"));
+                                VideoData.deleteAllVideoDataExceptCompanyAndSafety();
+                                downloadContent(pushData);
                                 break;
                         }
                         break;
@@ -142,6 +139,25 @@ public class VideoTaskHandler extends Handler {
 
         }
 
+    }
+
+    private void downloadContent(PushData pushData){
+        for (Asset asset : pushData.getAssets()) {
+            //check is there any entry with the same assert id then ignore it .may be its a duplicate message
+            if (!VideoData.isAssetExist(sContext, asset.getAssetID())) {
+                long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(),DownloadUtil.getDestinationDir(asset.getType()), asset.getName());
+                Data data = copyAssetToData(asset);
+                data.setMessage(pushData.getContent());
+                data.setDownloadingId(String.valueOf(lDownloadId));
+                data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADING);
+                data.setTransactionId(pushData.getTransactionID());
+                data.setCloudTime(pushData.getCloudTime());
+                data.setReceivedTime(pushData.getReceivedTime());
+                VideoData.insertOrUpdateVideoData(sContext, data);
+            } else {
+                Logger.info(TAG, "HANDLE_VIDEO_DATA :: DOWNLOAD:: already exist in the table::  asset id " + asset.getAssetID());
+            }
+        }
     }
 
     private Data copyAssetToData(Asset asset) {

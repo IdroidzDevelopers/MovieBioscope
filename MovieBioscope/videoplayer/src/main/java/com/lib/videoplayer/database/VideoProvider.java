@@ -49,7 +49,7 @@ public class VideoProvider extends ContentProvider {
     }
 
     public interface VIDEO_TYPE {
-        String TRAVELLER_VIDEO = "traveller";
+        String COMPANY_VIDEO = "company";
         String SAFETY_VIDEO = "safety";
         String MOVIE = "movie";
         String ADV = "ad";

@@ -68,7 +68,11 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
                         Address address = addresses.get(0);
                         if (null != address) {
                             String subLocality = address.getSubLocality();
-                            LocationUtil.updateCurentLocation(subLocality);
+                            if (null != subLocality) {
+                                LocationUtil.updateCurentLocation(subLocality);
+                            } else {
+                                LocationUtil.updateCurentLocation(address.getLocality());
+                            }
                             LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
                         }
                     }

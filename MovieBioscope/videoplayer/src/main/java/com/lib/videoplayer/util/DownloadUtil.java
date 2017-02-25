@@ -5,7 +5,6 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 import com.lib.location.util.NetworkUtil;
@@ -25,14 +24,14 @@ public class DownloadUtil {
      * @param name
      * @return
      */
-    public static long beginDownload(Context context, String downloadUri, String name) {
+    public static long beginDownload(Context context, String downloadUri,String dir, String name) {
         long downloadId = -1;
         if (NetworkUtil.isInternetAvailable(context)) {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            request.setDestinationInExternalPublicDir("/movie_bioscope", name);
+            request.setDestinationInExternalPublicDir(dir, name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }
@@ -111,15 +110,22 @@ public class DownloadUtil {
     public static String getDestinationDir(String videoType) {
         //TODO:
         switch (videoType) {
-            case VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO:
+            case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO: {
+                return "/movie_bioscope/company/";
+            }
             case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
+                return "/movie_bioscope/safety/";
             case VideoProvider.VIDEO_TYPE.MOVIE:
+                return "/movie_bioscope/movie/";
             case VideoProvider.VIDEO_TYPE.ADV:
+                return "/movie_bioscope/adv/";
             case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
+                return "/movie_bioscope/breaking_video/";
             case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
-                return "/storage/emulated/0/movie_bioscope";
+                return "/movie_bioscope/breaking_news/";
+            default:
+                return "/movie_bioscope/";
 
         }
-        return null;
     }
 }

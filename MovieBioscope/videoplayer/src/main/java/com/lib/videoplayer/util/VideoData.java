@@ -23,6 +23,7 @@ import com.lib.videoplayer.object.PushData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Random;
 
 public class VideoData {
@@ -156,7 +157,7 @@ public class VideoData {
         Data lData = null;
         if (null != aContext) {
             String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -512,7 +513,7 @@ public class VideoData {
         switch (type) {
             case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
             case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
-            case VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO:
+            case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO:
             case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
                 return true;
             default:
@@ -522,12 +523,32 @@ public class VideoData {
         }
     }
 
-    public static void deleteAllVideoData() {
+    public static void deleteAllVideoDataExceptCompanyAndSafety(){
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?,?)";
+        String[] selectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE,VideoProvider.VIDEO_TYPE.ADV,VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO};
         try {
-            int firebaseTopicDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, null);
-            Log.d(TAG, "Video data Delete Count :: " + firebaseTopicDeleteCount);
+            int videoDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
+            Log.d(TAG, "Video data Delete Count :: " + videoDeleteCount);
         } catch (Exception e) {
-            Log.d(TAG, "Exception :: deleteAllVideoData() :: ", e);
+            Log.d(TAG, "Exception :: deleteAllVideoDataExceptCompanyAndSafety() :: ", e);
         }
+    }
+
+    public static void deleteRequiredVideoType(String videoType){
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
+        String[] selectionArg = new String[]{"" + videoType};
+        try {
+            int videoTypeDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
+            Log.d(TAG, "deleteRequiredVideoType :: "+videoTypeDeleteCount);
+        }catch (Exception e){
+            Log.d(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
+        }
+    }
+
+    public static void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles()) {
+                boolean status=child.delete();
+            }
     }
 }

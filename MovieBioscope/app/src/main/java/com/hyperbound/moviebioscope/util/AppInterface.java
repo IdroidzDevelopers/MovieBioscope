@@ -10,8 +10,11 @@ public interface AppInterface {
 
     String BUS_REG_NO_KEY="regNo";
     int HANDLE_BUS_DETAILS =1;
+    int HANDLE_REFRESH =2;
     String TYPE_VIDEO="video";
-    String TYPE_REFRESH="refresh";
+    String COMMAND_REFRESH ="REFRESH";
+    String COMMAND_DOWNLOAD="DOWNLOAD";
+    String COMMAND_UPDATE="UPDATE";
     String TYPE_ROUTE="route";
     String URI_KEY="uri";
     String ACTION_KEY="action";

@@ -8,26 +8,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
-import com.hyperbound.moviebioscope.model.Url;
 import com.hyperbound.moviebioscope.ui.MainActivity;
 import com.hyperbound.moviebioscope.util.AppInterface;
-import com.hyperbound.moviebioscope.util.BusUtil;
-import com.hyperbound.moviebioscope.volley.VolleyUtil;
+import com.hyperbound.moviebioscope.util.AppTaskHandler;
 import com.lib.firebase.util.FirebaseUtil;
-import com.lib.location.util.LocationUtil;
-import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
-import com.lib.videoplayer.util.VideoData;
 
 public class BusFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -56,26 +50,32 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             if (remoteMessage.getData().containsKey(AppInterface.APP_KEY)
-                    && remoteMessage.getData().containsKey(AppInterface.DATA_KEY)) {
+                    && remoteMessage.getData().containsKey(AppInterface.DATA_KEY)
+                    && remoteMessage.getData().containsKey(AppInterface.ACTION_KEY)) {
                 String app = remoteMessage.getData().get(AppInterface.APP_KEY);
                 String data = remoteMessage.getData().get(AppInterface.DATA_KEY);
+                String action = remoteMessage.getData().get(AppInterface.ACTION_KEY);
                 long sentTime = remoteMessage.getSentTime();
                 Uri uri = FirebaseUtil.insertFirebaseData(BioscopeApp.getContext(), app, data, sentTime);
-                switch (app) {
-                    case AppInterface.TYPE_VIDEO: {
-                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
+                switch(action) {
+                    case AppInterface.COMMAND_DOWNLOAD:{
+                        switch (app) {
+                            case AppInterface.TYPE_VIDEO: {
+                                LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
+                                break;
+                            }
+                        }
                         break;
                     }
-                    case AppInterface.TYPE_REFRESH: {
-                        FirebaseUtil.deleteAllFirebaseData();
-                        FirebaseUtil.deleteAllFirebaseTopicsData();
-                        LocationUtil.deleteAllLocationData();
-                        RouteUtil.deleteAllRouteData();
-                        RouteUtil.deleteAllRouteImagesData();
-                        VideoData.deleteAllVideoData();
-                        if(null!=BusUtil.getBusNumber())
-                        VolleyUtil.getBusDetails(BusUtil.getBusNumber());
-                       break;
+                    case AppInterface.COMMAND_REFRESH:{
+                        Message msg = Message.obtain();
+                        msg.what = AppInterface.HANDLE_REFRESH;
+                        AppTaskHandler.getInstance().sendMessage(msg);
+                        break;
+                    }
+                    case AppInterface.COMMAND_UPDATE:{
+                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
+                        break;
                     }
                 }
             }

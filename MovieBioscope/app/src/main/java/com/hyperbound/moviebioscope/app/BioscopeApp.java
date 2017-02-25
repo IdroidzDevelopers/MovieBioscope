@@ -125,7 +125,7 @@ public class BioscopeApp extends Application {
         ContentValues lValue6 = new ContentValues();
         lValue6.put(VideoProvider.VIDEO_COLUMNS.VIDEO_ID, "dummy06");
         lValue6.put(VideoProvider.VIDEO_COLUMNS.NAME, "Traveller");
-        lValue6.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.TRAVELLER_VIDEO);
+        lValue6.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.COMPANY_VIDEO);
         lValue6.put(VideoProvider.VIDEO_COLUMNS.PATH, "/storage/emulated/0/movie_bioscope/traveller.mp4");
         lValue6.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
         lValue6.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);

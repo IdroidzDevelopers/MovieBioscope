@@ -41,6 +41,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private static final long BANNER_TIMEOUT = 5 * 1000;//5 secs
     private static final String ARG_VIDEO_ID = "video_id";
     private static final long BREAKING_NEWS_DISPLAY_TIME = 30 * 1000;//30 secs
+    private static final long NO_CONTENT_DISPLAY_TIME = 5 * 1000;
     private Handler mState;
     private StateMachine mStateMachine;
     private String mSelectedVideoId;
@@ -92,6 +93,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int HIDE_LOCATION_INFO = 1;
         int PREPARE_FOR_NEXT_AD = 2;
         int REMOVE_BREAKING_NEWS = 3;
+        int FINISH_ACTIVITY = 4;
     }
 
     @Override
@@ -171,7 +173,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mGifImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
+                // mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
             }
         });
     }
@@ -294,6 +296,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         } else {
             hideLoadingIcon();
             mNoContentView.setVisibility(View.VISIBLE);
+            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.FINISH_ACTIVITY,NO_CONTENT_DISPLAY_TIME);
         }
     }
 
@@ -395,21 +398,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startIntroVideo() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getIntroVideo(mContext);
-        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
-            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
-                mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
-                mOtherView.requestFocus();
-                mOtherView.start();
-                hideLoadingIcon();
-                mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.INTRO_VIDEO);
-                VideoData.updateVideoData(mContext, lData);
-            }
-        } else {
-            //still the change the change and process
-            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.MOVIE);
-            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+        if (!this.isFinishing()) {// TODO: dirty fix :: need solution
+            mOtherView.setVisibility(View.VISIBLE);
+            mOtherView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.navajhalaka_intro));
+            mOtherView.requestFocus();
+            mOtherView.start();
+            hideLoadingIcon();
+            mStateMachine.changeState(mStateMachine.mCurrentState, StateMachine.PLAYING_STATE.INTRO_VIDEO);
         }
     }
 
@@ -504,6 +499,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     removeBreakingNews();
                     resumeVideo();
                     break;
+                case TASK_EVENT.FINISH_ACTIVITY:
+                    if (!isFinishing()) {
+                        finish();
+                    }
+                    break;
 
                 default:
                     break;
@@ -585,6 +585,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                        case StateMachine.PLAYING_STATE.INTRO_VIDEO:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
                             startAd();
                             break;
@@ -640,7 +641,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             break;
                         case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
-                            startMovie();
+                            startIntroVideo();
                             break;
                         case StateMachine.PLAYING_STATE.INTRO_VIDEO:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessage(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH);
@@ -694,6 +695,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             case StateMachine.PLAYING_STATE.ADV:
                             case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                             case StateMachine.PLAYING_STATE.BREAKING_TEXT:
+                            case StateMachine.PLAYING_STATE.INTRO_VIDEO:
+
                                 //schedule the next advertisement
                                 mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
                                 break;
@@ -714,6 +717,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                        case StateMachine.PLAYING_STATE.INTRO_VIDEO:
                             hideMovie();
                             startBreakingVideo();
                             break;
@@ -729,6 +733,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                        case StateMachine.PLAYING_STATE.INTRO_VIDEO:
                             pauseVideo();
                             showBreakingNews();
                             mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);

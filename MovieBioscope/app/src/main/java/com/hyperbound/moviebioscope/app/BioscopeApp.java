@@ -40,8 +40,7 @@ public class BioscopeApp extends Application {
         LocationApplication.setLocationContext(this);
         RouteApplication.setRouteContext(this);
         FireBaseApplication.setFirebaseContext(this);
-        createFolderIfRequired();
-        putIntroVideo();
+        //createFolderIfRequired();
         //putDummyData();
         // putBusDetail();
         registerVideoCommand();
@@ -72,15 +71,6 @@ public class BioscopeApp extends Application {
         }
     }
 
-
-    private void putIntroVideo() {
-        Data data = new Data();
-        data.setAssetID("dummy");
-        data.setName("Navajhalaka");
-        data.setType(VideoProvider.VIDEO_TYPE.INTRO_VIDEO);
-        data.setPath("android.resource://" + getPackageName() + "/" + getResources().getResourceName(R.raw.navajhalaka_intro));
-        VideoData.insertOrUpdateVideoData(sContext, data);
-    }
 
     /***********************************************************************************
      * Testing code needs to be removed

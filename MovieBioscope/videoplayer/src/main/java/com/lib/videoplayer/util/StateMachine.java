@@ -44,36 +44,48 @@ public class StateMachine {
      * Sub class to store the video information
      */
     public static class VideoInfo {
-        public int videoState;
-        public int prevState;
-        public int currentState;
-        public Uri movieUri;
-        public int movieSeekTime;
-        public Uri otherUri;
-        public int otherSeekTime;
+        private int videoState;
+        private int prevState;
+        private int currentState;
+        private Uri movieUri;
+        private int movieSeekTime;
+        private Uri otherUri;
+        private int otherSeekTime;
 
         public int getVideoState() {
-            return videoState;
+            synchronized (StateMachine.class) {
+                return videoState;
+            }
         }
 
         public void setVideoState(int videoState) {
-            this.videoState = videoState;
+            synchronized (StateMachine.class) {
+                this.videoState = videoState;
+            }
         }
 
         public int getPrevState() {
-            return prevState;
+            synchronized (StateMachine.class) {
+                return prevState;
+            }
         }
 
         public void setPrevState(int prevState) {
-            this.prevState = prevState;
+            synchronized (StateMachine.class) {
+                this.prevState = prevState;
+            }
         }
 
         public int getCurrentState() {
-            return currentState;
+            synchronized (StateMachine.class) {
+                return currentState;
+            }
         }
 
         public void setCurrentState(int currentState) {
-            this.currentState = currentState;
+            synchronized (StateMachine.class) {
+                this.currentState = currentState;
+            }
         }
 
         public Uri getMovieUri() {
@@ -148,14 +160,18 @@ public class StateMachine {
     public synchronized void changeState(int aPrevState, int aCurrentState) {
         if (DEBUG)
             Log.d(TAG, "changeState() :: aPrevState:" + aPrevState + " " + getName(aPrevState) + " aCurrentState:" + aCurrentState + " " + getName(aCurrentState));
-        videoInfo.prevState = aPrevState;
-        videoInfo.currentState = aCurrentState;
+        synchronized (StateMachine.class) {
+            videoInfo.prevState = aPrevState;
+            videoInfo.currentState = aCurrentState;
+        }
     }
 
     public synchronized void setVideoState(int aState) {
         if (DEBUG)
             Log.d(TAG, "setVideoState() :: aState:" + getStateName(aState));
-        videoInfo.videoState = aState;
+        synchronized (StateMachine.class) {
+            videoInfo.videoState = aState;
+        }
     }
 
     private String getName(int aState) {

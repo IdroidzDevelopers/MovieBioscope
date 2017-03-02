@@ -44,7 +44,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
     private View mRootView;
     private ImageView mRoute;
     private ImageView mHome;
-    private Button mMovie;
+    private ImageView mMovie;
     private static final String ARG_PARAM1 = "param1";
     private Dialog mRouteDialog;
     private String mType;
@@ -102,13 +102,13 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
             mHome = (ImageView) mRootView.findViewById(R.id.home);
             mHome.setOnClickListener(this);
         }
-/*        mMovie=(Button)mRootView.findViewById(R.id.movie_list);
+        mMovie=(ImageView)mRootView.findViewById(R.id.movie_list);
         mMovie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
               LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction(CustomIntent.ACTION_MOVIE_LIST));
             }
-        });*/
+        });
     }
 
     @Override

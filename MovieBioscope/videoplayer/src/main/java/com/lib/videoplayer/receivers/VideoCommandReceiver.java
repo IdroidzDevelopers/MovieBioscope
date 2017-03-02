@@ -39,11 +39,9 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                         VideoTaskHandler.getInstance(context).sendMessage(lMessage);
                     }
                 }
-            }else if(CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())){
-                /*MovieDialog fragment1 = new MovieDialog();
-                fragment1.show(fm, "");*/
-            }else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())){
-                VideoData.resetTravelSafety();
+            } else if (CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())) {
+                context.startActivity(new Intent(context, MovieListDialog.class));
+                //context.sendBroadcast(new Intent().setAction("android.navajhalka.movielist"));
             }
         }
     }

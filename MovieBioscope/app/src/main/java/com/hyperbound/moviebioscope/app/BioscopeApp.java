@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.database.BusProvider;
 import com.lib.firebase.FireBaseApplication;
 import com.lib.location.LocationApplication;
@@ -18,9 +17,7 @@ import com.lib.route.RouteApplication;
 import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
-import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
-import com.lib.videoplayer.util.VideoData;
 
 import java.io.File;
 import java.io.IOException;
@@ -173,6 +170,7 @@ public class BioscopeApp extends Application {
         IntentFilter lIntentFilter = new IntentFilter();
         lIntentFilter.addAction(CustomIntent.ACTION_VIDEO_DATA_RECEIVED);
         lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_LIST);
+        lIntentFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 }

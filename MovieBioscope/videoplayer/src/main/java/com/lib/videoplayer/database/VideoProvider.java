@@ -21,11 +21,13 @@ public class VideoProvider extends ContentProvider {
 
     public static final String DATABASE_NAME = "bioscope.db";
     public static final String TABLE_VIDEO = "video_table";
+    public static final String TABLE_INTERMEDIATE_VIDEO_STATE = "video_intermediate_state";
     private static final int DATABASE_VERSION = 1;
 
     public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
     private static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
+    public static final Uri CONTENT_URI_INTERMEDIATE_VIDEO_STATE = Uri.parse(CONTENT_URI + "/" + TABLE_INTERMEDIATE_VIDEO_STATE);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
@@ -46,6 +48,18 @@ public class VideoProvider extends ContentProvider {
         String TRANSACTION_ID = "transaction_id";
         String CLOUD_TIME = "cloud_time";
         String RECEIVED_TIME = "received_time";
+    }
+
+    public interface VIDEO_INTERMEDIATE_COLUMNS {
+        String VIDEO_STATE = "video_state";
+        String PREV_STATE = "prev_state";
+        String CURRENT_STATE = "current_state";
+        String MOVIE_URI = "movie_uri";
+        String MOVIE_SEEK_TIME = "movie_seek_time";
+        String OTHER_URI = "other_uri";
+        String OTHER_SEEK_TIME = "other_seek_time";
+        String UPDATED_TIME = "updated_time";
+
     }
 
     public interface VIDEO_TYPE {
@@ -69,12 +83,19 @@ public class VideoProvider extends ContentProvider {
             + TABLE_VIDEO + "("
             + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.TRANSACTION_ID + " TEXT," + VIDEO_COLUMNS.CLOUD_TIME + " TEXT," + VIDEO_COLUMNS.RECEIVED_TIME + " TEXT" + ")";
 
+    private static final String CREATE_VIDEO_INTERMEDIATE_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_INTERMEDIATE_VIDEO_STATE + "("
+            + VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " INTEGER PRIMARY KEY ," + VIDEO_INTERMEDIATE_COLUMNS.PREV_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.CURRENT_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
+
+
     private static final int CASE_VIDEO_TABLE = 1;
+    private static final int CASE_VIDEO_INTERMEDIATE_TABLE = 2;
     private static final int CASE_DEFAULT = 3;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_INTERMEDIATE_VIDEO_STATE, CASE_VIDEO_INTERMEDIATE_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -85,6 +106,8 @@ public class VideoProvider extends ContentProvider {
         switch (match) {
             case CASE_VIDEO_TABLE:
                 return AUTHORITY + "/" + TABLE_VIDEO;
+            case CASE_VIDEO_INTERMEDIATE_TABLE:
+                return AUTHORITY + "/" + TABLE_INTERMEDIATE_VIDEO_STATE;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -98,6 +121,7 @@ public class VideoProvider extends ContentProvider {
         mDbHelper = new DatabaseHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.execSQL(CREATE_VIDEO_TABLE);
+        db.execSQL(CREATE_VIDEO_INTERMEDIATE_TABLE);
         return false;
     }
 
@@ -108,6 +132,10 @@ public class VideoProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_VIDEO_TABLE:
+                queryBuilder.setTables(uri.getLastPathSegment());
+                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case CASE_VIDEO_INTERMEDIATE_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -125,6 +153,13 @@ public class VideoProvider extends ContentProvider {
         long lRowId = 0;
         switch (sUriMatcher.match(uri)) {
             case CASE_VIDEO_TABLE:
+                try {
+                    lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                } catch (Exception e) {
+
+                }
+                break;
+            case CASE_VIDEO_INTERMEDIATE_TABLE:
                 try {
                     lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
                 } catch (Exception e) {
@@ -149,6 +184,9 @@ public class VideoProvider extends ContentProvider {
             case CASE_VIDEO_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
+            case CASE_VIDEO_INTERMEDIATE_TABLE:
+                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri);
         }
@@ -161,6 +199,10 @@ public class VideoProvider extends ContentProvider {
         SQLiteDatabase lDb = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CASE_VIDEO_TABLE:
+                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
+                break;
+
+            case CASE_VIDEO_INTERMEDIATE_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

@@ -156,8 +156,8 @@ public class VideoData {
     public static Data getTravellerVideo(Context aContext) {
         Data lData = null;
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + " = ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -187,8 +187,8 @@ public class VideoData {
     public static Data getSafetyVideo(Context aContext) {
         Data lData = null;
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.SAFETY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + " = ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.SAFETY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -523,9 +523,9 @@ public class VideoData {
         }
     }
 
-    public static void deleteAllVideoDataExceptCompanyAndSafety(){
+    public static void deleteAllVideoDataExceptCompanyAndSafety() {
         String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?,?)";
-        String[] selectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE,VideoProvider.VIDEO_TYPE.ADV,VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO};
+        String[] selectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.VIDEO_TYPE.ADV, VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO};
         try {
             int videoDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
             Log.d(TAG, "Video data Delete Count :: " + videoDeleteCount);
@@ -534,13 +534,14 @@ public class VideoData {
         }
     }
 
-    public static void deleteRequiredVideoType(String videoType){
+    public static void deleteRequiredVideoType(String videoType) {
         String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
         String[] selectionArg = new String[]{"" + videoType};
         try {
             int videoTypeDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
-            Log.d(TAG, "deleteRequiredVideoType :: "+videoTypeDeleteCount);
-        }catch (Exception e){
+            Log.d(TAG, "deleteRequiredVideoType :: " + videoTypeDeleteCount);
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
             Log.d(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
         }
     }
@@ -548,7 +549,16 @@ public class VideoData {
     public static void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles()) {
-                boolean status=child.delete();
+                boolean status = child.delete();
             }
+    }
+
+    public static void resetTravelSafety() {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?, ?)";
+        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO};
+        ContentValues lValues = new ContentValues();
+        lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, 0);//reset so that it will play again
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues, lSelection, lSelectionArg);
+        Logger.debug(TAG, "resetTravelSafety :: count " + count);
     }
 }

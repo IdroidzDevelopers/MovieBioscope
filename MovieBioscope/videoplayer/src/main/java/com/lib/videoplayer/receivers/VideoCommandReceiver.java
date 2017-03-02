@@ -12,6 +12,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.MovieDialog;
 import com.lib.videoplayer.ui.VideoActivity;
+import com.lib.videoplayer.util.VideoData;
 import com.lib.videoplayer.util.VideoTaskHandler;
 
 
@@ -41,6 +42,8 @@ public class VideoCommandReceiver extends BroadcastReceiver {
             }else if(CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())){
                 /*MovieDialog fragment1 = new MovieDialog();
                 fragment1.show(fm, "");*/
+            }else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())){
+                VideoData.resetTravelSafety();
             }
         }
     }

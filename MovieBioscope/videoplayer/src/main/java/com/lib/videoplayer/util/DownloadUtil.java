@@ -110,7 +110,8 @@ public class DownloadUtil {
     public static String getDestinationDir(String videoType) {
         //TODO:
         switch (videoType) {
-            case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO: {
+            case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO:
+            case VideoProvider.VIDEO_TYPE.COMPANY_AD: {
                 return "/movie_bioscope/company/";
             }
             case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:

@@ -63,12 +63,13 @@ public class VideoProvider extends ContentProvider {
     }
 
     public interface VIDEO_TYPE {
-        String COMPANY_VIDEO = "company";
-        String SAFETY_VIDEO = "safety";
+        String COMPANY_VIDEO = "company_video";
+        String SAFETY_VIDEO = "safety_video";
         String MOVIE = "movie";
         String ADV = "ad";
         String BREAKING_VIDEO = "news_video";
         String BREAKING_NEWS = "news_image";
+        String COMPANY_AD = "company_ad";
     }
 
     public interface DOWNLOAD_STATUS {

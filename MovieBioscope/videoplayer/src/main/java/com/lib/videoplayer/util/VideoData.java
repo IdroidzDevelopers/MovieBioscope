@@ -263,6 +263,44 @@ public class VideoData {
     }
 
     /**
+     * Method to get companyAd
+     *
+     * @param context
+     * @return
+     */
+    public static Data getCompanyAd(Context context) {
+        Data lData = new Data();
+        if (null != context) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            Cursor lCursor = null;
+            try {
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setAssetID(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    String lMessage = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.MESSAGE));
+                    lData.setMessage(lMessage);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: getCompanyAd() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        Logger.debug(TAG,"getCompanyAd() :: data "+lData);
+        return lData;
+    }
+
+
+    /**
      * Method to get breaking news data
      *
      * @param context
@@ -301,15 +339,15 @@ public class VideoData {
 
 
     /**
-     * background search for pending breaking news and video
+     * background search for pending breaking news or breaking video or company ad
      *
      * @param context
      * @return
      */
     public static synchronized void backgroundSearchForBreaking(Context context) {
         if (null != context) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};//0 means never played
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};//0 means never played
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -514,6 +552,7 @@ public class VideoData {
             case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
             case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
             case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO:
+            case VideoProvider.VIDEO_TYPE.COMPANY_AD:
             case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
                 return true;
             default:

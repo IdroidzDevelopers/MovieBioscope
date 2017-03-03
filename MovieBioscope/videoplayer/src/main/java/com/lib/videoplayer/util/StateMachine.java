@@ -38,6 +38,7 @@ public class StateMachine {
         int PAUSED = 7;
         int INTRO_VIDEO = 8;
         int MOVIE_FINISHED = 9;
+        int COMPANY_AD = 10;
     }
 
     /**

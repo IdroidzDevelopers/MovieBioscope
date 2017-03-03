@@ -17,6 +17,7 @@ import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Movie;
 import com.lib.videoplayer.object.MoviesList;
 import com.lib.videoplayer.util.MovieListRVAdapter;
+import com.lib.videoplayer.util.VideoData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,6 @@ public class MovieListDialog extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         displayAlert();
-        /*IntentFilter filter = new IntentFilter(ACTION);
-        this.registerReceiver(mReceivedSMSReceiver, filter);*/
     }
 
     private void displayAlert()
@@ -54,7 +53,8 @@ public class MovieListDialog extends Activity
         LinearLayoutManager llm = new LinearLayoutManager(this);
         moviesRecyclerView.setLayoutManager(llm);
         movieList =new ArrayList<MoviesList>();
-        putDummyData();
+        movieList= VideoData.getMoviesList();
+        //putDummyData();
         adapter = new MovieListRVAdapter(this, movieList);
         moviesRecyclerView.setAdapter(adapter);
         dialog.show();
@@ -149,16 +149,9 @@ public class MovieListDialog extends Activity
         movieList.add(data6);
     }
 
-    private final BroadcastReceiver mReceivedSMSReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (ACTION.equals(action))
-            {
-                displayAlert();
-            }
-        }
-    };
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

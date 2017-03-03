@@ -18,12 +18,16 @@ import com.lib.utility.util.Logger;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.object.Movie;
+import com.lib.videoplayer.object.MoviesList;
 import com.lib.videoplayer.object.PushData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class VideoData {
@@ -295,7 +299,7 @@ public class VideoData {
                 }
             }
         }
-        Logger.debug(TAG,"getCompanyAd() :: data "+lData);
+        Logger.debug(TAG, "getCompanyAd() :: data " + lData);
         return lData;
     }
 
@@ -599,5 +603,63 @@ public class VideoData {
         lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, 0);//reset so that it will play again
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues, lSelection, lSelectionArg);
         Logger.debug(TAG, "resetTravelSafety :: count " + count);
+    }
+
+    public static List<MoviesList> getMoviesList() {
+        Cursor lCursor = null;
+        String[] selectionArg = new String[]{"Distinct " + VideoProvider.VIDEO_COLUMNS.LANGUAGE};
+        List<MoviesList> mMoviesList = new ArrayList<MoviesList>();
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, selectionArg, null, null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    MoviesList movieList = new MoviesList();
+                    String language = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.LANGUAGE));
+                    movieList.setLanguage(language);
+                    String lSelection = VideoProvider.VIDEO_COLUMNS.LANGUAGE + " = ?";
+                    String[] lSelectionArg = new String[]{"" + language};
+                    Cursor movieCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                    if (null != movieCursor) {
+                        List<Movie> movies = new ArrayList<>();
+                        while (movieCursor.moveToNext()) {
+                            Movie movie = new Movie();
+                            movie.setMovieId(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID)));
+                            movie.setMovieName(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.NAME)));
+                            movie.setMoviePath(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH)));
+                            movies.add(movie);
+                        }
+                        movieList.setMovies(movies);
+                    }
+                    mMoviesList.add(movieList);
+                }
+
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getRoutes() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        Log.d(TAG, "getRoutes() " + mMoviesList);
+        return mMoviesList;
+    }
+
+    public static boolean updateMovieSelection(String movieId) {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] lSelectionArg = new String[]{"" + movieId};
+
+
+        ContentValues lResetContent = new ContentValues();
+        lResetContent.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 0);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lResetContent, null, null);
+        Log.d(TAG, "updateMovieSelection() :: CONTENT_URI_VIDEO_TABLE rows count " + count);
+
+        ContentValues lSelectContent = new ContentValues();
+        lSelectContent.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 1);
+        count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lSelectContent, lSelection, lSelectionArg);
+        Log.d(TAG, "updateMovieSelection :: updated the new selected movie" + count);
+        return count >= 0 ? true : false;
+
     }
 }

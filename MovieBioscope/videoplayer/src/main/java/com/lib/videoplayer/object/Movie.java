@@ -7,6 +7,7 @@ package com.lib.videoplayer.object;
 public class Movie {
     private String movieId;
     private String movieName;
+    private String moviePath;
 
     public String getMovieId() {
         return movieId;
@@ -22,5 +23,13 @@ public class Movie {
 
     public void setMovieName(String movieName) {
         this.movieName = movieName;
+    }
+
+    public String getMoviePath() {
+        return moviePath;
+    }
+
+    public void setMoviePath(String moviePath) {
+        this.moviePath = moviePath;
     }
 }

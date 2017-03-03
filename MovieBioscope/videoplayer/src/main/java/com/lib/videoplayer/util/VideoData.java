@@ -219,7 +219,7 @@ public class VideoData {
         long lRandomValue = MIN_TIME_IN_MILLIS +
                 (long) (lRandom.nextDouble() * (MAX_TIME_IN_MILLIS - MIN_TIME_IN_MILLIS));
         Log.d(TAG, "--Test-- MIN_TIME_IN_MILLIS " + MIN_TIME_IN_MILLIS + " lRandomValue " + lRandomValue + " MAX_TIME_IN_MILLIS " + MAX_TIME_IN_MILLIS);
-        return 60*1000;
+        return lRandomValue;
     }
 
     public static int updateVideoData(Context aContext, Data lData) {

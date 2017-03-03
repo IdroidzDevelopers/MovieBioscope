@@ -101,14 +101,15 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
         if (mType.equals(TYPE.HOME_ICON_TYPE)) {
             mHome = (ImageView) mRootView.findViewById(R.id.home);
             mHome.setOnClickListener(this);
+        }else {
+            mMovie = (ImageView) mRootView.findViewById(R.id.movie_list);
+            mMovie.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction(CustomIntent.ACTION_MOVIE_LIST));
+                }
+            });
         }
-        mMovie=(ImageView)mRootView.findViewById(R.id.movie_list);
-        mMovie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction(CustomIntent.ACTION_MOVIE_LIST));
-            }
-        });
     }
 
     @Override

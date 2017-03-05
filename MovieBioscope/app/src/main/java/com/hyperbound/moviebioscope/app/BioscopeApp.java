@@ -171,6 +171,7 @@ public class BioscopeApp extends Application {
         lIntentFilter.addAction(CustomIntent.ACTION_VIDEO_DATA_RECEIVED);
         lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_LIST);
         lIntentFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
+        lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_SELECTION_CHANGED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 }

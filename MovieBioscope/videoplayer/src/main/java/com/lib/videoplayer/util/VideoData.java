@@ -39,21 +39,47 @@ public class VideoData {
     private static final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_FIVE_MINUTES;
     private static final long MAX_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS + INTERVAL_FIVE_MINUTES;
 
-    public static Data getMovieData(Context aContext, String videoId) {
+
+    public static String getDefaultMovie() {
+        String id = null;
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.SELECTED_STATE + "= ?";
+        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.MOVIE, "" + 1};
+        Cursor lCursor = null;
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+            while (null != lCursor && lCursor.moveToNext()) {
+                id = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                break;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: getDefaultMovie() :: ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        Logger.debug(TAG, "getDefaultMovie() :: movie id " + id);
+        return id;
+    }
+
+
+    public static Data getMovieData(Context aContext) {
         Data lData = null;
         String lSelection;
         String[] lSelectionArg;
         String orderBy = null;
+        String defaultSelectedMovieId = null;
         if (null != aContext) {
-            if (null == videoId) {
+            defaultSelectedMovieId = getDefaultMovie();
+            if (null == defaultSelectedMovieId) {
                 Logger.info(TAG, "get movie based on random logic");
                 lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
                 lSelectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                 orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             } else {
-                Logger.info(TAG, "get user selected movie with asset id " + videoId);
+                Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);
                 lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
-                lSelectionArg = new String[]{"" + videoId};
+                lSelectionArg = new String[]{"" + defaultSelectedMovieId};
             }
             Cursor lCursor = null;
             try {
@@ -607,10 +633,12 @@ public class VideoData {
 
     public static List<MoviesList> getMoviesList() {
         Cursor lCursor = null;
-        String[] selectionArg = new String[]{"Distinct " + VideoProvider.VIDEO_COLUMNS.LANGUAGE};
+        String[] projection = new String[]{"Distinct " + VideoProvider.VIDEO_COLUMNS.LANGUAGE};
+        String selection = VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + " = ?";
+        String[] selectionArg = new String[]{"" + VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
         List<MoviesList> mMoviesList = new ArrayList<MoviesList>();
         try {
-            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, selectionArg, null, null, null);
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, projection, selection, selectionArg, null);
             if (null != lCursor) {
                 while (lCursor.moveToNext()) {
                     MoviesList movieList = new MoviesList();
@@ -646,20 +674,23 @@ public class VideoData {
     }
 
     public static boolean updateMovieSelection(String movieId) {
+        resetMovieSelection();
+
         String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
         String[] lSelectionArg = new String[]{"" + movieId};
-
-
-        ContentValues lResetContent = new ContentValues();
-        lResetContent.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 0);
-        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lResetContent, null, null);
-        Log.d(TAG, "updateMovieSelection() :: CONTENT_URI_VIDEO_TABLE rows count " + count);
-
-        ContentValues lSelectContent = new ContentValues();
-        lSelectContent.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 1);
-        count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lSelectContent, lSelection, lSelectionArg);
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 1);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
         Log.d(TAG, "updateMovieSelection :: updated the new selected movie" + count);
         return count >= 0 ? true : false;
 
+    }
+
+    public static int resetMovieSelection() {
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.SELECTED_STATE, 0);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, null, null);
+        Log.d(TAG, "resetMovieSelection() :: rows count " + count);
+        return count;
     }
 }

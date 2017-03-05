@@ -17,7 +17,7 @@
             android:name="com.lib.videoplayer.ui.VideoActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.lib.videoplayer.ui.MovieListDialog" />
+        <activity android:name="com.lib.videoplayer.ui.MovieListDialog" android:theme="@style/Theme.Transparent" />
 
         <provider
             android:name="com.lib.videoplayer.database.VideoProvider"

@@ -13,6 +13,7 @@ import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.MovieDialog;
 import com.lib.videoplayer.ui.MovieListDialog;
 import com.lib.videoplayer.ui.VideoActivity;
+import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 import com.lib.videoplayer.util.VideoTaskHandler;
 
@@ -45,6 +46,8 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                 //context.sendBroadcast(new Intent().setAction("android.navajhalka.movielist"));
             }else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())){
                 VideoData.resetTravelSafety();
+            }else if (CustomIntent.ACTION_MOVIE_SELECTION_CHANGED.equals(intent.getAction())) {
+                StateMachine.deletePersistState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
             }
         }
     }

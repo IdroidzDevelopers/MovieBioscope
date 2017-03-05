@@ -45,7 +45,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private static final long BACKGROUND_SEARCH_AFTER = 10 * 1000;
     private Handler mState;
     private StateMachine mStateMachine;
-    private String mSelectedVideoId;
     private Context mContext;
     private VideoView mMovieView;
     private VideoView mOtherView;
@@ -133,7 +132,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             Bundle lData = getIntent().getBundleExtra(CustomIntent.EXTRAS.VIDEO_STATE);
             if (null != lData) {
                 int lVideoState = lData.getInt(CustomIntent.EXTRAS.VIDEO_STATE, -1);
-                mSelectedVideoId = lData.getString(CustomIntent.EXTRAS.VIDEO_ID, null);
                 if (lVideoState == StateMachine.VIDEO_STATE.ONLY_ADV) {
                     mState = new OnlyAdvState();
                     mStateMachine.setVideoState(StateMachine.VIDEO_STATE.ONLY_ADV);
@@ -296,7 +294,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startMovie() {
         mOtherView.setVisibility(View.GONE);
-        Data lData = VideoData.getMovieData(mContext, mSelectedVideoId);
+        Data lData = VideoData.getMovieData(mContext);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             mMovieView.setVisibility(View.VISIBLE);
             mMovieView.setVideoURI(Uri.parse(lData.getPath()));
@@ -720,6 +718,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             break;
                         case StateMachine.PLAYING_STATE.MOVIE:
                             //once finished , move to home
+                            mStateMachine.deletePersistState(getVideoState());
+                            VideoData.resetMovieSelection();
                             mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.MOVIE_FINISHED);
                             if (!isFinishing()) {
                                 finish();

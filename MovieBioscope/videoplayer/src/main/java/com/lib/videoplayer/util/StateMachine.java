@@ -251,7 +251,7 @@ public class StateMachine {
         }
     }
 
-    public void deletePersistState(int videoState) {
+    public static void deletePersistState(int videoState) {
         String selection = VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " = ?";
         String[] selectionArg = new String[]{"" + videoState};
         try {

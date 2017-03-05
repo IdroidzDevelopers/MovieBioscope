@@ -30,8 +30,10 @@ public class MovieRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private List<Movie> mDataList;
     private int mRowIndex = -1;
+    private MovieSelectCallback mMovieSelectcallback;
 
-    public MovieRVAdapter() {
+    public MovieRVAdapter(Context context) {
+        this.mMovieSelectcallback = ((MovieSelectCallback) context);
     }
 
     public void setData(List<Movie> data) {
@@ -65,6 +67,7 @@ public class MovieRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Log.d("Video","Selected Movie ::"+mDataList.get(getPosition()).getMovieName());
             VideoData.updateMovieSelection(mDataList.get(getPosition()).getMovieId());
             LocalBroadcastManager.getInstance(VideoApplication.getVideoContext()).sendBroadcast(new Intent(CustomIntent.ACTION_MOVIE_SELECTION_CHANGED));
+            mMovieSelectcallback.onMovieSelected();
             //Toast.makeText(view.getContext(), "Clicked = " + mDataList.get(getPosition()).getMovieName(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -89,6 +92,10 @@ public class MovieRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         return mDataList.size();
+    }
+
+    public static interface MovieSelectCallback {
+        void onMovieSelected();
     }
 
 

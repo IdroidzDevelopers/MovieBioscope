@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MovieListRVAdapter extends RecyclerView.Adapter<MovieListRVAdapter.SimpleViewHolder> {
 
-    private final Context mContext;
+    private static Context mContext;
     private static List<MoviesList> mData;
     private static RecyclerView movieList;
 
@@ -35,7 +35,7 @@ public class MovieListRVAdapter extends RecyclerView.Adapter<MovieListRVAdapter.
             title = (TextView) view.findViewById(R.id.language_text);
             movieList = (RecyclerView) itemView.findViewById(R.id.movie_list);
             movieList.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            horizontalAdapter = new MovieRVAdapter();
+            horizontalAdapter = new MovieRVAdapter(mContext);
             movieList.setAdapter(horizontalAdapter);
         }
     }

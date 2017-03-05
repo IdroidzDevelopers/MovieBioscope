@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent_color">#88676767</color>
+    <color name="black">#000000</color>
+    <color name="brown">#795548</color>
+    <color name="movie_name_color">#004D40</color>
+    <color name="movie_dialog_bg">#FBE9E7</color>
 </resources>

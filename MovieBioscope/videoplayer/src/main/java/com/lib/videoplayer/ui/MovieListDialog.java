@@ -4,19 +4,23 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Movie;
 import com.lib.videoplayer.object.MoviesList;
 import com.lib.videoplayer.util.MovieListRVAdapter;
+import com.lib.videoplayer.util.MovieRVAdapter;
 import com.lib.videoplayer.util.VideoData;
 
 import java.util.ArrayList;
@@ -26,7 +30,7 @@ import java.util.List;
  * Created by aarokiax on 2/28/2017.
  */
 
-public class MovieListDialog extends Activity
+public class MovieListDialog extends Activity implements MovieRVAdapter.MovieSelectCallback
 {
     private static final String TAG = "MovieListDialog";
     static final String ACTION = "android.navajhalka.movielist";
@@ -34,6 +38,8 @@ public class MovieListDialog extends Activity
     private MovieListRVAdapter adapter;
     RecyclerView moviesRecyclerView;
     List<MoviesList> movieList;
+    private TextView emptyView;
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +49,18 @@ public class MovieListDialog extends Activity
 
     private void displayAlert()
     {
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         dialog.setContentView(R.layout.movies_dialog);
+        emptyView = (TextView) dialog.findViewById(R.id.empty_view);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                finish();
+            }
+        });
         moviesRecyclerView =(RecyclerView) dialog.findViewById(R.id.movies_language_list);
         moviesRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -57,6 +70,14 @@ public class MovieListDialog extends Activity
         //putDummyData();
         adapter = new MovieListRVAdapter(this, movieList);
         moviesRecyclerView.setAdapter(adapter);
+        if (movieList.isEmpty()) {
+            moviesRecyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        }
+        else {
+            moviesRecyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
         dialog.show();
     }
 
@@ -150,8 +171,8 @@ public class MovieListDialog extends Activity
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+    public void onMovieSelected() {
+        if(dialog.isShowing())
+            dialog.dismiss();
     }
 }

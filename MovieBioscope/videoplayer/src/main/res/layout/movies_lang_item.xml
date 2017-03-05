@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="180dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +15,9 @@
             android:id="@+id/language_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textAllCaps="true"
+            android:textColor="@color/brown"
             android:text="Android"/>
 
         <android.support.v7.widget.RecyclerView

@@ -27,6 +27,7 @@ import com.lib.location.ui.TopBannerFragment;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.R;
+import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.FileUtil;
@@ -302,6 +303,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.requestFocus();
             mMovieView.start();
             hideLoadingIcon();
+            mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
             mStateMachine.videoInfo.setMovieUri(Uri.parse(lData.getPath()));
             mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.MOVIE);
             VideoData.updateVideoData(mContext, lData);
@@ -337,6 +339,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
                 mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.ADV);
                 VideoData.updateVideoData(mContext, lData);
@@ -355,6 +358,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
                 mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.BREAKING_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
@@ -375,6 +379,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
                 mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.TRAVEL_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
@@ -400,6 +405,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
                 mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.SAFETY_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
@@ -623,16 +629,17 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             switch (msg.what) {
                 case EVENT.PLAY_NEXT:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.NONE:
-                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
-                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
                         case StateMachine.PLAYING_STATE.MOVIE:
                         case StateMachine.PLAYING_STATE.ADV:
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
+                        case StateMachine.PLAYING_STATE.COMPANY_AD:
+                            sendCompletedBroadcast();
+                        case StateMachine.PLAYING_STATE.NONE:
+                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
+                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
                         case StateMachine.PLAYING_STATE.PAUSED:
                         case StateMachine.PLAYING_STATE.INTRO_VIDEO:
-                        case StateMachine.PLAYING_STATE.COMPANY_AD:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
                             startAd();
                             break;
@@ -718,6 +725,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             break;
                         case StateMachine.PLAYING_STATE.MOVIE:
                             //once finished , move to home
+                            sendCompletedBroadcast();
                             mStateMachine.deletePersistState(getVideoState());
                             VideoData.resetMovieSelection();
                             mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.MOVIE_FINISHED);
@@ -735,6 +743,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.COMPANY_AD:
+                            sendCompletedBroadcast();
                         case StateMachine.PLAYING_STATE.PAUSED:
                             //Forcefully make the previous state as movie and try to resume, because ad , breaking travel having a single video view
                             mStateMachine.retainPersistenceState(getVideoState());
@@ -849,6 +858,22 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
             }
         }
+    }
+
+    private void sendCompletedBroadcast() {
+        Logger.debug(TAG,"sendCompletedBroadcast :: called");
+        Intent intent = new Intent();
+        intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, mStateMachine.videoInfo.getVideoId());
+        switch (mStateMachine.videoInfo.getCurrentState()) {
+            case StateMachine.PLAYING_STATE.MOVIE:
+                intent.setAction(CustomIntent.ACTION_MOVIE_COMPLETED);
+                break;
+            default:
+                intent.setAction(CustomIntent.ACTION_ADV_COMPLETED);
+                break;
+
+        }
+        LocalBroadcastManager.getInstance(VideoApplication.getVideoContext()).sendBroadcast(intent);
     }
 
     private void resumeVideo() {

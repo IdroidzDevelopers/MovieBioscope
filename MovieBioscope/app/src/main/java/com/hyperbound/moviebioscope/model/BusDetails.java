@@ -7,7 +7,6 @@ import java.util.List;
  */
 
 public class BusDetails {
-
     private String regNo;
     private String fleetID;
     private String company;

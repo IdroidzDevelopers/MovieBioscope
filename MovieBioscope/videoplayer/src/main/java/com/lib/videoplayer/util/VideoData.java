@@ -634,8 +634,8 @@ public class VideoData {
     public static List<MoviesList> getMoviesList() {
         Cursor lCursor = null;
         String[] projection = new String[]{"Distinct " + VideoProvider.VIDEO_COLUMNS.LANGUAGE};
-        String selection = VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + " = ?";
-        String[] selectionArg = new String[]{"" + VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + " = ?";
+        String[] selectionArg = new String[]{VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
         List<MoviesList> mMoviesList = new ArrayList<MoviesList>();
         try {
             lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, projection, selection, selectionArg, null);
@@ -644,8 +644,8 @@ public class VideoData {
                     MoviesList movieList = new MoviesList();
                     String language = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.LANGUAGE));
                     movieList.setLanguage(language);
-                    String lSelection = VideoProvider.VIDEO_COLUMNS.LANGUAGE + " = ?";
-                    String[] lSelectionArg = new String[]{"" + language};
+                    String lSelection = VideoProvider.VIDEO_COLUMNS.LANGUAGE + " = ? AND " + VideoProvider.VIDEO_COLUMNS.TYPE + " = ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + " = ?";
+                    String[] lSelectionArg = new String[]{"" + language, VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                     Cursor movieCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
                     if (null != movieCursor) {
                         List<Movie> movies = new ArrayList<>();

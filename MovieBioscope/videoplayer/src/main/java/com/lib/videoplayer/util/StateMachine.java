@@ -45,13 +45,32 @@ public class StateMachine {
      * Sub class to store the video information
      */
     public static class VideoInfo {
+        private String videoId;
         private int videoState;
         private int prevState;
         private int currentState;
         private Uri movieUri;
         private int movieSeekTime;
+
+        public String getVideoId() {
+            return videoId;
+        }
+
+        public void setVideoId(String videoId) {
+            this.videoId = videoId;
+        }
+
+        public String getPrevVideoId() {
+            return prevVideoId;
+        }
+
+        public void setPrevVideoId(String prevVideoId) {
+            this.prevVideoId = prevVideoId;
+        }
+
         private Uri otherUri;
         private int otherSeekTime;
+        private String prevVideoId;
 
         public int getVideoState() {
             synchronized (StateMachine.class) {
@@ -132,6 +151,11 @@ public class StateMachine {
                     ", otherUri=" + otherUri +
                     ", otherSeekTime=" + otherSeekTime +
                     '}';
+        }
+
+        public void updateVideoId(String assetID) {
+            prevVideoId = videoId;
+            videoId = assetID;
         }
     }
 

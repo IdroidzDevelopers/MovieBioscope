@@ -13,12 +13,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.firebase.FireBaseManager;
+import com.hyperbound.moviebioscope.model.AnalyticData;
 import com.hyperbound.moviebioscope.model.BusDetails;
 import com.hyperbound.moviebioscope.model.BusRegData;
 import com.hyperbound.moviebioscope.model.DestinationDetails;
 import com.hyperbound.moviebioscope.model.Images;
 import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
+import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.firebase.util.FirebaseUtil;
 import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
@@ -34,10 +36,13 @@ public class AppTaskHandler extends Handler {
 
     public interface TASK {
         int SAVE_BUS_DATA = 0;
+        int SYNC_ANALYTIC_DATA = 619;
+        int DELETE_ANALYTIC_DATA = 620;
     }
 
     public interface KEY {
         String REG_NUMBER = "reg_number";
+        String ANALYTIC_IDS = "analytic_ids";
     }
 
     private static AppTaskHandler sInstance;
@@ -73,6 +78,23 @@ public class AppTaskHandler extends Handler {
                     BusUtil.saveRegistrationDetail(BioscopeApp.getContext(), lRegNumber);
                 }
                 break;
+            case TASK.SYNC_ANALYTIC_DATA:
+                if (null != lBundle) {
+                    String videoId = (String) lBundle.get(CustomIntent.EXTRAS.VIDEO_ID);
+                    AnalyticData data = AnalyticUtil.createAnalyticData(videoId);
+                    AnalyticUtil.insertAnalytic(data);
+                    VolleyUtil.syncAnalyticDataIfRequired();
+                }
+                break;
+            case TASK.DELETE_ANALYTIC_DATA:
+                if (null != lBundle) {
+                    String[] analyticArray = lBundle.getStringArray(KEY.ANALYTIC_IDS);
+                    for (String s : analyticArray) {
+                        AnalyticUtil.delete(s);
+                    }
+                }
+                break;
+
             case AppInterface.HANDLE_BUS_DETAILS:
                 if (null != lBundle) {
                     BusRegData busData = gson.fromJson(msg.getData().getString("data"), BusRegData.class);

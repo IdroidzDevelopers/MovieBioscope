@@ -9,15 +9,20 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
+import com.hyperbound.moviebioscope.util.AnalyticUtil;
 import com.hyperbound.moviebioscope.util.AppInterface;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
+import com.hyperbound.moviebioscope.util.NetworkUtil;
 import com.lib.location.LocationApplication;
 import com.lib.location.util.LocationInterface;
 import com.lib.location.volley.LocationHandler;
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,6 +76,35 @@ public class VolleyUtil {
             Log.e(TAG, "JsonException", je);
         }
     }
+
+    /**
+     * Method to sync analytics data to cloud
+     */
+    public static void syncAnalyticDataIfRequired() {
+        Log.d(TAG, "syncAnalyticDataIfRequired() :: called");
+        if (NetworkUtil.isInternetAvailable(BioscopeApp.getContext())) {
+            String lUrl = AppInterface.BASE_URL + AppInterface.ANALYTIC_API;
+            JSONArray jsonArray = AnalyticUtil.getAnalytics();
+            JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                    (Request.Method.POST, lUrl, jsonArray, new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            Log.d(TAG, "syncAnalyticDataIfRequired() :: onResponse() ::" + response);
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "syncAnalyticDataIfRequired() :: onErrorResponse() ::" + error);
+
+                        }
+                    });
+            VolleySingleton.getInstance(LocationApplication.getLocationContext()).addToRequestQueue(jsObjRequest);
+        } else {
+            Logger.debug(TAG, "no internet connection ");
+        }
+    }
+
 
     public static void getTravelInfo(String source, String destination) {
         String lUrl = LocationInterface.MATRIX_API_BASE_URL + LocationInterface.ORIGIN_KEY + source

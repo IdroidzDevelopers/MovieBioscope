@@ -7,6 +7,7 @@ package com.hyperbound.moviebioscope.util;
 public interface AppInterface {
     String BASE_URL="http://139.59.62.165/";
     String BUS_REGISTRATION_API="api/fleets/auth";
+    String ANALYTIC_API="api/analytics/";
 
     String BUS_REG_NO_KEY="regNo";
     int HANDLE_BUS_DETAILS =1;

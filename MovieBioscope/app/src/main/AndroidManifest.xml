@@ -55,6 +55,15 @@
             android:name=".database.BusProvider"
             android:authorities="com.hyperbound.moviebioscope.contentprovider.database.BusProvider" />
 
+        <provider
+            android:name=".database.AnalyticProvider"
+            android:authorities="com.hyperbound.moviebioscope.contentprovider.database.AnalyticProvider" />
+
+        <receiver android:name=".receiver.ConnectionChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

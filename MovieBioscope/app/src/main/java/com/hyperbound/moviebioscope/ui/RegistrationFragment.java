@@ -145,7 +145,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
             if (null != intent) {
                 if (CustomIntent.ACTION_ROUTE_RECEIVED.equals(intent.getAction())) {
                     dismissProgressDialog();
-                    saveDataInBackgroundThread(mRegistrationNumber);
+                    //saveDataInBackgroundThread(mRegistrationNumber);
                     moveToNextPage();
                 } else if (CustomIntent.ACTION_INVALID_BUS_NUMBER.equals(intent.getAction())) {
                     dismissProgressDialog();

@@ -13,6 +13,8 @@ public class CustomIntent {
     public static final String ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE = "com.android.action.ROUTE_IMAGE_DOWNLOAD_COMPLETE";
     public static final String ACTION_MOVIE_LIST = "com.android.action.MOVIE_LIST";
     public static final String ACTION_MOVIE_SELECTION_CHANGED = "com.android.action.MOVIE_SELECTION_CHANGED";
+    public static final String ACTION_MOVIE_COMPLETED = "com.android.action.MOVIE_COMPLETE";
+    public static final String ACTION_ADV_COMPLETED = "com.android.action.ADV_COMPLETE";
 
     public interface EXTRAS {
         String URI_KEY = "uri";

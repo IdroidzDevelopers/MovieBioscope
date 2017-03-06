@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.BusProvider;
+import com.hyperbound.moviebioscope.model.BusDetails;
 
 public class BusUtil {
     private static final String TAG = BusUtil.class.getSimpleName();
@@ -44,36 +45,38 @@ public class BusUtil {
 
     public static synchronized void insertBusInfo(String busId, String busNumber,
                                                   String comapanyId, String companyName) {
-        ContentValues lLocationContentValue = new ContentValues();
-        lLocationContentValue.put(BusProvider.COLUMNS.BUS_ID, busId);
-        lLocationContentValue.put(BusProvider.COLUMNS.BUS_NUMBER, busNumber);
-        lLocationContentValue.put(BusProvider.COLUMNS.COMPANY_ID, comapanyId);
-        lLocationContentValue.put(BusProvider.COLUMNS.COMPANY_NAME, companyName);
-        int count = BioscopeApp.getContext().getContentResolver().update(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, lLocationContentValue, null, null);
+        ContentValues value = new ContentValues();
+        value.put(BusProvider.COLUMNS.BUS_ID, busId);
+        value.put(BusProvider.COLUMNS.BUS_NUMBER, busNumber);
+        value.put(BusProvider.COLUMNS.COMPANY_ID, comapanyId);
+        value.put(BusProvider.COLUMNS.COMPANY_NAME, companyName);
+        Uri uri = BioscopeApp.getContext().getContentResolver().insert(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, value);
         if (DEBUG)
-            Log.d(TAG, "insertBusInfo() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + count);
+            Log.d(TAG, "insertBusInfo() :: CONTENT_URI_BUS_DETAIL_TABLE rows count " + uri);
     }
 
-    public static synchronized String getBusNumber() {
-
+    public static synchronized BusDetails getBusData() {
+        BusDetails data = null;
         Cursor lCursor = null;
-        String busNumber=null;
+        String busNumber = null;
         try {
-            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, null,null,null, null);
+            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, null, null, null, null);
             if (null != lCursor) {
                 while (lCursor.moveToNext()) {
-                    busNumber=lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_NUMBER));
+                    data = new BusDetails();
+                    data.setFleetID(lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_ID)));
+                    data.setCompany(lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.COMPANY_ID)));
                     break;
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception getBusNumber() ", e);
+            Log.e(TAG, "Exception getBusData() ", e);
         } finally {
             if (null != lCursor && !lCursor.isClosed()) {
                 lCursor.close();
             }
         }
-        if (DEBUG) Log.d(TAG, "getBusNumber() " + busNumber);
-        return busNumber;
+        if (DEBUG) Log.d(TAG, "getBusData() " + busNumber);
+        return data;
     }
 }

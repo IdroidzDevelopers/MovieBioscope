@@ -8,7 +8,6 @@ import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.database.AnalyticProvider;
 import com.hyperbound.moviebioscope.model.AnalyticData;
 import com.hyperbound.moviebioscope.model.BusDetails;
-import com.lib.location.ui.TopBannerFragment;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.Logger;
@@ -22,30 +21,30 @@ public class AnalyticUtil {
 
     public static AnalyticData createAnalyticData(String assetId) {
         AnalyticData data = new AnalyticData();
-        data.setAssetId(assetId);
+        data.setAssetID(assetId);
         Route route = RouteUtil.getCurrentRoute(BioscopeApp.getContext());
         if (null != route) {
-            data.setRouteId(route.getmRouteId());
+            data.setRouteID(route.getmRouteId());
         }
         BusDetails detail = BusUtil.getBusData();
-        data.setFleetId(detail.getFleetID());
-        data.setCompanyId(detail.getCompany());
+        data.setFleetID(detail.getFleetID());
+        data.setCompanyID(detail.getCompany());
         return data;
     }
 
     public static Uri insertAnalytic(AnalyticData data) {
         ContentValues value = new ContentValues();
-        if (null != data.getAssetId()) {
-            value.put(AnalyticProvider.COLUMNS.ASSET_ID, data.getAssetId());
+        if (null != data.getAssetID()) {
+            value.put(AnalyticProvider.COLUMNS.ASSET_ID, data.getAssetID());
         }
-        if (null != data.getRouteId()) {
-            value.put(AnalyticProvider.COLUMNS.ROUTE_ID, data.getRouteId());
+        if (null != data.getRouteID()) {
+            value.put(AnalyticProvider.COLUMNS.ROUTE_ID, data.getRouteID());
         }
-        if (null != data.getFleetId()) {
-            value.put(AnalyticProvider.COLUMNS.FLEET_ID, data.getFleetId());
+        if (null != data.getFleetID()) {
+            value.put(AnalyticProvider.COLUMNS.FLEET_ID, data.getFleetID());
         }
-        if (null != data.getCompanyId()) {
-            value.put(AnalyticProvider.COLUMNS.COMPANY_ID, data.getCompanyId());
+        if (null != data.getCompanyID()) {
+            value.put(AnalyticProvider.COLUMNS.COMPANY_ID, data.getCompanyID());
         }
         value.put(AnalyticProvider.COLUMNS.PLAYED_TIME, System.currentTimeMillis());
         Uri uri = BioscopeApp.getContext().getContentResolver().insert(AnalyticProvider.CONTENT_URI_ANALYTIC_TABLE, value);

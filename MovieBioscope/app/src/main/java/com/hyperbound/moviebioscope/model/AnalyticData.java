@@ -1,54 +1,51 @@
 package com.hyperbound.moviebioscope.model;
 
-/**
- * Created by Aron on 06-03-2017.
- */
 
 public class AnalyticData {
-    private String analyticId;
-    private String assetId;
-    private String routeId;
-    private String fleetId;
-    private String companyId;
+    private String analyticsID;
+    private String assetID;
+    private String fleetID;
+    private String routeID;
+    private String companyID;
 
-    public String getAnalyticId() {
-        return analyticId;
+    public String getAnalyticsID() {
+        return analyticsID;
     }
 
-    public void setAnalyticId(String analyticId) {
-        this.analyticId = analyticId;
+    public void setAnalyticsID(String analyticsID) {
+        this.analyticsID = analyticsID;
     }
 
-    public String getAssetId() {
-        return assetId;
+    public String getAssetID() {
+        return assetID;
     }
 
-    public void setAssetId(String assetId) {
-        this.assetId = assetId;
+    public void setAssetID(String assetID) {
+        this.assetID = assetID;
     }
 
-    public String getRouteId() {
-        return routeId;
+    public String getRouteID() {
+        return routeID;
     }
 
-    public void setRouteId(String routeId) {
-        this.routeId = routeId;
+    public void setRouteID(String routeID) {
+        this.routeID = routeID;
     }
 
-    public String getFleetId() {
-        return fleetId;
+    public String getFleetID() {
+        return fleetID;
     }
 
-    public void setFleetId(String fleetId) {
-        this.fleetId = fleetId;
+    public void setFleetID(String fleetID) {
+        this.fleetID = fleetID;
     }
 
-    public String getCompanyId() {
-        return companyId;
+    public String getCompanyID() {
+        return companyID;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompanyID(String companyID) {
+        this.companyID = companyID;
     }
 
     public String getPlayedTime() {

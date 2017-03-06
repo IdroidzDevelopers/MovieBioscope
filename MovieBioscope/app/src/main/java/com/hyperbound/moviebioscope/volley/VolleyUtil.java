@@ -11,7 +11,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hyperbound.moviebioscope.app.BioscopeApp;
+import com.hyperbound.moviebioscope.model.AnalyticData;
+import com.hyperbound.moviebioscope.model.AnalyticResponse;
 import com.hyperbound.moviebioscope.util.AnalyticUtil;
 import com.hyperbound.moviebioscope.util.AppInterface;
 import com.hyperbound.moviebioscope.util.AppTaskHandler;
@@ -21,6 +25,7 @@ import com.lib.location.util.LocationInterface;
 import com.lib.location.volley.LocationHandler;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
+import com.lib.videoplayer.object.PushData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,6 +95,19 @@ public class VolleyUtil {
                         @Override
                         public void onResponse(JSONArray response) {
                             Log.d(TAG, "syncAnalyticDataIfRequired() :: onResponse() ::" + response);
+                            try {
+                                GsonBuilder gsonBuilder = new GsonBuilder();
+                                Gson gson = gsonBuilder.create();
+                                AnalyticResponse[] object = gson.fromJson(response.toString(), AnalyticResponse[].class);
+                                if (null != object && "SUCC03".equals(object[0].getCode())) {
+                                    for (AnalyticData data : object[0].getData()) {
+                                        int count = AnalyticUtil.delete(data.getAnalyticsID());
+                                        Log.d(TAG, "syncAnalyticDataIfRequired() :: delete() :: count " + count);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Logger.error(TAG, "syncAnalyticDataIfRequired:: onResponse():: exception ", e);
+                            }
                         }
                     }, new Response.ErrorListener() {
 

@@ -86,14 +86,6 @@ public class AppTaskHandler extends Handler {
                     VolleyUtil.syncAnalyticDataIfRequired();
                 }
                 break;
-            case TASK.DELETE_ANALYTIC_DATA:
-                if (null != lBundle) {
-                    String[] analyticArray = lBundle.getStringArray(KEY.ANALYTIC_IDS);
-                    for (String s : analyticArray) {
-                        AnalyticUtil.delete(s);
-                    }
-                }
-                break;
 
             case AppInterface.HANDLE_BUS_DETAILS:
                 if (null != lBundle) {

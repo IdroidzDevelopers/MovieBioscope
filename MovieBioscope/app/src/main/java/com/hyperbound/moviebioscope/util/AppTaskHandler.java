@@ -22,11 +22,13 @@ import com.hyperbound.moviebioscope.model.Routes;
 import com.hyperbound.moviebioscope.model.SourceDetails;
 import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.firebase.util.FirebaseUtil;
+import com.lib.location.util.LocationUtil;
 import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
 import com.lib.route.util.DownloadUtil;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
+import com.lib.videoplayer.util.VideoData;
 
 import java.util.List;
 
@@ -138,6 +140,17 @@ public class AppTaskHandler extends Handler {
                     }
                 }
                 break;
+            case AppInterface.HANDLE_REFRESH :{
+                FirebaseUtil.deleteAllFirebaseData();
+                FirebaseUtil.deleteAllFirebaseTopicsData();
+                LocationUtil.deleteAllLocationData();
+                RouteUtil.deleteAllRouteData();
+                RouteUtil.deleteAllRouteImagesData();
+                //VideoData.deleteAllVideoData();
+                if(null!=BusUtil.getBusNumber())
+                    VolleyUtil.getBusDetails(BusUtil.getBusNumber());
+                break;
+            }
         }
     }
 }

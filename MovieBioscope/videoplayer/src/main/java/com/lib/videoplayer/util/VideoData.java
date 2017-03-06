@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -462,7 +463,9 @@ public class VideoData {
                 while (null != lCursor && lCursor.moveToNext()) {
                     data = new Data();
                     String videoId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    String transactionId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.TRANSACTION_ID));
                     data.setAssetID(videoId);
+                    data.setTransactionId(transactionId);
                     String type = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.TYPE));
                     data.setType(type);
                     break;
@@ -692,5 +695,20 @@ public class VideoData {
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, null, null);
         Log.d(TAG, "resetMovieSelection() :: rows count " + count);
         return count;
+    }
+
+    public static void createAndSendAcknowledgementData(String transactionId, String assetId, String status) {
+        Bundle lBundle = new Bundle();
+        lBundle.putString("transactionid", transactionId);
+        lBundle.putString("assetid", assetId);
+        lBundle.putString("status", status);
+        LocalBroadcastManager.getInstance(VideoApplication.getVideoContext()).
+                sendBroadcast(new Intent(CustomIntent.ACTION_ACK_DATA_RECEIVED).
+                        putExtra("data", lBundle));
+    }
+
+    public static void createAndSendAcknowledgementData(String transactionId, String status) {
+        createAndSendAcknowledgementData(transactionId, null, status);
+
     }
 }

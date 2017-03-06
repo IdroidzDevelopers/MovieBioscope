@@ -157,4 +157,46 @@ public class VolleyUtil {
                 });
         VolleySingleton.getInstance(LocationApplication.getLocationContext()).addToRequestQueue(jsObjRequest);
     }
+
+    public static void sendCommandAcknowledgement(String fleetId,String transactionId,String assetId,String status){
+        String lUrl = AppInterface.BASE_URL + AppInterface.COMMAND_ACK_API;
+        try {
+            JSONArray requestArray=new JSONArray();
+            final JSONObject requestJson = new JSONObject();
+            requestJson.put(AppInterface.FLEET_ID_KEY, fleetId);
+            requestJson.put(AppInterface.TRANSACTION_ID_KEY, transactionId);
+            if(null!=assetId) {
+                requestJson.put(AppInterface.ASSET_ID_KEY, assetId);
+            }
+            requestJson.put(AppInterface.STATUS_KEY, status);
+            requestArray.put(requestJson);
+            JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                    (Request.Method.POST, lUrl, requestArray, new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            Log.d(TAG, "sendCommandAcknowledgement() :: onResponse() ::" + response);
+                            try {
+                                JSONObject responseData=new JSONObject(response.get(0).toString());
+                                String code = responseData.getString("code");
+                                if (null != code && code.equals("SUCC03")) {
+                                    Log.i(TAG,"Acknowledgement success");
+                                }
+                                Log.i(TAG, "Response : " + response.toString());
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "sendCommandAcknowledgement() :: onErrorResponse() ::" + error);
+
+                        }
+                    });
+            VolleySingleton.getInstance(BioscopeApp.getContext()).addToRequestQueue(jsObjRequest);
+        } catch (JSONException je) {
+            Log.e(TAG, "JsonException", je);
+        }
+    }
 }

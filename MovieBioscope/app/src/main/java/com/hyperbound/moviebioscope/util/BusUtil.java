@@ -79,4 +79,27 @@ public class BusUtil {
         if (DEBUG) Log.d(TAG, "getBusData() " + busNumber);
         return data;
     }
+
+    public static synchronized String getFleetId() {
+
+        Cursor lCursor = null;
+        String busId=null;
+        try {
+            lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, null,null,null, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    busId=lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_ID));
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getFleetId() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getFleetId() " + busId);
+        return busId;
+    }
 }

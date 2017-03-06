@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
+import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
@@ -84,19 +85,21 @@ public class VideoTaskHandler extends Handler {
                         Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + pushData.getAction() + " rowId " + rowId);
                         switch (pushData.getAction()) {
                             case JSON_ACTION.DOWNLOAD:
+                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(),"Received");
                                 downloadContent(pushData);
                                 break;
                             case JSON_ACTION.REFRESH:
                                 //TODO:
                                 break;
                             case JSON_ACTION.UPDATE:
-                                String sdcard=Environment.getExternalStorageDirectory().getAbsolutePath();
-                                Log.d(TAG,"SD CARD ::"+sdcard);
-                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE)+"/"));
-                                Log.d(TAG,"SD CARD ::"+sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE));
-                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.ADV)+"/"));
-                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_NEWS)+"/"));
-                                VideoData.deleteRecursive(new File(sdcard+DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO)+"/"));
+                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(),"Received");
+                                String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
+                                Log.d(TAG, "SD CARD ::" + sdcard);
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE) + "/"));
+                                Log.d(TAG, "SD CARD ::" + sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.ADV) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_NEWS) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO) + "/"));
                                 VideoData.deleteAllVideoDataExceptCompanyAndSafety();
                                 downloadContent(pushData);
                                 break;
@@ -118,6 +121,7 @@ public class VideoTaskHandler extends Handler {
                             data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
                             data.setLastPlayedTime(String.valueOf(System.currentTimeMillis()));
                             VideoData.insertOrUpdateVideoData(sContext, data);
+                            VideoData.createAndSendAcknowledgementData(data.getTransactionId(),data.getAssetID(),"Downloaded");
                             Intent intent = new Intent(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
                             intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, data.getAssetID());
                             intent.putExtra(CustomIntent.EXTRAS.TYPE, data.getType());
@@ -141,11 +145,11 @@ public class VideoTaskHandler extends Handler {
 
     }
 
-    private void downloadContent(PushData pushData){
+    private void downloadContent(PushData pushData) {
         for (Asset asset : pushData.getAssets()) {
             //check is there any entry with the same assert id then ignore it .may be its a duplicate message
             if (!VideoData.isAssetExist(sContext, asset.getAssetID())) {
-                long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(),DownloadUtil.getDestinationDir(asset.getType()), asset.getName());
+                long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(), DownloadUtil.getDestinationDir(asset.getType()), asset.getName());
                 Data data = copyAssetToData(asset);
                 data.setMessage(pushData.getContent());
                 data.setDownloadingId(String.valueOf(lDownloadId));
@@ -169,4 +173,5 @@ public class VideoTaskHandler extends Handler {
         data.setType(asset.getType());
         return data;
     }
+
 }

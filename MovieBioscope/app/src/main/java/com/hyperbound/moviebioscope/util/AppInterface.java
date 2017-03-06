@@ -8,8 +8,13 @@ public interface AppInterface {
     String BASE_URL="http://139.59.62.165/";
     String BUS_REGISTRATION_API="api/fleets/auth";
     String ANALYTIC_API="api/analytics/";
+    String COMMAND_ACK_API="api/transaction/ack";
 
     String BUS_REG_NO_KEY="regNo";
+    String TRANSACTION_ID_KEY="transactionID";
+    String FLEET_ID_KEY="fleetID";
+    String ASSET_ID_KEY="assetID";
+    String STATUS_KEY="status";
     int HANDLE_BUS_DETAILS =1;
     int HANDLE_REFRESH =2;
     String TYPE_VIDEO="video";

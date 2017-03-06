@@ -64,6 +64,12 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.AcknowledgementReceiver">
+            <intent-filter>
+                <action android:name="com.android.action.ACK_DATA_RECEIVED"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

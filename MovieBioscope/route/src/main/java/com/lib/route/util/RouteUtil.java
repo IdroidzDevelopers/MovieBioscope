@@ -112,8 +112,8 @@ public class RouteUtil {
         return lRoute;
     }
 
-    public static List<Bitmap> getImagesForRoute(String routeId) {
-        List<Bitmap> routeImages = new ArrayList<Bitmap>();
+    public static List<String> getImagesForRoute(String routeId) {
+        List<String> routeImages = new ArrayList<String>();
         if (null != routeId) {
             Cursor lCursor = null;
             String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ?";
@@ -123,9 +123,7 @@ public class RouteUtil {
                 if (null != lCursor) {
                     while (lCursor.moveToNext()) {
                         String path = lCursor.getString(lCursor.getColumnIndex(RouteProvider.ROUTE_IMAGE_COLUMNS.PATH));
-                        File imageFile = new File(path);
-                        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-                        routeImages.add(bitmap);
+                        routeImages.add(path);
                     }
                 }
             } catch (Exception e) {
@@ -135,12 +133,6 @@ public class RouteUtil {
                     lCursor.close();
                 }
             }
-        }
-        //if route not selected or image not present for particular route
-        if (routeImages.size() == 0) {
-            Bitmap bitmap = BitmapFactory.decodeResource(RouteApplication.getRouteContext().getResources(),
-                    R.drawable.default_landing_background);
-            routeImages.add(bitmap);
         }
         if (DEBUG) Log.d(TAG, "getImagesForRoute() " + routeImages);
         return routeImages;

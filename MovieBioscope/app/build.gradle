@@ -26,17 +26,19 @@ dependencies {
     })
     compile project(":location")
     compile project(":videoplayer")
+    compile project(path: ':route')
+    compile project(path: ':firebase')
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
+    compile 'com.google.firebase:firebase-crash:10.0.1'
     testCompile 'junit:junit:4.12'
-    compile project(path: ':route')
-    compile project(path: ':firebase')
 }
 
 apply plugin: 'com.google.gms.google-services'
+
 
 
 

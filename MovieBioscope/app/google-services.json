@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "408500113323-pt1jsr52is4v2eke75t5lkokl6a7ni3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hyperbound.moviebioscope",
+            "certificate_hash": "ab4060d591dfdd2c2d763841ca5edba0595f4e05"
+          }
+        },
+        {
           "client_id": "408500113323-j49uulbka5gi4b4grkjgr8soc89uact2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.hyperbound.moviebioscope",
-            "certificate_hash": "4BC801382E8F36DB6D57605F5FB92B420E518C21"
+            "certificate_hash": "4bc801382e8f36db6d57605f5fb92b420e518c21"
           }
         },
         {

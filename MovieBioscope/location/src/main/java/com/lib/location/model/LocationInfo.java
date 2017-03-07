@@ -9,12 +9,23 @@ public class LocationInfo {
     private String source;
     private String destination;
     private String currentLocation;
+
+
+    private String city;
     private String totalDistance;
     private String totalJourneyTime;
     private String distanceToSource;
     private String distanceToDestination;
     private String timeToDestination;
     private String lastSyncTime;
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getSource() {
         return source;

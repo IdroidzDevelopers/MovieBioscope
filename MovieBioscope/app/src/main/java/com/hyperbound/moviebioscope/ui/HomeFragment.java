@@ -238,6 +238,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 });
         mGpsDialog = alertDialogBuilder.create();
         mGpsDialog.show();
+
     }
 
 

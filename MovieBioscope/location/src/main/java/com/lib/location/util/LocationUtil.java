@@ -99,9 +99,10 @@ public class LocationUtil {
 
     }
 
-    public static synchronized void updateCurentLocation(String currentLocation) {
+    public static synchronized void updateCurentLocation(String currentLocation,String city) {
         ContentValues lLocationContentValue = new ContentValues();
         lLocationContentValue.put(LocationProvider.LOCATION_COLUMNS.CURRENT_LOCATION, currentLocation);
+        lLocationContentValue.put(LocationProvider.LOCATION_COLUMNS.CITY, city);
         int count = LocationApplication.getLocationContext().getContentResolver().update(LocationProvider.CONTENT_URI_LOCATION_TABLE, lLocationContentValue, null, null);
         if (DEBUG)
             Log.d(TAG, "updateCurentLocation() :: CONTENT_URI_LOCATION_INFO_TABLE rows count " + count);
@@ -143,8 +144,8 @@ public class LocationUtil {
                 while (lCursor.moveToNext()) {
                     locationInfo = new LocationInfo();
                     locationInfo.setCurrentLocation(lCursor.getString(lCursor.getColumnIndex(LocationProvider.LOCATION_COLUMNS.CURRENT_LOCATION)));
+                    locationInfo.setCity(lCursor.getString(lCursor.getColumnIndex(LocationProvider.LOCATION_COLUMNS.CITY)));
                 }
-
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception getLocationInfo() ", e);
@@ -157,11 +158,11 @@ public class LocationUtil {
         return locationInfo;
     }
 
-    public static void deleteAllLocationData(){
+    public static void deleteAllLocationData() {
         try {
             int locationDeleteCount = LocationApplication.getLocationContext().getContentResolver().delete(LocationProvider.CONTENT_URI_LOCATION_TABLE, null, null);
-            Log.d(TAG, "Location Data Delete Count :: "+locationDeleteCount);
-        }catch (Exception e){
+            Log.d(TAG, "Location Data Delete Count :: " + locationDeleteCount);
+        } catch (Exception e) {
             Log.d(TAG, "Exception :: deleteAllLocationData() :: ", e);
         }
     }

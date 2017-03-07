@@ -39,6 +39,7 @@ public class BottomBannerFragment extends Fragment {
     private TextView mSource;
     private TextView mDestination;
     private TextView mCurrentLocation;
+    private TextView mCity;
     private TextView mDistanceToSource;
     private TextView mDistanceToDest;
     private TextView mTimeToDest;
@@ -75,6 +76,7 @@ public class BottomBannerFragment extends Fragment {
         mSource = (TextView) mRootView.findViewById(R.id.source);
         mDestination = (TextView) mRootView.findViewById(R.id.destination);
         mCurrentLocation = (TextView) mRootView.findViewById(R.id.current_location);
+        mCity = (TextView) mRootView.findViewById(R.id.city);
         mDistanceToSource = (TextView) mRootView.findViewById(R.id.source_distance);
         mDistanceToDest = (TextView) mRootView.findViewById(R.id.destination_distance);
         mTimeToDest = (TextView) mRootView.findViewById(R.id.time_left);
@@ -151,6 +153,11 @@ public class BottomBannerFragment extends Fragment {
         LocationInfo locationInfo = LocationUtil.getCurrentLocation();
         if (null != locationInfo) {
             mCurrentLocation.setText(locationInfo.getCurrentLocation());
+            if (null != locationInfo.getCity()) {
+                mCity.setText(locationInfo.getCity());
+            } else {
+                mCity.setText("");
+            }
         }
     }
 

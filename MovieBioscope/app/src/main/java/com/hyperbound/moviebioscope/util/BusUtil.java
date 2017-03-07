@@ -66,6 +66,7 @@ public class BusUtil {
                     data = new BusDetails();
                     data.setFleetID(lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_ID)));
                     data.setCompany(lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.COMPANY_ID)));
+                    data.setRegNo(lCursor.getString(lCursor.getColumnIndex(BusProvider.COLUMNS.BUS_NUMBER)));
                     break;
                 }
             }

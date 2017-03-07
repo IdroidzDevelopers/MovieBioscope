@@ -140,15 +140,16 @@ public class AppTaskHandler extends Handler {
                     }
                 }
                 break;
-            case AppInterface.HANDLE_REFRESH :{
+            case AppInterface.HANDLE_REFRESH: {
                 FirebaseUtil.deleteAllFirebaseData();
                 FirebaseUtil.deleteAllFirebaseTopicsData();
                 LocationUtil.deleteAllLocationData();
                 RouteUtil.deleteAllRouteData();
                 RouteUtil.deleteAllRouteImagesData();
                 //VideoData.deleteAllVideoData();
-                if(null!=BusUtil.getBusNumber())
-                    VolleyUtil.getBusDetails(BusUtil.getBusNumber());
+                BusDetails detail = BusUtil.getBusData();
+                if (null != detail && null != detail.getRegNo())
+                    VolleyUtil.getBusDetails(detail.getRegNo());
                 break;
             }
         }

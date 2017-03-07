@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.hyperbound.moviebioscope.database.BusProvider;
+import com.hyperbound.moviebioscope.receiver.AcknowledgementReceiver;
 import com.hyperbound.moviebioscope.receiver.VideoCompleteReceiver;
 import com.lib.firebase.FireBaseApplication;
 import com.lib.location.LocationApplication;
@@ -43,6 +44,7 @@ public class BioscopeApp extends Application {
         // putBusDetail();
         registerVideoCommand();
         registerVideoComplete();
+        registerAcknowledgementCommand();
         //putClouddata();
         //putLocationData();
         //putRouteData();
@@ -182,5 +184,11 @@ public class BioscopeApp extends Application {
         lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_COMPLETED);
         lIntentFilter.addAction(CustomIntent.ACTION_ADV_COMPLETED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCompleteReceiver(), lIntentFilter);
+    }
+
+    private void registerAcknowledgementCommand(){
+        IntentFilter lIntentFilter = new IntentFilter();
+        lIntentFilter.addAction(CustomIntent.ACTION_ACK_DATA_RECEIVED);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new AcknowledgementReceiver(), lIntentFilter);
     }
 }

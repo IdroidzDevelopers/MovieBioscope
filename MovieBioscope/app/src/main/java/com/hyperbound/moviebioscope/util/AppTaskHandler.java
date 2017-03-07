@@ -8,6 +8,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,6 +30,9 @@ import com.lib.route.util.DownloadUtil;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.util.VideoData;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -141,6 +145,10 @@ public class AppTaskHandler extends Handler {
                 }
                 break;
             case AppInterface.HANDLE_REFRESH: {
+                String fleetId=BusUtil.getFleetId();
+                String data=lBundle.getString("data");
+                String transactionId=getTransactionId(data);
+                VolleyUtil.sendCommandAcknowledgement(fleetId,transactionId,null,"Received");
                 FirebaseUtil.deleteAllFirebaseData();
                 FirebaseUtil.deleteAllFirebaseTopicsData();
                 LocationUtil.deleteAllLocationData();
@@ -153,5 +161,18 @@ public class AppTaskHandler extends Handler {
                 break;
             }
         }
+    }
+
+    private String getTransactionId(String data){
+        String transactionId=null;
+        try {
+            JSONObject dataJson = new JSONObject(data);
+            if (dataJson.has("transactionID")){
+                transactionId=dataJson.getString("transactionID");
+            }
+        }catch (JSONException je){
+            Log.e(TAG,"Exception in Jsonparsing",je);
+        }
+        return transactionId;
     }
 }

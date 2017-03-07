@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/top_banner"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="@dimen/top_banner_height"
     android:layout_alignParentTop="true"
     android:background="@color/transparent_color">
 
@@ -11,8 +11,8 @@
         android:id="@+id/distance_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="@dimen/distance_layout_left_margin"
+        android:layout_marginTop="@dimen/distance_layout_top_margin"
         android:orientation="vertical">
 
         <TextView
@@ -21,7 +21,7 @@
             android:layout_gravity="center"
             android:text="@string/total_distance_text"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="@dimen/distance_textview_size" />
 
         <TextView
             android:id="@+id/total_distance"
@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:text="--km"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="@dimen/distance_value_size" />
     </LinearLayout>
 
     <!--distance layout : end-->
@@ -41,8 +41,8 @@
         android:id="@+id/journey_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="80dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="@dimen/journey_layout_left_margin"
+        android:layout_marginTop="@dimen/journey_layout_top_margin"
         android:layout_toRightOf="@+id/distance_layout"
         android:orientation="vertical">
 
@@ -52,7 +52,7 @@
             android:layout_gravity="center"
             android:text="@string/journey_hours_text"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="@dimen/journey_textview_size" />
 
 
         <TextView
@@ -62,22 +62,22 @@
             android:layout_gravity="center"
             android:text="-- hr"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="@dimen/journey_value_size" />
     </LinearLayout>
     <!--journey layout : end-->
 
     <ImageView
         android:id="@+id/movie_list"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/movie_list_icon_width"
+        android:layout_height="@dimen/movie_list_icon_height"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/route"
         android:src="@drawable/movie_bg" />
 
     <ImageView
         android:id="@+id/bioscope_img"
-        android:layout_width="@dimen/movie_list_icon_width"
-        android:layout_height="@dimen/movie_list_icon_height"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
@@ -86,8 +86,8 @@
 
     <ImageView
         android:id="@+id/route"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/route_icon_width"
+        android:layout_height="@dimen/route_icon_height"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@+id/bioscope_img"

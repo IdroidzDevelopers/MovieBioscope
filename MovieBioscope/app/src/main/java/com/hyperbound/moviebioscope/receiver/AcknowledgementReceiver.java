@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Message;
 
 import com.hyperbound.moviebioscope.util.BusUtil;
+import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.MovieListDialog;
@@ -27,9 +28,9 @@ public class AcknowledgementReceiver extends BroadcastReceiver {
                 Logger.debug(TAG, "Bundle data " + lBundle.toString());
                 if (null != lBundle) {
                     String fleetId=BusUtil.getFleetId();
-                    String transactionId;
-                    String assetId;
-                    String status;
+                    String transactionId=null;
+                    String assetId=null;
+                    String status=null;
                     if(lBundle.containsKey("transactionid")) {
                         transactionId=lBundle.getString("transactionid");
                     }
@@ -39,6 +40,7 @@ public class AcknowledgementReceiver extends BroadcastReceiver {
                     if (lBundle.containsKey("status")){
                         status=lBundle.getString("status");
                     }
+                    VolleyUtil.sendCommandAcknowledgement(fleetId,transactionId,assetId,status);
                 }
             }
         }

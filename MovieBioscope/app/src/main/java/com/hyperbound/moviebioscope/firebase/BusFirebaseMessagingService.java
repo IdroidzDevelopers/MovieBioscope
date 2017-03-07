@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -70,6 +71,9 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                     case AppInterface.COMMAND_REFRESH:{
                         Message msg = Message.obtain();
                         msg.what = AppInterface.HANDLE_REFRESH;
+                        Bundle lBundle=new Bundle();
+                        lBundle.putString("data",data);
+                        msg.setData(lBundle);
                         AppTaskHandler.getInstance().sendMessage(msg);
                         break;
                     }

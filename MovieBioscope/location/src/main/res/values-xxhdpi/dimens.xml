@@ -1,0 +1,45 @@
+<resources>
+    <!--Top Banner start-->
+    <dimen name="top_banner_height">80dp</dimen>
+    <dimen name="distance_layout_left_margin">35dp</dimen>
+    <dimen name="distance_layout_top_margin">20dp</dimen>
+    <dimen name="distance_textview_size">15sp</dimen>
+    <dimen name="distance_value_size">20sp</dimen>
+    <dimen name="journey_layout_left_margin">40dp</dimen>
+    <dimen name="journey_layout_top_margin">20dp</dimen>
+    <dimen name="journey_textview_size">15sp</dimen>
+    <dimen name="journey_value_size">20sp</dimen>
+    <dimen name="home_icon_width">90dp</dimen>
+    <dimen name="home_icon_height">40dp</dimen>
+    <dimen name="home_icon_right_margin">100dp</dimen>
+    <dimen name="route_icon_width">90dp</dimen>
+    <dimen name="route_icon_height">55dp</dimen>
+    <dimen name="movie_list_icon_width">90dp</dimen>
+    <dimen name="movie_list_icon_height">40dp</dimen>
+    <dimen name="bioscope_image_height">55dp</dimen>
+    <dimen name="bioscope_image_width">150dp</dimen>
+    <!--Top Banner end-->
+
+    <!--Bottom Banner start-->
+    <dimen name="bottom_banner_height">130dp</dimen>
+    <dimen name="source_layout_left_margin">15dp</dimen>
+    <dimen name="start_textview_size">18sp</dimen>
+    <dimen name="source_textview_size">20sp</dimen>
+    <dimen name="source_distance_textview_size">18sp</dimen>
+    <dimen name="current_time_textview_size">15sp</dimen>
+    <dimen name="current_time_value_size">18sp</dimen>
+    <dimen name="internet_layout_left_margin">70dp</dimen>
+    <dimen name="offline_icon_height">35dp</dimen>
+    <dimen name="offline_icon_width">35dp</dimen>
+    <dimen name="offline_textview_size">15sp</dimen>
+    <dimen name="destination_layout_right_margin">15dp</dimen>
+    <dimen name="destination_textview_size">18sp</dimen>
+    <dimen name="destination_value_size">20sp</dimen>
+    <dimen name="destination_distance_value_size">18sp</dimen>
+    <dimen name="timeleft_textview_size">15sp</dimen>
+    <dimen name="timeleft_value_size">20sp</dimen>
+    <dimen name="current_location_textview_size">15sp</dimen>
+    <dimen name="current_location_value_size">20sp</dimen>
+    <dimen name="current_location_city_value_size">15sp</dimen>
+    <!--Bottom Banner end-->
+</resources>

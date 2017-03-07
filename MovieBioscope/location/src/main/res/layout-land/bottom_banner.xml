@@ -164,14 +164,6 @@
             android:text="--"
             android:textColor="@android:color/white"
             android:textSize="@dimen/current_location_value_size" />
-        <TextView
-            android:id="@+id/city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="--"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/current_location_city_value_size" />
 
     </LinearLayout>
     <!--current location layout : end-->

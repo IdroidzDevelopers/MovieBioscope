@@ -1,0 +1,18 @@
+<resources>
+    <!-- Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). -->
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <dimen name="company_image_height">200dp</dimen>
+    <dimen name="company_image_width">300dp</dimen>
+    <dimen name="company_image_top_margin">30dp</dimen>
+    <dimen name="bus_registraion_text_top_margin">30dp</dimen>
+    <dimen name="bus_registraion_edittext_top_margin">30dp</dimen>
+    <dimen name="bus_registraion_text_size">40sp</dimen>
+    <dimen name="bus_registraion_edittext_size">40sp</dimen>
+    <dimen name="bus_registraion_button_top_margin">40dp</dimen>
+    <dimen name="bus_registraion_button_textsize">45sp</dimen>
+    <dimen name="play_icon_width">100dp</dimen>
+    <dimen name="play_icon_height">100dp</dimen>
+    <dimen name="play_icon_right_margin">50dp</dimen>
+</resources>

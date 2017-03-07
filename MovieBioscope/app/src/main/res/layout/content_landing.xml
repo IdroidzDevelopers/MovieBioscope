@@ -16,11 +16,11 @@
     </android.support.v4.view.ViewPager>
     <ImageButton
         android:id="@+id/play"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/play_icon_width"
+        android:layout_height="@dimen/play_icon_height"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="50dp"
+        android:layout_marginRight="@dimen/play_icon_right_margin"
         android:background="@drawable/play_button_bg" />
 
 </RelativeLayout>

@@ -38,7 +38,7 @@ public class BusProvider extends ContentProvider {
 
 
     private static final String CREATE_BUS_DETAIL_TABLE = "CREATE TABLE IF NOT EXISTS "
-            + BUS_DETAIL_TABLE + "(" + COLUMNS.BUS_ID + " TEXT PRIMARY KEY ,"
+            + BUS_DETAIL_TABLE + "(" + COLUMNS.BUS_ID + " TEXT ,"
             + COLUMNS.BUS_NUMBER + " TEXT ,"+ COLUMNS.COMPANY_ID+ " TEXT ,"+ COLUMNS.COMPANY_NAME+ " TEXT " +")";
 
 

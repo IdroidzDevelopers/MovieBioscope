@@ -1,6 +1,7 @@
 package com.hyperbound.moviebioscope.ui;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,12 +19,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.hyperbound.moviebioscope.R;
+import com.hyperbound.moviebioscope.app.BioscopeApp;
 import com.hyperbound.moviebioscope.util.ImagePagerAdapter;
 import com.hyperbound.moviebioscope.util.NetworkUtil;
 import com.lib.route.RouteApplication;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.VideoActivity;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
@@ -128,12 +131,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         mSlideHandler.postDelayed(mSlideRunnable, DELAY);
+        StartVideoTimer();
         if (!NetworkUtil.isInternetAvailable(getActivity())) {
             showInternetDialog();
         } else if (!NetworkUtil.isGPSEnabled(getActivity())) {
             showGPSDisabledAlertToUser();
-        } else {
-            StartVideoTimer();
         }
     }
 
@@ -174,7 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            if (VideoData.isAdvExist(getActivity())) {
+            if (!isDialogVisible() && VideoData.isAdvExist(BioscopeApp.getContext())) {
                 Intent lIntent = new Intent(getActivity(), VideoActivity.class);
                 Bundle lBundle = new Bundle();
                 lBundle.putInt(CustomIntent.EXTRAS.VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
@@ -262,4 +264,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mInternetDialog.show();
     }
 
+    private boolean isDialogVisible() {
+        if (null != mGpsDialog && mGpsDialog.isShowing()) {
+            Logger.debug(TAG, "isDialogVisible : true");
+            return true;
+        } else if (null != mInternetDialog && mInternetDialog.isShowing()) {
+            Logger.debug(TAG, "isDialogVisible : true");
+            return true;
+        } else {
+            Logger.debug(TAG, "isDialogVisible : false");
+            return false;
+        }
+    }
 }

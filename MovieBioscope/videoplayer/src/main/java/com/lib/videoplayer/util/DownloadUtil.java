@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.lib.location.util.NetworkUtil;
@@ -24,13 +25,14 @@ public class DownloadUtil {
      * @param name
      * @return
      */
-    public static long beginDownload(Context context, String downloadUri,String dir, String name) {
+    public static long beginDownload(Context context, String downloadUri, String dir, String name) {
         long downloadId = -1;
         if (NetworkUtil.isInternetAvailable(context)) {
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
+            FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + dir);
             request.setDestinationInExternalPublicDir(dir, name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);

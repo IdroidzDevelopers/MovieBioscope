@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.lib.route.database.RouteProvider;
@@ -31,7 +32,8 @@ public class DownloadUtil {
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            request.setDestinationInExternalPublicDir("/movie_bioscope/images", name);
+            FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + "/movie_bioscope/images/");
+            request.setDestinationInExternalPublicDir("/movie_bioscope/images/", name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }

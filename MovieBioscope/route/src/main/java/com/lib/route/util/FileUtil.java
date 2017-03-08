@@ -1,11 +1,11 @@
-package com.lib.videoplayer.util;
+package com.lib.route.util;
 
 
 import android.media.MediaScannerConnection;
 import android.util.Log;
 
+import com.lib.route.RouteApplication;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.VideoApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class FileUtil {
             try {
                 boolean status = file.createNewFile();
                 Log.d(TAG, "createFolderIfRequired() :: status" + status);
-                MediaScannerConnection.scanFile(VideoApplication.getVideoContext(), new String[]{file.getAbsolutePath()}, null, null);
+                MediaScannerConnection.scanFile(RouteApplication.getRouteContext(), new String[]{file.getAbsolutePath()}, null, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }

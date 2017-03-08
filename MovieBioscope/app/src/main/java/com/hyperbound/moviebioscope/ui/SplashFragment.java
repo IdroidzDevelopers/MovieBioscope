@@ -12,6 +12,7 @@ import com.hyperbound.moviebioscope.R;
 import com.hyperbound.moviebioscope.util.BusUtil;
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
+import com.lib.utility.util.Logger;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +26,7 @@ public class SplashFragment extends Fragment {
     private static final long SPLASH_SCREEN_TIME_OUT = 3 * 1000;
     private View mRootView;
     private Handler mHandler;
+    private Runnable mMoveNextRunnable;
 
     public SplashFragment() {
         // Required empty public constructor
@@ -53,26 +55,52 @@ public class SplashFragment extends Fragment {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.splash_layout, container, false);
         mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                moveToNextPage();
-            }
-        }, SPLASH_SCREEN_TIME_OUT);
+        mMoveNextRunnable = new MovePageRunnable();
         return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (null != mHandler && null != mMoveNextRunnable) {
+            mHandler.postDelayed(mMoveNextRunnable, SPLASH_SCREEN_TIME_OUT);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (null != mHandler && null != mMoveNextRunnable) {
+            mHandler.removeCallbacks(mMoveNextRunnable);
+        }
+    }
+
+    private class MovePageRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            moveToNextPage();
+        }
     }
 
 
     private void moveToNextPage() {
-        FragmentTransaction lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if (BusUtil.isRegistrationNumberAvailable(getActivity())) {
-            lTransaction.replace(R.id.container, HomeFragment.newInstance());
-            lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
-            lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance(TopBannerFragment.TYPE.NORMAL_TYPE));
-        } else {
-            lTransaction.replace(R.id.container, RegistrationFragment.newInstance());
+        FragmentTransaction lTransaction = null;
+        if (null != getActivity() && null != getActivity().getSupportFragmentManager()) {
+            lTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         }
-        lTransaction.commit();
+        if (null != lTransaction) {
+            if (BusUtil.isRegistrationNumberAvailable(getActivity())) {
+                lTransaction.replace(R.id.container, HomeFragment.newInstance());
+                lTransaction.replace(R.id.bottom_container, BottomBannerFragment.newInstance());
+                lTransaction.replace(R.id.top_container, TopBannerFragment.newInstance(TopBannerFragment.TYPE.NORMAL_TYPE));
+            } else {
+                lTransaction.replace(R.id.container, RegistrationFragment.newInstance());
+            }
+            lTransaction.commit();
+        } else {
+            Logger.debug(TAG, "moveToNextPage :: lTransaction is " + lTransaction);
+        }
     }
 
 

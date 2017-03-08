@@ -20,6 +20,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
+import com.lib.videoplayer.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class BioscopeApp extends Application {
 
     private static final String TAG = BioscopeApp.class.getSimpleName();
     private static final String FOLDER_NAME = "movie_bioscope";
-    private static final String FILE_NAME = "read_me.txt";
+
     private static Context sContext;
 
     @Override
@@ -39,7 +40,6 @@ public class BioscopeApp extends Application {
         LocationApplication.setLocationContext(this);
         RouteApplication.setRouteContext(this);
         FireBaseApplication.setFirebaseContext(this);
-        //createFolderIfRequired();
         //putDummyData();
         // putBusDetail();
         registerVideoCommand();
@@ -53,25 +53,6 @@ public class BioscopeApp extends Application {
     public static Context getContext() {
         return sContext;
     }
-
-
-    private void createFolderIfRequired() {
-        File folder = new File(Environment.getExternalStorageDirectory() + "/" + FOLDER_NAME);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        File file = new File(Environment.getExternalStorageDirectory() + "/" + FOLDER_NAME + "/" + FILE_NAME);
-        if (!file.exists()) {
-            try {
-                boolean status = file.createNewFile();
-                Log.d(TAG, "createFolderIfRequired() :: status" + status);
-                MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, null);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     /***********************************************************************************
      * Testing code needs to be removed

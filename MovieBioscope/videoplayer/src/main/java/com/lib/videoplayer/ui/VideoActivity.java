@@ -212,6 +212,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     protected void onPause() {
         super.onPause();
         //remove the handlers
+        hideLocationInfo();
         if (null != mTaskHandler) {
             mTaskHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
             mTaskHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);

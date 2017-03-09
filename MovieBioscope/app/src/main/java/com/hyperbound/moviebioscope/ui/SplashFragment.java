@@ -99,7 +99,7 @@ public class SplashFragment extends Fragment {
             }
             lTransaction.commit();
         } else {
-            Logger.debug(TAG, "moveToNextPage :: lTransaction is " + lTransaction);
+            Logger.debug(TAG, "moveToNextPage :: lTransaction is null " );
         }
     }
 

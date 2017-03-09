@@ -62,7 +62,6 @@ public class BusUtil {
     public static synchronized BusDetails getBusData() {
         BusDetails data = null;
         Cursor lCursor = null;
-        String busNumber = null;
         try {
             lCursor = BioscopeApp.getContext().getContentResolver().query(BusProvider.CONTENT_URI_BUS_DETAIL_TABLE, null, null, null, null);
             if (null != lCursor) {
@@ -82,7 +81,7 @@ public class BusUtil {
                 lCursor.close();
             }
         }
-        if (DEBUG) Log.d(TAG, "getBusData() " + busNumber);
+        if (DEBUG) Log.d(TAG, "getBusData() " + data);
         return data;
     }
 

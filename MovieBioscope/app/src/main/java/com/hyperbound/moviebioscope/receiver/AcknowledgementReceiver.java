@@ -25,22 +25,22 @@ public class AcknowledgementReceiver extends BroadcastReceiver {
         if (null != intent) {
             if (CustomIntent.ACTION_ACK_DATA_RECEIVED.equals(intent.getAction())) {
                 Bundle lBundle = intent.getBundleExtra("data");
-                Logger.debug(TAG, "Bundle data " + lBundle.toString());
                 if (null != lBundle) {
-                    String fleetId=BusUtil.getFleetId();
-                    String transactionId=null;
-                    String assetId=null;
-                    String status=null;
-                    if(lBundle.containsKey("transactionid")) {
-                        transactionId=lBundle.getString("transactionid");
+                    Logger.debug(TAG, "Bundle data " + lBundle.toString());
+                    String fleetId = BusUtil.getFleetId();
+                    String transactionId = null;
+                    String assetId = null;
+                    String status = null;
+                    if (lBundle.containsKey("transactionid")) {
+                        transactionId = lBundle.getString("transactionid");
                     }
-                    if (lBundle.containsKey("assetid")){
-                        assetId=lBundle.getString("assetid");
+                    if (lBundle.containsKey("assetid")) {
+                        assetId = lBundle.getString("assetid");
                     }
-                    if (lBundle.containsKey("status")){
-                        status=lBundle.getString("status");
+                    if (lBundle.containsKey("status")) {
+                        status = lBundle.getString("status");
                     }
-                    VolleyUtil.sendCommandAcknowledgement(fleetId,transactionId,assetId,status);
+                    VolleyUtil.sendCommandAcknowledgement(fleetId, transactionId, assetId, status);
                 }
             }
         }

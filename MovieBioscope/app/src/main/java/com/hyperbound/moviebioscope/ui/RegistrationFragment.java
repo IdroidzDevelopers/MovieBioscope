@@ -161,7 +161,9 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         mProgressDialog.setMessage(getString(R.string.validating_text));
 
         // Set the progress dialog background color
-        mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFD4D9D0")));
+        if (null != mProgressDialog && null != mProgressDialog.getWindow()) {
+            mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFD4D9D0")));
+        }
         mProgressDialog.setIndeterminate(false);
         // Finally, show the progress dialog
         mProgressDialog.show();

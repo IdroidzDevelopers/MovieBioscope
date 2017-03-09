@@ -88,7 +88,9 @@ public class RouteTaskHandler extends Handler {
                         String selection = RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID + " = ?";
                         String[] selectionArg = new String[]{"" + downloadId};
                         ContentValues values = new ContentValues();
-                        values.put(RouteProvider.ROUTE_IMAGE_COLUMNS.PATH, downloadData.getPath());
+                        if (null != downloadData) {
+                            values.put(RouteProvider.ROUTE_IMAGE_COLUMNS.PATH, downloadData.getPath());
+                        }
                         values.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.FAILED);
                         RouteApplication.getRouteContext().getContentResolver().update(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, values, selection, selectionArg);
                     }

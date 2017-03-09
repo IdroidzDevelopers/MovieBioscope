@@ -16,13 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lib.location.R;
 import com.lib.location.model.LocationInfo;
-import com.lib.location.util.LocationInterface;
 import com.lib.location.util.LocationUtil;
 import com.lib.location.util.RouteAdapter;
 import com.lib.route.objects.Route;
@@ -101,7 +99,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
         if (mType.equals(TYPE.HOME_ICON_TYPE)) {
             mHome = (ImageView) mRootView.findViewById(R.id.home);
             mHome.setOnClickListener(this);
-        }else {
+        } else {
             mMovie = (ImageView) mRootView.findViewById(R.id.movie_list);
             mMovie.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -154,12 +152,16 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Route lRoute = arrayAdapter.getItem(which);
-                Log.d(TAG, "onClick() " + lRoute.getmRouteId());
-                updateDefaultRoute(lRoute.getmRouteId());
+                if (null != lRoute) {
+                    Log.d(TAG, "onClick() " + lRoute.getmRouteId());
+                    updateDefaultRoute(lRoute.getmRouteId());
+                }
             }
         });
         mRouteDialog = builderSingle.create();
-        mRouteDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent_color)));
+        if (null != mRouteDialog.getWindow()) {
+            mRouteDialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent_color)));
+        }
         mRouteDialog.show();
     }
 

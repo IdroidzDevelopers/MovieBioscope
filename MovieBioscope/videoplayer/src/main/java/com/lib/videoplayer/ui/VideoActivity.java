@@ -118,10 +118,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
-        if (null != mTaskHandler) {
-            removeBreakingNews();
-            mTaskHandler.removeMessages(TASK_EVENT.REMOVE_BREAKING_NEWS);
-        }
     }
 
     /**
@@ -213,9 +209,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         super.onPause();
         //remove the handlers
         hideLocationInfo();
+        removeBreakingNews();
+        removeCompanyAd();
         if (null != mTaskHandler) {
             mTaskHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
             mTaskHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+            mTaskHandler.removeMessages(TASK_EVENT.REMOVE_COMPANY_AD);
+            mTaskHandler.removeMessages(TASK_EVENT.REMOVE_BREAKING_NEWS);
         }
         pauseVideo();
     }
@@ -471,20 +471,28 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * show location information from screen
      */
     private void showLocationInfo() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.replace(R.id.bottom_container, mBottomBannerFragment, BottomBannerFragment.TAG);
-        lTransaction.replace(R.id.top_container, mTopBannerFragment, TopBannerFragment.TAG);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.replace(R.id.bottom_container, mBottomBannerFragment, BottomBannerFragment.TAG);
+                lTransaction.replace(R.id.top_container, mTopBannerFragment, TopBannerFragment.TAG);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     /**
      * Hide location information from screen
      */
     private void hideLocationInfo() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.remove(mBottomBannerFragment);
-        lTransaction.remove(mTopBannerFragment);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.remove(mBottomBannerFragment);
+                lTransaction.remove(mTopBannerFragment);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
 
@@ -492,18 +500,26 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * show breaking news on the screen
      */
     private void showBreakingNews() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.replace(R.id.breaking_news_container, mBreakingNewsFragment, BreakingNewsFragment.TAG);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.replace(R.id.breaking_news_container, mBreakingNewsFragment, BreakingNewsFragment.TAG);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     /**
      * Hide breaking news from screen
      */
     private void removeBreakingNews() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.remove(mBreakingNewsFragment);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.remove(mBreakingNewsFragment);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
 
@@ -511,18 +527,26 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * show company ad on the screen
      */
     private void showCompanyAd() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.replace(R.id.breaking_news_container, mCompanyAdFragment, CompanyAdFragment.TAG);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.replace(R.id.breaking_news_container, mCompanyAdFragment, CompanyAdFragment.TAG);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
     /**
      * Hide breaking news from screen
      */
     private void removeCompanyAd() {
-        FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
-        lTransaction.remove(mCompanyAdFragment);
-        lTransaction.commitAllowingStateLoss();
+        if (null != getSupportFragmentManager()) {
+            FragmentTransaction lTransaction = getSupportFragmentManager().beginTransaction();
+            if (null != lTransaction) {
+                lTransaction.remove(mCompanyAdFragment);
+                lTransaction.commitAllowingStateLoss();
+            }
+        }
     }
 
 
@@ -862,7 +886,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private void sendCompletedBroadcast() {
-        Logger.debug(TAG,"sendCompletedBroadcast :: called");
+        Logger.debug(TAG, "sendCompletedBroadcast :: called");
         Intent intent = new Intent();
         intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, mStateMachine.videoInfo.getVideoId());
         switch (mStateMachine.videoInfo.getCurrentState()) {

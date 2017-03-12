@@ -27,6 +27,7 @@ import com.lib.route.objects.Route;
 import com.lib.route.util.RouteTaskHandler;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
+import com.lib.utility.util.Logger;
 
 import java.util.List;
 
@@ -104,6 +105,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
             mMovie.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Logger.debug(TAG,"--(Test)-- clicked");
                     LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent().setAction(CustomIntent.ACTION_MOVIE_LIST));
                 }
             });

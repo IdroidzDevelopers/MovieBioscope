@@ -1,24 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    android:background="@color/movie_dialog_bg">
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/movies_language_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"/>
+        android:paddingTop="4dp" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true" />
+
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone"
+        android:text="@string/no_movie_available"
         android:textSize="40sp"
-        android:text="@string/no_movie_available" />
-
+        android:visibility="gone" />
 </RelativeLayout>

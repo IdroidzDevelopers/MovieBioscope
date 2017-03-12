@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textAllCaps="true"
-            android:textColor="@color/brown"
+            android:textColor="@color/violet_color"
             android:text="Android"/>
 
         <android.support.v7.widget.RecyclerView

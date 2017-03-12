@@ -4,16 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 
 import com.hyperbound.moviebioscope.util.BusUtil;
 import com.hyperbound.moviebioscope.volley.VolleyUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.ui.MovieListDialog;
-import com.lib.videoplayer.util.StateMachine;
-import com.lib.videoplayer.util.VideoData;
-import com.lib.videoplayer.util.VideoTaskHandler;
 
 
 public class AcknowledgementReceiver extends BroadcastReceiver {

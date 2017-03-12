@@ -1,7 +1,5 @@
 package com.lib.videoplayer.receivers;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +8,8 @@ import android.os.Message;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.ui.MovieDialog;
-import com.lib.videoplayer.ui.MovieListDialog;
-import com.lib.videoplayer.ui.VideoActivity;
+import com.lib.videoplayer.R;
+import com.lib.videoplayer.ui.MovieListActivity;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 import com.lib.videoplayer.util.VideoTaskHandler;
@@ -42,7 +39,7 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                     }
                 }
             } else if (CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())) {
-                context.startActivity(new Intent(context, MovieListDialog.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, MovieListActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 //context.sendBroadcast(new Intent().setAction("android.navajhalka.movielist"));
             }else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())){
                 VideoData.resetTravelSafety();

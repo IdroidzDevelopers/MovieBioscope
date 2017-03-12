@@ -18,9 +18,8 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.lib.videoplayer.ui.MovieListDialog"
-            android:launchMode="singleInstance"
-            android:theme="@style/Theme.Transparent" />
+            android:name="com.lib.videoplayer.ui.MovieListActivity"
+            android:launchMode="singleInstance"/>
 
         <provider
             android:name="com.lib.videoplayer.database.VideoProvider"

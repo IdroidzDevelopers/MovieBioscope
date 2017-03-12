@@ -60,6 +60,7 @@ public class MovieRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             text = (TextView) itemView.findViewById(R.id.movie_item_text);
             movieIcon = (ImageView) itemView.findViewById(R.id.movieicon);
             itemView.setOnClickListener(this);
+            text.setSelected(true);
         }
 
         @Override

@@ -15,12 +15,17 @@
             android:layout_width="170dp"
             android:layout_height="120dp"
             android:src="@mipmap/ic_movie" />
+
         <TextView
             android:id="@+id/movie_item_text"
-            android:layout_width="wrap_content"
+            android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="Dhangal"
-            android:textColor="@color/movie_name_color"/>
+            android:layout_gravity="center"
+            android:foregroundGravity="center"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:textColor="@color/movie_name_color"
+            android:textSize="15sp" />
     </LinearLayout>
 </RelativeLayout>

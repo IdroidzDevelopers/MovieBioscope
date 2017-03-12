@@ -90,6 +90,7 @@ public class MovieListFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
             moviesRecyclerView.setAdapter(adapter);
              mProgressBar.setVisibility(View.GONE);
             if (movieList.isEmpty()) {

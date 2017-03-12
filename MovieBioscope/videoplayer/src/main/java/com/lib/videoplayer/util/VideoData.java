@@ -625,6 +625,14 @@ public class VideoData {
             }
     }
 
+    public static void deleteFile(String filePath) {
+        if(null!=filePath) {
+            File deleteFile = new File(filePath);
+            boolean status = deleteFile.delete();
+            Log.d(TAG, "File Delete status:: " + status);
+        }
+    }
+
     public static void resetTravelSafety() {
         String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?, ?)";
         String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO};
@@ -714,5 +722,32 @@ public class VideoData {
     public static void createAndSendAcknowledgementData(String transactionId, String status) {
         createAndSendAcknowledgementData(transactionId, null, status);
 
+    }
+
+    public static synchronized String getAssetPath(String assetId) {
+        String assetPath=null;
+        if (null != assetId) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+            String[] lSelectionArg = {"" + assetId};
+            Cursor lCursor = null;
+            try {
+                lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    assetPath = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    if (null != assetPath) {
+                            Logger.debug(TAG, "getAssetPath() ::"+assetPath);
+
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: backgroundSearchForBreaking() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return assetPath;
     }
 }

@@ -23,6 +23,7 @@ import com.lib.location.volley.VolleyUtil;
 import com.lib.utility.util.CustomIntent;
 
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -69,10 +70,14 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
                         if (null != address) {
                             String subLocality = address.getSubLocality();
                             String city = address.getLocality();
+                            String currentArea=null;
+                            if(null!=address.getAddressLine(1)) {
+                                currentArea = address.getAddressLine(0)+" "+address.getAddressLine(1);
+                            }
                             if (null != subLocality) {
-                                LocationUtil.updateCurentLocation(subLocality,city);
+                                LocationUtil.updateCurentLocation(subLocality,city,currentArea);
                             } else {
-                                LocationUtil.updateCurentLocation(address.getLocality(),null);
+                                LocationUtil.updateCurentLocation(address.getLocality(),null,currentArea);
 
                             }
                             LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));

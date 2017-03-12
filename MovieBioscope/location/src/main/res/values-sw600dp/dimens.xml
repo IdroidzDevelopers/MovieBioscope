@@ -41,5 +41,6 @@
     <dimen name="current_location_textview_size">15sp</dimen>
     <dimen name="current_location_value_size">30sp</dimen>
     <dimen name="current_location_city_value_size">20sp</dimen>
+    <dimen name="current_location_area_value_size">10sp</dimen>
     <!--Bottom Banner end-->
 </resources>

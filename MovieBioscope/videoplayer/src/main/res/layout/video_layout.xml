@@ -63,10 +63,10 @@
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/company_logo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/company_gif_width"
+        android:layout_height="@dimen/company_gif_height"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="40dp"
+        android:layout_marginRight="@dimen/company_gif_right_margin"
         android:layout_alignParentTop="true"
         android:src="@drawable/tv_logo" />
 </RelativeLayout>

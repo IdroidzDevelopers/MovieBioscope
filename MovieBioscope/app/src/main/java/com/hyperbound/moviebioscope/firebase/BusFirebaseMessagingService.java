@@ -81,6 +81,10 @@ public class BusFirebaseMessagingService extends FirebaseMessagingService {
                         LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
                         break;
                     }
+                    case AppInterface.COMMAND_DELETE:{
+                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_VIDEO_DATA_RECEIVED).putExtra(CustomIntent.EXTRAS.URI_KEY, uri.toString()));
+                        break;
+                    }
                 }
             }
         }

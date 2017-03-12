@@ -1,10 +1,11 @@
 package com.lib.videoplayer.object;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 public class PushData {
-    private Asset[] assets;
+    private List<Asset> assets;
     private String action;
     private String content;
     private String transactionID;
@@ -30,18 +31,18 @@ public class PushData {
     @Override
     public String toString() {
         return "PushData{" +
-                "assets=" + Arrays.toString(assets) +
+                "assets=" + Arrays.asList(assets) +
                 ", action='" + action + '\'' +
                 ", content='" + content + '\'' +
                 ", transactionID='" + transactionID + '\'' +
                 '}';
     }
 
-    public Asset[] getAssets() {
+    public List<Asset> getAssets() {
         return assets;
     }
 
-    public void setAssets(Asset[] assets) {
+    public void setAssets(List<Asset> assets) {
         this.assets = assets;
     }
 

@@ -22,6 +22,7 @@ import com.lib.videoplayer.object.DownloadData;
 import com.lib.videoplayer.object.PushData;
 
 import java.io.File;
+import java.util.List;
 
 
 public class VideoTaskHandler extends Handler {
@@ -43,6 +44,7 @@ public class VideoTaskHandler extends Handler {
         String DOWNLOAD = "DOWNLOAD";
         String UPDATE = "UPDATE";
         String REFRESH = "REFRESH";
+        String DELETE = "DELETE";
     }
 
     public interface TASK {
@@ -85,14 +87,14 @@ public class VideoTaskHandler extends Handler {
                         Logger.info(TAG, "HANDLE_VIDEO_DATA :: action " + pushData.getAction() + " rowId " + rowId);
                         switch (pushData.getAction()) {
                             case JSON_ACTION.DOWNLOAD:
-                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(),"Received");
+                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(), "Received");
                                 downloadContent(pushData);
                                 break;
                             case JSON_ACTION.REFRESH:
                                 //TODO:
                                 break;
                             case JSON_ACTION.UPDATE:
-                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(),"Received");
+                                VideoData.createAndSendAcknowledgementData(pushData.getTransactionID(), "Received");
                                 String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
                                 Log.d(TAG, "SD CARD ::" + sdcard);
                                 VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.MOVIE) + "/"));
@@ -102,6 +104,13 @@ public class VideoTaskHandler extends Handler {
                                 VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO) + "/"));
                                 VideoData.deleteAllVideoDataExceptCompanyAndSafety();
                                 downloadContent(pushData);
+                                break;
+                            case JSON_ACTION.DELETE:
+                                List<Asset> assetsList = pushData.getAssets();
+                                for(Asset asset:assetsList){
+                                    String deleteFilePath=VideoData.getAssetPath(asset.getAssetID());
+                                    VideoData.deleteFile(deleteFilePath);
+                                }
                                 break;
                         }
                         break;
@@ -121,7 +130,7 @@ public class VideoTaskHandler extends Handler {
                             data.setDownloadStatus(VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
                             data.setLastPlayedTime(String.valueOf(System.currentTimeMillis()));
                             VideoData.insertOrUpdateVideoData(sContext, data);
-                            VideoData.createAndSendAcknowledgementData(data.getTransactionId(),data.getAssetID(),"Downloaded");
+                            VideoData.createAndSendAcknowledgementData(data.getTransactionId(), data.getAssetID(), "Downloaded");
                             Intent intent = new Intent(CustomIntent.ACTION_MEDIA_DOWNLOAD_COMPLETE);
                             intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, data.getAssetID());
                             intent.putExtra(CustomIntent.EXTRAS.TYPE, data.getType());

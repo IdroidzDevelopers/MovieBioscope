@@ -12,12 +12,21 @@ public class LocationInfo {
 
 
     private String city;
+    private String area;
     private String totalDistance;
     private String totalJourneyTime;
     private String distanceToSource;
     private String distanceToDestination;
     private String timeToDestination;
     private String lastSyncTime;
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
 
     public String getCity() {
         return city;

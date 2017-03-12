@@ -99,10 +99,11 @@ public class LocationUtil {
 
     }
 
-    public static synchronized void updateCurentLocation(String currentLocation,String city) {
+    public static synchronized void updateCurentLocation(String currentLocation,String city,String area) {
         ContentValues lLocationContentValue = new ContentValues();
         lLocationContentValue.put(LocationProvider.LOCATION_COLUMNS.CURRENT_LOCATION, currentLocation);
         lLocationContentValue.put(LocationProvider.LOCATION_COLUMNS.CITY, city);
+        lLocationContentValue.put(LocationProvider.LOCATION_COLUMNS.AREA, area);
         int count = LocationApplication.getLocationContext().getContentResolver().update(LocationProvider.CONTENT_URI_LOCATION_TABLE, lLocationContentValue, null, null);
         if (DEBUG)
             Log.d(TAG, "updateCurentLocation() :: CONTENT_URI_LOCATION_INFO_TABLE rows count " + count);
@@ -145,6 +146,7 @@ public class LocationUtil {
                     locationInfo = new LocationInfo();
                     locationInfo.setCurrentLocation(lCursor.getString(lCursor.getColumnIndex(LocationProvider.LOCATION_COLUMNS.CURRENT_LOCATION)));
                     locationInfo.setCity(lCursor.getString(lCursor.getColumnIndex(LocationProvider.LOCATION_COLUMNS.CITY)));
+                    locationInfo.setArea(lCursor.getString(lCursor.getColumnIndex(LocationProvider.LOCATION_COLUMNS.AREA)));
                 }
             }
         } catch (Exception e) {

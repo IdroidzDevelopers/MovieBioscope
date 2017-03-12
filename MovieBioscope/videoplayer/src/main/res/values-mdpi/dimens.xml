@@ -9,8 +9,8 @@
     <dimen name="journey_layout_top_margin">20dp</dimen>
     <dimen name="journey_textview_size">15sp</dimen>
     <dimen name="journey_value_size">20sp</dimen>
-    <dimen name="home_icon_width">80dp</dimen>
-    <dimen name="home_icon_height">35dp</dimen>
+    <dimen name="home_icon_width">90dp</dimen>
+    <dimen name="home_icon_height">40dp</dimen>
     <dimen name="home_icon_right_margin">100dp</dimen>
     <dimen name="route_icon_width">90dp</dimen>
     <dimen name="route_icon_height">55dp</dimen>

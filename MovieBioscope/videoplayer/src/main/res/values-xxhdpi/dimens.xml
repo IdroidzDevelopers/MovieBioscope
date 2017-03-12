@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="company_gif_width">80dp</dimen>
+    <dimen name="company_gif_height">80dp</dimen>
+    <dimen name="company_gif_right_margin">20dp</dimen>
+</resources>

@@ -83,7 +83,6 @@ public class MovieListFragment extends Fragment {
             movieList = VideoData.getMoviesList();
             adapter = new MovieListRVAdapter(getActivity(), movieList);
             return null;
-
         }
 
 

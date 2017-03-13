@@ -19,6 +19,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.lib.videoplayer.ui.MovieListActivity"
+            android:screenOrientation="landscape"
             android:launchMode="singleInstance"/>
 
         <provider

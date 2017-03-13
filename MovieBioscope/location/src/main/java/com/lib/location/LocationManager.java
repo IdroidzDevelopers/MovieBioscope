@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.lib.location.model.LocationInfo;
 import com.lib.location.util.LocationInterface;
@@ -32,11 +34,12 @@ import java.util.Locale;
  * Created by aarokiax on 2/13/2017.
  */
 
-public class LocationManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class LocationManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
     private static final String TAG = "LocationManager";
 
     private GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
+    private LocationRequest mLocationRequest;
 
     public void getCurrentLocation() {
         if (mGoogleApiClient == null) {
@@ -50,47 +53,15 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
     }
 
     protected void getLocation() {
+        if(null==mLocationRequest){
+            configureLocationRequest();
+        }
         //checkForPermission();
         if (mGoogleApiClient.isConnected()) {
-
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (null != mLastLocation) {
-                Log.d(TAG, "Latitude" + mLastLocation.getLatitude() + "Long" + mLastLocation.getLongitude());
-                LocationInfo routeData = LocationUtil.getRouteInfo();
-                if (null != routeData) {
-                    VolleyUtil.getLocationInfo(mLastLocation.getLatitude(), mLastLocation.getLongitude(), routeData.getSource(), routeData.getDestination());
-                }
-                Geocoder geocoder = new Geocoder(LocationApplication.getLocationContext(), Locale.getDefault());
-                List<Address> addresses = null;
-                try {
-                    // In this we get just a single address.
-                    addresses = geocoder.getFromLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 1);
-                    if (addresses.size() > 0) {
-                        Address address = addresses.get(0);
-                        if (null != address) {
-                            String subLocality = address.getSubLocality();
-                            String city = address.getLocality();
-                            String currentArea=null;
-                            if(null!=address.getAddressLine(1)) {
-                                currentArea = address.getAddressLine(0)+" "+address.getAddressLine(1);
-                            }
-                            if (null != subLocality) {
-                                LocationUtil.updateCurentLocation(subLocality,city,currentArea);
-                            } else {
-                                LocationUtil.updateCurentLocation(address.getLocality(),null,currentArea);
+            processLocation(mLastLocation);
 
-                            }
-                            LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
-                        }
-                    }
-                } catch (IOException ioException) {
-                    Log.e(TAG, ioException.toString());
-                } catch (IllegalArgumentException illegalArgumentException) {
-                    Log.e(TAG, "Latitude = " + mLastLocation.getLatitude() +
-                            ", Longitude = " + mLastLocation.getLongitude(), illegalArgumentException);
-                }
-
-            }
         }
     }
 
@@ -117,6 +88,14 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
                 .build();
     }
 
+    protected synchronized void configureLocationRequest(){
+        mLocationRequest=new LocationRequest();
+        mLocationRequest.setInterval(LocationInterface.LOCATION_INTERVAL);
+        mLocationRequest.setFastestInterval(LocationInterface.FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(LocationInterface.MINIMUM_DISPLACEMENT);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
         getLocation();
@@ -131,5 +110,51 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(TAG,"onLocationChanged :: "+location.toString());
+        processLocation(location);
+    }
+
+    private void processLocation(Location newLocation){
+        if (null != newLocation) {
+            Log.d(TAG, "Latitude" + newLocation.getLatitude() + "Long" + newLocation.getLongitude());
+            LocationInfo routeData = LocationUtil.getRouteInfo();
+            if (null != routeData) {
+                VolleyUtil.getLocationInfo(newLocation.getLatitude(), newLocation.getLongitude(), routeData.getSource(), routeData.getDestination());
+            }
+            Geocoder geocoder = new Geocoder(LocationApplication.getLocationContext(), Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                // In this we get just a single address.
+                addresses = geocoder.getFromLocation(newLocation.getLatitude(), newLocation.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    Address address = addresses.get(0);
+                    if (null != address) {
+                        String subLocality = address.getSubLocality();
+                        String city = address.getLocality();
+                        String currentArea=null;
+                        if(null!=address.getAddressLine(1)) {
+                            currentArea = address.getAddressLine(0)+" "+address.getAddressLine(1);
+                        }
+                        if (null != subLocality) {
+                            LocationUtil.updateCurentLocation(subLocality,city,currentArea);
+                        } else {
+                            LocationUtil.updateCurentLocation(address.getLocality(),null,currentArea);
+
+                        }
+                        LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
+                    }
+                }
+            } catch (IOException ioException) {
+                Log.e(TAG, ioException.toString());
+            } catch (IllegalArgumentException illegalArgumentException) {
+                Log.e(TAG, "Latitude = " + newLocation.getLatitude() +
+                        ", Longitude = " + newLocation.getLongitude(), illegalArgumentException);
+            }
+
+        }
     }
 }

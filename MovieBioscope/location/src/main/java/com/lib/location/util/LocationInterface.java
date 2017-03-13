@@ -17,4 +17,8 @@ public interface LocationInterface {
 
     String STATUS_OK_KEY = "OK";
 
+    int LOCATION_INTERVAL=5000;
+    int FASTEST_INTERVAL=5000;
+    float MINIMUM_DISPLACEMENT=100.0f;
+
 }

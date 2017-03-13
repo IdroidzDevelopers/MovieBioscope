@@ -33,7 +33,7 @@ public class DownloadUtil {
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
             FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + dir);
-            request.setDestinationInExternalPublicDir(dir, name);
+            request.setDestinationInExternalPublicDir( dir, name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }

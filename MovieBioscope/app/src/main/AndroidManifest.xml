@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.hyperbound.moviebioscope">
+    package="com.app.navajhalaka">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -53,11 +53,11 @@
 
         <provider
             android:name=".database.BusProvider"
-            android:authorities="com.hyperbound.moviebioscope.contentprovider.database.BusProvider" />
+            android:authorities="com.app.navajhalaka.contentprovider.database.BusProvider" />
 
         <provider
             android:name=".database.AnalyticProvider"
-            android:authorities="com.hyperbound.moviebioscope.contentprovider.database.AnalyticProvider" />
+            android:authorities="com.app.navajhalaka.contentprovider.database.AnalyticProvider" />
 
         <receiver android:name=".receiver.ConnectionChangeReceiver">
             <intent-filter>

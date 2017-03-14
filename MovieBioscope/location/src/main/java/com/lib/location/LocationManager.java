@@ -8,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,17 +30,23 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import android.app.IntentService;
 
 /**
  * Created by aarokiax on 2/13/2017.
  */
 
-public class LocationManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
+public class LocationManager extends IntentService implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,LocationListener {
     private static final String TAG = "LocationManager";
 
     private GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     private LocationRequest mLocationRequest;
+
+
+    public LocationManager() {
+        super(TAG);
+    }
 
     public void getCurrentLocation() {
         if (mGoogleApiClient == null) {
@@ -52,6 +59,8 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
         }
     }
 
+
+
     protected void getLocation() {
         if(null==mLocationRequest){
             configureLocationRequest();
@@ -60,7 +69,8 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            processLocation(mLastLocation);
+            //getAddressInfo(mLastLocation);
+            getDistanceInfo(mLastLocation);
 
         }
     }
@@ -115,46 +125,56 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG,"onLocationChanged :: "+location.toString());
-        processLocation(location);
+        getAddressInfo(location);
     }
 
-    private void processLocation(Location newLocation){
-        if (null != newLocation) {
-            Log.d(TAG, "Latitude" + newLocation.getLatitude() + "Long" + newLocation.getLongitude());
+    private void getAddressInfo(Location location){
+        Geocoder geocoder = new Geocoder(LocationApplication.getLocationContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            // In this we get just a single address.
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses.size() > 0) {
+                Address address = addresses.get(0);
+                if (null != address) {
+                    String subLocality = address.getSubLocality();
+                    String city = address.getLocality();
+                    String currentArea=null;
+                    if(null!=address.getAddressLine(1)) {
+                        currentArea = address.getAddressLine(0)+" "+address.getAddressLine(1);
+                    }
+                    if (null != subLocality) {
+                        LocationUtil.updateCurentLocation(subLocality,city,currentArea);
+                    } else {
+                        LocationUtil.updateCurentLocation(address.getLocality(),null,currentArea);
+
+                    }
+                    LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
+                }
+            }
+        } catch (IOException ioException) {
+            Log.e(TAG, ioException.toString());
+        } catch (IllegalArgumentException illegalArgumentException) {
+            Log.e(TAG, "Latitude = " + location.getLatitude() +
+                    ", Longitude = " + location.getLongitude(), illegalArgumentException);
+        }
+
+    }
+
+
+    private void getDistanceInfo(Location location){
+        if (null != location) {
+            Log.d(TAG, "Latitude" + location.getLatitude() + "Long" + location.getLongitude());
             LocationInfo routeData = LocationUtil.getRouteInfo();
             if (null != routeData) {
-                VolleyUtil.getLocationInfo(newLocation.getLatitude(), newLocation.getLongitude(), routeData.getSource(), routeData.getDestination());
+                VolleyUtil.getLocationInfo(location.getLatitude(), location.getLongitude(), routeData.getSource(), routeData.getDestination());
             }
-            Geocoder geocoder = new Geocoder(LocationApplication.getLocationContext(), Locale.getDefault());
-            List<Address> addresses = null;
-            try {
-                // In this we get just a single address.
-                addresses = geocoder.getFromLocation(newLocation.getLatitude(), newLocation.getLongitude(), 1);
-                if (addresses.size() > 0) {
-                    Address address = addresses.get(0);
-                    if (null != address) {
-                        String subLocality = address.getSubLocality();
-                        String city = address.getLocality();
-                        String currentArea=null;
-                        if(null!=address.getAddressLine(1)) {
-                            currentArea = address.getAddressLine(0)+" "+address.getAddressLine(1);
-                        }
-                        if (null != subLocality) {
-                            LocationUtil.updateCurentLocation(subLocality,city,currentArea);
-                        } else {
-                            LocationUtil.updateCurentLocation(address.getLocality(),null,currentArea);
-
-                        }
-                        LocalBroadcastManager.getInstance(LocationApplication.getLocationContext()).sendBroadcast(new Intent(CustomIntent.ACTION_CURRENT_LOCATION_CHANGED));
-                    }
-                }
-            } catch (IOException ioException) {
-                Log.e(TAG, ioException.toString());
-            } catch (IllegalArgumentException illegalArgumentException) {
-                Log.e(TAG, "Latitude = " + newLocation.getLatitude() +
-                        ", Longitude = " + newLocation.getLongitude(), illegalArgumentException);
-            }
-
         }
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        Log.d(TAG,"Got intent to start Location manager");
+        getCurrentLocation();
     }
 }

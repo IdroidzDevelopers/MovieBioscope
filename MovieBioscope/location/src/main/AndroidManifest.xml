@@ -15,6 +15,9 @@
         <provider
             android:name="com.lib.location.databases.LocationProvider"
             android:authorities="com.lib.location.contentprovider.database.LocationProvider" />
+        <service
+            android:name=".LocationManager"
+            android:exported="false"/>
     </application>
 
 </manifest>

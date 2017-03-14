@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "408500113323",
-    "firebase_url": "https://moviebioscope-7d1f5.firebaseio.com",
-    "project_id": "moviebioscope-7d1f5",
-    "storage_bucket": "moviebioscope-7d1f5.appspot.com"
+    "project_number": "1075555486603",
+    "firebase_url": "https://navajhalaka.firebaseio.com",
+    "project_id": "navajhalaka",
+    "storage_bucket": "navajhalaka.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:408500113323:android:317109684ade3de0",
+        "mobilesdk_app_id": "1:1075555486603:android:65a6b64daeba8937",
         "android_client_info": {
           "package_name": "com.app.navajhalaka"
         }
       },
       "oauth_client": [
         {
-          "client_id": "408500113323-pt1jsr52is4v2eke75t5lkokl6a7ni3l.apps.googleusercontent.com",
+          "client_id": "1075555486603-uqdod3rk0om3sv7e49n44sb8bcnqokqd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.app.navajhalaka",
@@ -23,21 +23,13 @@
           }
         },
         {
-          "client_id": "408500113323-j49uulbka5gi4b4grkjgr8soc89uact2.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.app.navajhalaka",
-            "certificate_hash": "4bc801382e8f36db6d57605f5fb92b420e518c21"
-          }
-        },
-        {
-          "client_id": "408500113323-3qs5al9uu1kglt239dg5ua9a2rvh952r.apps.googleusercontent.com",
+          "client_id": "1075555486603-gqafv99f78jo551h9lvm1nv59ho2o4b4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDd77rKluUd8uVTJcbaymy28dJtqF6tB0A"
+          "current_key": "AIzaSyBQ7OGVHbdmE1iqg6waMW4x4VkwFy5so_4"
         }
       ],
       "services": {
@@ -48,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "408500113323-3qs5al9uu1kglt239dg5ua9a2rvh952r.apps.googleusercontent.com",
+              "client_id": "1075555486603-gqafv99f78jo551h9lvm1nv59ho2o4b4.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

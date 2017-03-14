@@ -262,11 +262,15 @@ public class StateMachine {
         if (null != videoInfo.movieUri) {
             lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.MOVIE_URI, videoInfo.movieUri.toString());
         }
-        lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.MOVIE_SEEK_TIME, movieSeekTime);
+        if (0 != movieSeekTime) {
+            lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.MOVIE_SEEK_TIME, movieSeekTime);
+        }
         if (null != videoInfo.otherUri) {
             lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.OTHER_URI, videoInfo.otherUri.toString());
         }
-        lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME, mOtherSeekTime);
+        if (0 != mOtherSeekTime) {
+            lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME, mOtherSeekTime);
+        }
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_INTERMEDIATE_VIDEO_STATE, lValues, selection, selectionArg);
         Log.d(TAG, "persistState() :: count :: " + count);
         if (count == 0) {

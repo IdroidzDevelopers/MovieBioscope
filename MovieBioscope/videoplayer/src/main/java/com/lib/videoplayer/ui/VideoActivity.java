@@ -567,13 +567,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case TASK_EVENT.REMOVE_BREAKING_NEWS:
                     removeBreakingNews();
                     mStateMachine.retainPersistenceState(getVideoState());
-                    mStateMachine.deletePersistState(getVideoState());
                     resumeVideo();
                     break;
                 case TASK_EVENT.REMOVE_COMPANY_AD:
                     removeCompanyAd();
                     mStateMachine.retainPersistenceState(getVideoState());
-                    mStateMachine.deletePersistState(getVideoState());
                     resumeVideo();
                     break;
                 case TASK_EVENT.FINISH_ACTIVITY:
@@ -653,29 +651,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mStateMachine.print();
             switch (msg.what) {
                 case EVENT.PLAY_NEXT:
-                    switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.MOVIE:
-                        case StateMachine.PLAYING_STATE.ADV:
-                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
-                        case StateMachine.PLAYING_STATE.BREAKING_TEXT:
-                        case StateMachine.PLAYING_STATE.COMPANY_AD:
-                            sendCompletedBroadcast();
-                        case StateMachine.PLAYING_STATE.NONE:
-                        case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
-                        case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
-                        case StateMachine.PLAYING_STATE.PAUSED:
-                        case StateMachine.PLAYING_STATE.INTRO_VIDEO:
-                            VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
-                            startAd();
-                            break;
-                    }
+                    VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
+                    startAd();
                     break;
                 case EVENT.RESUME:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
                         case StateMachine.PLAYING_STATE.PAUSED:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
                             mStateMachine.retainPersistenceState(getVideoState());
-                            mStateMachine.deletePersistState(getVideoState());
                             resumeVideo();
                             break;
                         case StateMachine.PLAYING_STATE.NONE:
@@ -685,6 +668,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         default:
                             Logger.debug(TAG, "worst case prev :: " + mStateMachine.videoInfo.getPrevState() + " curr " + mStateMachine.videoInfo.getCurrentState());
                             mStateMachine.deletePersistState(getVideoState());
+                            mStateMachine.reset();
                             mState.sendEmptyMessage(EVENT.PLAY_NEXT);
                     }
                     break;
@@ -772,7 +756,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.PAUSED:
                             //Forcefully make the previous state as movie and try to resume, because ad , breaking travel having a single video view
                             mStateMachine.retainPersistenceState(getVideoState());
-                            mStateMachine.deletePersistState(getVideoState());
                             mStateMachine.videoInfo.setPrevState(StateMachine.PLAYING_STATE.MOVIE);
                             if (0 != mStateMachine.videoInfo.getMovieSeekTime()) {
                                 resumeVideo();
@@ -787,7 +770,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.PAUSED:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
                             mStateMachine.retainPersistenceState(getVideoState());
-                            mStateMachine.deletePersistState(getVideoState());
                             resumeVideo();
                             break;
                         case StateMachine.PLAYING_STATE.NONE:
@@ -798,6 +780,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         default:
                             Logger.debug(TAG, "worst case prev :: " + mStateMachine.videoInfo.getPrevState() + " curr " + mStateMachine.videoInfo.getCurrentState());
                             mStateMachine.deletePersistState(getVideoState());
+                            mStateMachine.reset();
                             mState.sendEmptyMessage(EVENT.PLAY_NEXT);
                     }
                     break;
@@ -910,6 +893,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.seekTo(mStateMachine.videoInfo.getMovieSeekTime());
             mMovieView.start();
             mMovieView.setOnPreparedListener(mMoviePrepareListener);
+            mStateMachine.deletePersistState(getVideoState());
             hideLoadingIcon();
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
             //reset the value so that it wont resume from same place again
@@ -921,7 +905,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mOtherView.start();
             mOtherView.setOnPreparedListener(mOtherPrepareListener);
             hideLoadingIcon();
-            //reset the value so that it wont resume from same place again
+            if (getVideoState() == StateMachine.VIDEO_STATE.ONLY_ADV) {
+                mStateMachine.deletePersistState(getVideoState());
+            }
         }
         mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.videoInfo.getPrevState());
     }

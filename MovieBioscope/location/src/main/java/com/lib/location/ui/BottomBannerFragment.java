@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.lib.location.LocationManager;
 import com.lib.location.R;
 import com.lib.location.model.LocationInfo;
 import com.lib.location.util.LocationUtil;
@@ -176,12 +177,19 @@ public class BottomBannerFragment extends Fragment {
             LocationUtil.insertOrUpdateRouteInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
             if (NetworkUtil.isInternetAvailable(getActivity()) && NetworkUtil.isGPSEnabled(getActivity())) {
                 Logger.debug(TAG, "internet and gps on :: fetching location information");
-                com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
-                lm.getCurrentLocation();
+                /*com.lib.location.LocationManager lm = new com.lib.location.LocationManager();
+                lm.getCurrentLocation();*/
+                startLocationService();
                 VolleyUtil.getTravelInfo(lRoute.getmRouteSource(), lRoute.getmRouteDestination());
             } else {
                 Logger.debug(TAG, "internet and gps off");
             }
         }
+    }
+
+    protected void startLocationService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(getActivity(), LocationManager.class);
+        getActivity().startService(intent);
     }
 }

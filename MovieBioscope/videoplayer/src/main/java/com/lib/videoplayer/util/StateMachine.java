@@ -39,6 +39,7 @@ public class StateMachine {
         int INTRO_VIDEO = 8;
         int MOVIE_FINISHED = 9;
         int COMPANY_AD = 10;
+        int LANDING_VIDEO = 11;
     }
 
     /**
@@ -221,6 +222,10 @@ public class StateMachine {
                 return "INTRO_VIDEO";
             case PLAYING_STATE.MOVIE_FINISHED:
                 return "MOVIE_FINISHED";
+            case PLAYING_STATE.COMPANY_AD:
+                return "COMPANY_AD";
+            case PLAYING_STATE.LANDING_VIDEO:
+                return "LANDING_VIDEO";
             default:
                 return "UNKNOWN";
         }

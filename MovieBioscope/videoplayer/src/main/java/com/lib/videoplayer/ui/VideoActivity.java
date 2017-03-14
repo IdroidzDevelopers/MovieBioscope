@@ -348,6 +348,27 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
+    /**
+     * Method to start landing video
+     */
+    private void startLandingVideo() {
+        mMovieView.setVisibility(View.GONE);
+        Data lData = VideoData.getRandomLandingVideo(mContext);
+        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
+            if (!this.isFinishing()) {
+                mOtherView.setVisibility(View.VISIBLE);
+                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
+                mOtherView.requestFocus();
+                mOtherView.start();
+                hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
+                mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
+                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.LANDING_VIDEO);
+                VideoData.updateVideoData(mContext, lData);
+            }
+        }
+    }
+
     private void startBreakingVideo() {
         mMovieView.setVisibility(View.GONE);
         Data lData = VideoData.getBreakingVideo(mContext);
@@ -652,7 +673,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             switch (msg.what) {
                 case EVENT.PLAY_NEXT:
                     VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
-                    startAd();
+                    startLandingVideo();
                     break;
                 case EVENT.RESUME:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
@@ -663,7 +684,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             break;
                         case StateMachine.PLAYING_STATE.NONE:
                             VideoTaskHandler.getInstance(mContext).sendEmptyMessageDelayed(VideoTaskHandler.TASK.BACK_GROUND_BREAKING_NEWS_SEARCH, BACKGROUND_SEARCH_AFTER);
-                            startAd();
+                            startLandingVideo();
                             break;
                         default:
                             Logger.debug(TAG, "worst case prev :: " + mStateMachine.videoInfo.getPrevState() + " curr " + mStateMachine.videoInfo.getCurrentState());
@@ -674,14 +695,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
                 case EVENT.PLAY_BREAKING_VIDEO:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.ADV:
+                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
                             startBreakingVideo();
                             break;
                     }
                     break;
                 case EVENT.PLAY_BREAKING_NEWS:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.ADV:
+                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                             pauseVideo();
                             showBreakingNews();
@@ -692,7 +713,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
                 case EVENT.PLAY_COMPANY_AD:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.ADV:
+                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                             pauseVideo();
                             showCompanyAd();

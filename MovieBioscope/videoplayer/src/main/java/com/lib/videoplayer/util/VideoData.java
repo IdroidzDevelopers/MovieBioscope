@@ -136,6 +136,37 @@ public class VideoData {
         return lData;
     }
 
+    public static Data getRandomLandingVideo(Context aContext) {
+        Data lData = null;
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    lData = new Data();
+                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    lData.setAssetID(lId);
+                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                    lData.setPath(lValue);
+                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                    lData.setCount(lCount);
+                    break;
+                }
+            } catch (Exception e) {
+                Logger.error(TAG, "Exception :: getRandomLandingVideo() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        Logger.debug(TAG, "getRandomLandingVideo() :: " + lData);
+        return lData;
+    }
+
     public static boolean isAdvExist(Context aContext) {
         boolean flag = false;
         if (null != aContext) {
@@ -156,6 +187,37 @@ public class VideoData {
                     lCursor.close();
                 }
             }
+        }
+        return flag;
+    }
+
+    /**
+     * Method to check landing video exist or not
+     *
+     * @param aContext
+     * @return
+     */
+    public static boolean isLandingVideoExist(Context aContext) {
+        boolean flag = false;
+        if (null != aContext) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            Cursor lCursor = null;
+            try {
+                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    flag = true;
+                    break;
+                }
+            } catch (Exception e) {
+                Logger.error(TAG, "Exception :: isLandingVideoExist() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+            Logger.debug(TAG, "isLandingVideoExist() :: " + flag);
         }
         return flag;
     }
@@ -563,12 +625,14 @@ public class VideoData {
 
         if (count == 0) {
             if (isSingleTonType(data.getType())) {
-                //dirty logic
+                Data videoData = getVideoForType(data.getType());
+                deleteFile(videoData.getPath());
                 //at any time only one breaking new and video
                 selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
                 selectionArg = new String[]{"" + data.getType()};
                 count = context.getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
                 Logger.debug(TAG, "deleted count is " + count);
+
             }
             context.getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, value);
         }
@@ -613,8 +677,7 @@ public class VideoData {
             int videoTypeDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
             Log.d(TAG, "deleteRequiredVideoType :: " + videoTypeDeleteCount);
         } catch (Exception e) {
-            Log.d(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
-            Log.d(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
+            Logger.error(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
         }
     }
 
@@ -626,7 +689,7 @@ public class VideoData {
     }
 
     public static void deleteFile(String filePath) {
-        if(null!=filePath) {
+        if (null != filePath) {
             File deleteFile = new File(filePath);
             boolean status = deleteFile.delete();
             Log.d(TAG, "File Delete status:: " + status);
@@ -725,7 +788,7 @@ public class VideoData {
     }
 
     public static synchronized String getAssetPath(String assetId) {
-        String assetPath=null;
+        String assetPath = null;
         if (null != assetId) {
             String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
             String[] lSelectionArg = {"" + assetId};
@@ -735,7 +798,7 @@ public class VideoData {
                 while (null != lCursor && lCursor.moveToNext()) {
                     assetPath = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
                     if (null != assetPath) {
-                            Logger.debug(TAG, "getAssetPath() ::"+assetPath);
+                        Logger.debug(TAG, "getAssetPath() ::" + assetPath);
 
                     }
                     break;
@@ -749,5 +812,38 @@ public class VideoData {
             }
         }
         return assetPath;
+    }
+
+    /**
+     * Method to get video for type
+     *
+     * @return
+     */
+    public static Data getVideoForType(String type) {
+        Data lData = new Data();
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ?";
+        String[] lSelectionArg = {type};
+        Cursor lCursor = null;
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+            while (null != lCursor && lCursor.moveToNext()) {
+                String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                lData.setAssetID(lId);
+                String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                lData.setPath(lValue);
+                String lMessage = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.MESSAGE));
+                lData.setMessage(lMessage);
+                int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                lData.setCount(lCount);
+                break;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: getVideoForType() :: ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        return lData;
     }
 }

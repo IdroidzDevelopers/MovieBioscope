@@ -116,8 +116,8 @@ public class RouteUtil {
         List<String> routeImages = new ArrayList<String>();
         if (null != routeId) {
             Cursor lCursor = null;
-            String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ?";
-            String[] lSelectionArg = new String[]{"" + routeId};
+            String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ? AND "+RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS+" = ?";
+            String[] lSelectionArg = new String[]{"" + routeId,RouteProvider.DOWNLOAD_STATUS.DOWNLOADED};
             try {
                 lCursor = RouteApplication.getRouteContext().getContentResolver().query(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, lSelection, lSelectionArg, null);
                 if (null != lCursor) {

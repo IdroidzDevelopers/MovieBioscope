@@ -71,6 +71,7 @@ public class VideoProvider extends ContentProvider {
         String BREAKING_VIDEO = "news_video";
         String BREAKING_NEWS = "news_image";
         String COMPANY_AD = "company_ad";
+        String LANDING_VIDEO = "landing_video";
     }
 
     public interface DOWNLOAD_STATUS {

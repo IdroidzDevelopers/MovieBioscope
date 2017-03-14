@@ -126,6 +126,8 @@ public class DownloadUtil {
                 return "/movie_bioscope/breaking_video/";
             case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
                 return "/movie_bioscope/breaking_news/";
+            case VideoProvider.VIDEO_TYPE.LANDING_VIDEO:
+                return "/movie_bioscope/landing_video/";
             default:
                 return "/movie_bioscope/";
 

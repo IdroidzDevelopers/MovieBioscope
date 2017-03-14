@@ -176,7 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            if (!isDialogVisible() && VideoData.isAdvExist(BioscopeApp.getContext())) {
+            if (!isDialogVisible() && VideoData.isLandingVideoExist(BioscopeApp.getContext())) {
                 Intent lIntent = new Intent(getActivity(), VideoActivity.class);
                 Bundle lBundle = new Bundle();
                 lBundle.putInt(CustomIntent.EXTRAS.VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);

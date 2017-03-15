@@ -625,8 +625,6 @@ public class VideoData {
 
         if (count == 0) {
             if (isSingleTonType(data.getType())) {
-                Data videoData = getVideoForType(data.getType());
-                deleteFile(videoData.getPath());
                 //at any time only one breaking new and video
                 selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
                 selectionArg = new String[]{"" + data.getType()};

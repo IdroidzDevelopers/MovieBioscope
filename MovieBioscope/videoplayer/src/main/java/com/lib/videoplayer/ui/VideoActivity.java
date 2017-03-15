@@ -295,6 +295,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      * Method to start movie view
      */
     private void startMovie() {
+        mStateMachine.deletePersistState(getVideoState());
         mOtherView.setVisibility(View.GONE);
         Data lData = VideoData.getMovieData(mContext);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
@@ -858,10 +859,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.ADV:
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.INTRO_VIDEO:
-                            pauseVideo();
                         case StateMachine.PLAYING_STATE.NONE:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                            pauseVideo();
                             showBreakingNews();
                             mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);
                             break;
@@ -876,10 +877,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         case StateMachine.PLAYING_STATE.ADV:
                         case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
                         case StateMachine.PLAYING_STATE.INTRO_VIDEO:
-                            pauseVideo();
                         case StateMachine.PLAYING_STATE.NONE:
                         case StateMachine.PLAYING_STATE.BREAKING_TEXT:
                         case StateMachine.PLAYING_STATE.PAUSED:
+                            pauseVideo();
                             showCompanyAd();
                             mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_COMPANY_AD, COMPANY_AD_DISPLAY_TIME);
                             break;

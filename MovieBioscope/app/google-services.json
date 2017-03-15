@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "1075555486603",
-    "firebase_url": "https://navajhalaka.firebaseio.com",
-    "project_id": "navajhalaka",
-    "storage_bucket": "navajhalaka.appspot.com"
+    "project_number": "244910839442",
+    "firebase_url": "https://navajhalakaapp.firebaseio.com",
+    "project_id": "navajhalakaapp",
+    "storage_bucket": "navajhalakaapp.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1075555486603:android:65a6b64daeba8937",
+        "mobilesdk_app_id": "1:244910839442:android:65a6b64daeba8937",
         "android_client_info": {
           "package_name": "com.app.navajhalaka"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1075555486603-uqdod3rk0om3sv7e49n44sb8bcnqokqd.apps.googleusercontent.com",
+          "client_id": "244910839442-ch3nbv84j3de5a3btj68a4qqku6aqvsf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.app.navajhalaka",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "1075555486603-gqafv99f78jo551h9lvm1nv59ho2o4b4.apps.googleusercontent.com",
+          "client_id": "244910839442-rtonvlqrpg7ftc6knq5vjodb6j1i7a4v.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBQ7OGVHbdmE1iqg6waMW4x4VkwFy5so_4"
+          "current_key": "AIzaSyC39KyOhc78ZfHlwHiJbtDKUkfdWTzC1pw"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "1075555486603-gqafv99f78jo551h9lvm1nv59ho2o4b4.apps.googleusercontent.com",
+              "client_id": "244910839442-rtonvlqrpg7ftc6knq5vjodb6j1i7a4v.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

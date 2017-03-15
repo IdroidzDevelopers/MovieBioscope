@@ -10,7 +10,7 @@ public interface LocationInterface {
     String ORIGIN_KEY = "&origins=";
     String DESTINATION_KEY = "&destinations=";
     String API_KEY = "&key=";
-    String DISTANCE_MATRIX_API_KEY = "AIzaSyB3jccl5gExvhXHTlC-yrPwk_bSQe1WBbI";
+    String DISTANCE_MATRIX_API_KEY = "AIzaSyB3diyn_W-KvF2Dg_7k6WL5qmBSSrWo2H8";
 
     int HANDLE_LOCATION_INFO = 1;
     int HANDLE_JOURNEY_INFO = 2;

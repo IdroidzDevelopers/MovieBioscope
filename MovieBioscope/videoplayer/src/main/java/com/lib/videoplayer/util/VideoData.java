@@ -140,7 +140,7 @@ public class VideoData {
         Data lData = null;
         if (null != aContext) {
             String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.LANDING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -201,7 +201,7 @@ public class VideoData {
         boolean flag = false;
         if (null != aContext) {
             String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.LANDING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {

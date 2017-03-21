@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -680,17 +681,23 @@ public class VideoData {
     }
 
     public static void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles()) {
-                boolean status = child.delete();
-            }
+        if(null!=fileOrDirectory) {
+            if (fileOrDirectory.isDirectory())
+                for (File child : fileOrDirectory.listFiles()) {
+                    boolean status = child.delete();
+                }
+        }
     }
 
     public static void deleteFile(String filePath) {
         if (null != filePath) {
-            File deleteFile = new File(filePath);
-            boolean status = deleteFile.delete();
-            Log.d(TAG, "File Delete status:: " + status);
+            try {
+                File deleteFile = new File(filePath);
+                boolean status = deleteFile.delete();
+                Log.d(TAG, "File Delete status:: " + status);
+            }catch (Exception e){
+                Logger.error(TAG,"Exception :: deleteFile() ::",e);
+            }
         }
     }
 

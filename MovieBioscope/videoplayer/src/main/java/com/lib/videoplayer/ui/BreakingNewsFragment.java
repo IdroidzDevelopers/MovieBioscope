@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 
 
@@ -53,6 +54,7 @@ public class BreakingNewsFragment extends Fragment {
         mBreakingMessage = (TextView) mRootView.findViewById(R.id.breaking_news_message);
         Data data = VideoData.getBreakingNews(getActivity());
         if (null != data && null != data.getPath()) {
+            StateMachine.getInstance().videoInfo.setVideoId(data.getAssetID());
             mBreakingImage.setImageURI(Uri.parse(data.getPath()));
             VideoData.updateVideoData(getActivity(), data);
         }

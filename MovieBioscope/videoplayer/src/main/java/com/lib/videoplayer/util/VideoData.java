@@ -27,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -330,12 +329,11 @@ public class VideoData {
     public static Data getBreakingVideo(Context context) {
         Data lData = new Data();
         if (null != context) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
             Cursor lCursor = null;
             try {
-                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
                 while (null != lCursor && lCursor.moveToNext()) {
                     String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
                     lData.setAssetID(lId);
@@ -365,8 +363,8 @@ public class VideoData {
     public static Data getCompanyAd(Context context) {
         Data lData = new Data();
         if (null != context) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
             Cursor lCursor = null;
             try {
                 lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
@@ -403,12 +401,11 @@ public class VideoData {
     public static Data getBreakingNews(Context context) {
         Data lData = new Data();
         if (null != context) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
             Cursor lCursor = null;
             try {
-                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
+                lCursor = context.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
                 while (null != lCursor && lCursor.moveToNext()) {
                     String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
                     lData.setAssetID(lId);
@@ -492,6 +489,7 @@ public class VideoData {
                             return true;
                         } else {
                             Logger.debug(TAG, "isBreakingNewsStillValid() :: u missed breaking news ");
+                            deleteFileById(videoId);
                             return false;
                         }
                     }
@@ -625,36 +623,15 @@ public class VideoData {
         Logger.debug(TAG, "updated count is " + count);
 
         if (count == 0) {
-            if (isSingleTonType(data.getType())) {
+/*            if (isSingleTonType(data.getType())) {
                 //at any time only one breaking new and video
                 selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
                 selectionArg = new String[]{"" + data.getType()};
                 count = context.getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
                 Logger.debug(TAG, "deleted count is " + count);
 
-            }
+            }*/
             context.getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, value);
-        }
-    }
-
-    /**
-     * Method to check the video type is single existance
-     *
-     * @param type
-     * @return
-     */
-    private static boolean isSingleTonType(String type) {
-        switch (type) {
-            case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
-            case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
-            case VideoProvider.VIDEO_TYPE.COMPANY_VIDEO:
-            case VideoProvider.VIDEO_TYPE.COMPANY_AD:
-            case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
-                return true;
-            default:
-                return false;
-
-
         }
     }
 
@@ -669,19 +646,22 @@ public class VideoData {
         }
     }
 
-    public static void deleteRequiredVideoType(String videoType) {
-        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " = ?";
-        String[] selectionArg = new String[]{"" + videoType};
+    public static void deleteFileById(String videoId) {
+        String path = getAssetPath(videoId);
+        deleteFile(path);
+        String selection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] selectionArg = new String[]{"" + videoId};
         try {
             int videoTypeDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
-            Log.d(TAG, "deleteRequiredVideoType :: " + videoTypeDeleteCount);
+            Log.d(TAG, "--(debug)-- :: deleteFileById :: " + videoTypeDeleteCount);
         } catch (Exception e) {
-            Logger.error(TAG, "Exception :: deleteRequiredVideoType() :: ", e);
+            Logger.error(TAG, "Exception :: deleteFileById() :: ", e);
         }
     }
 
+
     public static void deleteRecursive(File fileOrDirectory) {
-        if(null!=fileOrDirectory) {
+        if (null != fileOrDirectory) {
             if (fileOrDirectory.isDirectory())
                 for (File child : fileOrDirectory.listFiles()) {
                     boolean status = child.delete();
@@ -694,9 +674,9 @@ public class VideoData {
             try {
                 File deleteFile = new File(filePath);
                 boolean status = deleteFile.delete();
-                Log.d(TAG, "File Delete status:: " + status);
-            }catch (Exception e){
-                Logger.error(TAG,"Exception :: deleteFile() ::",e);
+                Log.d(TAG, "--(debug)-- :: File Delete status:: " + status);
+            } catch (Exception e) {
+                Logger.error(TAG, "Exception :: deleteFile() ::", e);
             }
         }
     }
@@ -809,7 +789,7 @@ public class VideoData {
                     break;
                 }
             } catch (Exception e) {
-                Log.d(TAG, "Exception :: backgroundSearchForBreaking() :: ", e);
+                Log.e(TAG, "Exception :: getAssetPath() :: ", e);
             } finally {
                 if (null != lCursor && !lCursor.isClosed()) {
                     lCursor.close();

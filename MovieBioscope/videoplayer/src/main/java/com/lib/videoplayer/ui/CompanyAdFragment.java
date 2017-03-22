@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.lib.videoplayer.R;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 
 
@@ -50,6 +51,7 @@ public class CompanyAdFragment extends Fragment {
         mCompanyAdImage = (ImageView) mRootView.findViewById(R.id.company_ad_image);
         Data data = VideoData.getCompanyAd(getActivity());
         if (null != data && null != data.getPath()) {
+            StateMachine.getInstance().videoInfo.setVideoId(data.getAssetID());
             mCompanyAdImage.setImageURI(Uri.parse(data.getPath()));
             VideoData.updateVideoData(getActivity(), data);
         }

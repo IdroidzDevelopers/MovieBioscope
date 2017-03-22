@@ -6,8 +6,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.lib.utility.util.Logger;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class StateMachine {
     private static final String TAG = StateMachine.class.getSimpleName();
@@ -35,7 +40,6 @@ public class StateMachine {
         int ADV = 4;
         int BREAKING_VIDEO = 5;
         int BREAKING_TEXT = 6;
-        int PAUSED = 7;
         int INTRO_VIDEO = 8;
         int MOVIE_FINISHED = 9;
         int COMPANY_AD = 10;
@@ -47,11 +51,59 @@ public class StateMachine {
      */
     public static class VideoInfo {
         private String videoId;
+        private String prevVideoId;
         private int videoState;
         private int prevState;
         private int currentState;
         private Uri movieUri;
         private int movieSeekTime;
+        private Uri otherUri;
+        private int otherSeekTime;
+        private Uri breakingUri;
+        private int breakingSeekTime;
+        private List<Integer> mPausedStates = new ArrayList<Integer>();
+
+        public List<Integer> getPausedState() {
+            return mPausedStates;
+        }
+
+        public void addPausedState(Integer mPausedState) {
+            mPausedStates.add(mPausedState);
+        }
+
+        public void setPausedState(List<Integer> aPausedStates) {
+            this.mPausedStates = aPausedStates;
+        }
+
+        public Integer getTopPausedState() {
+            if (mPausedStates.size() == 0) {
+                return PLAYING_STATE.NONE;
+            } else {
+                int topState = mPausedStates.get(mPausedStates.size() - 1);
+                return topState;
+            }
+        }
+
+        public void removeTopState() {
+            mPausedStates.remove(mPausedStates.size() - 1);
+            sInstance.updatePauseState();
+        }
+
+        public Uri getBreakingUri() {
+            return breakingUri;
+        }
+
+        public void setBreakingUri(Uri breakingUri) {
+            this.breakingUri = breakingUri;
+        }
+
+        public int getBreakingSeekTime() {
+            return breakingSeekTime;
+        }
+
+        public void setBreakingSeekTime(int breakingSeekTime) {
+            this.breakingSeekTime = breakingSeekTime;
+        }
 
         public String getVideoId() {
             return videoId;
@@ -69,9 +121,6 @@ public class StateMachine {
             this.prevVideoId = prevVideoId;
         }
 
-        private Uri otherUri;
-        private int otherSeekTime;
-        private String prevVideoId;
 
         public int getVideoState() {
             synchronized (StateMachine.class) {
@@ -185,7 +234,7 @@ public class StateMachine {
 
     public synchronized void changeState(int aPrevState, int aCurrentState) {
         if (DEBUG)
-            Log.d(TAG, "changeState() :: aPrevState:" + aPrevState + " " + getName(aPrevState) + " aCurrentState:" + aCurrentState + " " + getName(aCurrentState));
+            Log.d(TAG, "--(debug)-- :: changeState() :: aPrevState:" + aPrevState + " " + getName(aPrevState) + " aCurrentState:" + aCurrentState + " " + getName(aCurrentState));
         synchronized (StateMachine.class) {
             videoInfo.prevState = aPrevState;
             videoInfo.currentState = aCurrentState;
@@ -216,8 +265,6 @@ public class StateMachine {
                 return "BREAKING_VIDEO";
             case PLAYING_STATE.BREAKING_TEXT:
                 return "BREAKING_NEWS";
-            case PLAYING_STATE.PAUSED:
-                return "PAUSED";
             case PLAYING_STATE.INTRO_VIDEO:
                 return "INTRO_VIDEO";
             case PLAYING_STATE.MOVIE_FINISHED:
@@ -245,7 +292,7 @@ public class StateMachine {
     }
 
     public void print() {
-        Log.d(TAG, "print :: mVideoState: " + videoInfo.videoState + " " + getStateName(videoInfo.videoState) + " mPrevState: " + videoInfo.prevState + " " + getName(videoInfo.prevState) + " mCurrentState: " + videoInfo.currentState + " " + getName(videoInfo.currentState));
+        Log.d(TAG, "--(debug)-- print :: mVideoState: " + videoInfo.videoState + " " + getStateName(videoInfo.videoState) + " mPrevState: " + videoInfo.prevState + " " + getName(videoInfo.prevState) + " mCurrentState: " + videoInfo.currentState + " " + getName(videoInfo.currentState));
     }
 
     public void reset() {
@@ -255,9 +302,51 @@ public class StateMachine {
         videoInfo.movieSeekTime = 0;
         videoInfo.otherUri = null;
         videoInfo.otherSeekTime = 0;
+        videoInfo.breakingUri = null;
+        videoInfo.breakingSeekTime = 0;
+        videoInfo.mPausedStates = new ArrayList<Integer>();
     }
 
-    public void persistState(long movieSeekTime, long mOtherSeekTime) {
+    public void updatePauseState() {
+        if (0 == videoInfo.mPausedStates.size()) {
+            Log.d(TAG, "updatePauseState :: not required ");
+            return;
+        }
+        String selection = VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " = ?";
+        String[] selectionArg = new String[]{"" + videoInfo.videoState};
+        ContentValues lValues = new ContentValues();
+        lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.PAUSED_STATES, convertListToString(videoInfo.getPausedState()));
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_INTERMEDIATE_VIDEO_STATE, lValues, selection, selectionArg);
+        Log.d(TAG, "updatePauseState() :: count :: " + count);
+    }
+
+    private String convertListToString(List<Integer> list) {
+        StringBuilder builder = new StringBuilder();
+
+        for (Integer s : list) {
+            builder.append(s);
+            builder.append(",");
+        }
+
+        String csv = builder.toString();
+        if (csv.endsWith(",")) {
+            csv = csv.substring(0, csv.length() - ",".length());
+        }
+        return csv;
+    }
+
+    private List<Integer> convertStringToList(String value) {
+        List<Integer> list = new ArrayList<Integer>();
+        if (null != value) {
+            for (String s : Arrays.asList(value.split(","))) {
+                list.add(Integer.parseInt(s));
+            }
+        }
+        return list;
+    }
+
+
+    public void persistState(long movieSeekTime, long mOtherSeekTime, long breakingSeekTime) {
         String selection = VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " = ?";
         String[] selectionArg = new String[]{"" + videoInfo.videoState};
         ContentValues lValues = new ContentValues();
@@ -276,11 +365,21 @@ public class StateMachine {
         if (0 != mOtherSeekTime) {
             lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME, mOtherSeekTime);
         }
+        if (null != videoInfo.breakingUri) {
+            lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.BREAKING_URI, videoInfo.breakingUri.toString());
+        }
+        if (0 != breakingSeekTime) {
+            lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.BREAKING_SEEK_TIME, breakingSeekTime);
+        }
+        if (0 != videoInfo.mPausedStates.size()) {
+            lValues.put(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.PAUSED_STATES, convertListToString(videoInfo.mPausedStates));
+        }
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_INTERMEDIATE_VIDEO_STATE, lValues, selection, selectionArg);
-        Log.d(TAG, "persistState() :: count :: " + count);
         if (count == 0) {
             Uri uri = VideoApplication.getVideoContext().getContentResolver().insert(VideoProvider.CONTENT_URI_INTERMEDIATE_VIDEO_STATE, lValues);
             Log.d(TAG, "persistState() :: uri :: " + uri);
+        } else {
+            Log.d(TAG, "persistState() :: count :: " + count);
         }
     }
 
@@ -289,9 +388,9 @@ public class StateMachine {
         String[] selectionArg = new String[]{"" + videoState};
         try {
             int count = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_INTERMEDIATE_VIDEO_STATE, selection, selectionArg);
-            Log.d(TAG, "deletePersistState() :: Count :: " + count);
+            Logger.debug(TAG, "deletePersistState() :: Count :: " + count);
         } catch (Exception e) {
-            Log.d(TAG, "Exception :: deletePersistState() :: ", e);
+            Logger.error(TAG, "Exception :: deletePersistState() :: ", e);
         }
     }
 
@@ -332,10 +431,20 @@ public class StateMachine {
                     if (null != value) {
                         videoInfo.setOtherSeekTime(Integer.parseInt(value));
                     }
+                    value = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.BREAKING_URI));
+                    if (null != value) {
+                        videoInfo.setBreakingUri(Uri.parse(value));
+                    }
+                    value = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.BREAKING_SEEK_TIME));
+                    if (null != value) {
+                        videoInfo.setBreakingSeekTime(Integer.parseInt(value));
+                    }
+                    value = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_INTERMEDIATE_COLUMNS.PAUSED_STATES));
+                    if (null != value) {
+                        videoInfo.setPausedState(convertStringToList(value));
+                    }
                     break;
                 }
-            } else {
-                reset();
             }
         } catch (Exception e) {
             Log.d(TAG, "Exception :: retainPersistenceState() :: ", e);

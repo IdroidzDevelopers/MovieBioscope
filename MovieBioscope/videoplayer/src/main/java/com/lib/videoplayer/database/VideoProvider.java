@@ -48,7 +48,7 @@ public class VideoProvider extends ContentProvider {
         String TRANSACTION_ID = "transaction_id";
         String CLOUD_TIME = "cloud_time";
         String RECEIVED_TIME = "received_time";
-        String SELECTED_STATE="selected_state";
+        String SELECTED_STATE = "selected_state";
     }
 
     public interface VIDEO_INTERMEDIATE_COLUMNS {
@@ -59,6 +59,9 @@ public class VideoProvider extends ContentProvider {
         String MOVIE_SEEK_TIME = "movie_seek_time";
         String OTHER_URI = "other_uri";
         String OTHER_SEEK_TIME = "other_seek_time";
+        String BREAKING_URI = "breaking_uri";
+        String BREAKING_SEEK_TIME = "breaking_seek_time";
+        String PAUSED_STATES = "paused_states";
         String UPDATED_TIME = "updated_time";
 
     }
@@ -88,7 +91,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_VIDEO_INTERMEDIATE_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_INTERMEDIATE_VIDEO_STATE + "("
-            + VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " INTEGER PRIMARY KEY ," + VIDEO_INTERMEDIATE_COLUMNS.PREV_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.CURRENT_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
+            + VIDEO_INTERMEDIATE_COLUMNS.VIDEO_STATE + " INTEGER PRIMARY KEY ," + VIDEO_INTERMEDIATE_COLUMNS.PREV_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.CURRENT_STATE + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.MOVIE_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.OTHER_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.BREAKING_URI + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.BREAKING_SEEK_TIME + " TEXT," + VIDEO_INTERMEDIATE_COLUMNS.PAUSED_STATES + " TEXT,"+ VIDEO_INTERMEDIATE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
 
 
     private static final int CASE_VIDEO_TABLE = 1;

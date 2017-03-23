@@ -1,10 +1,7 @@
 package com.app.navajhalaka.ui;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -21,12 +18,10 @@ import android.widget.ImageButton;
 import com.app.navajhalaka.R;
 import com.app.navajhalaka.app.BioscopeApp;
 import com.app.navajhalaka.util.ImagePagerAdapter;
-import com.app.navajhalaka.util.NetworkUtil;
 import com.lib.route.RouteApplication;
 import com.lib.route.objects.Route;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
-import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.VideoActivity;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
@@ -52,8 +47,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Handler mSlideHandler;
     public static final int DELAY = 3 * 1000;
     private int page = 0;
-    private AlertDialog mInternetDialog;
-    private AlertDialog mGpsDialog;
 
     Runnable mSlideRunnable = new Runnable() {
         public void run() {
@@ -132,11 +125,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         mSlideHandler.postDelayed(mSlideRunnable, DELAY);
         StartVideoTimer();
-        if (!NetworkUtil.isInternetAvailable(getActivity())) {
-            showInternetDialog();
-        } else if (!NetworkUtil.isGPSEnabled(getActivity())) {
-            showGPSDisabledAlertToUser();
-        }
     }
 
 
@@ -158,12 +146,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         super.onPause();
         mHandler.removeCallbacks(mRunnable);
         mSlideHandler.removeCallbacks(mSlideRunnable);
-        if (null != mInternetDialog && mInternetDialog.isShowing()) {
-            mInternetDialog.dismiss();
-        }
-        if (null != mGpsDialog && mGpsDialog.isShowing()) {
-            mGpsDialog.dismiss();
-        }
     }
 
 
@@ -176,7 +158,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void run() {
-            if (!isDialogVisible() && VideoData.isLandingVideoExist(BioscopeApp.getContext())) {
+            if (VideoData.isLandingVideoExist(BioscopeApp.getContext())) {
                 Intent lIntent = new Intent(getActivity(), VideoActivity.class);
                 Bundle lBundle = new Bundle();
                 lBundle.putInt(CustomIntent.EXTRAS.VIDEO_STATE, StateMachine.VIDEO_STATE.ONLY_ADV);
@@ -217,64 +199,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setMessage(getString(R.string.gps_dialog_text))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.setting),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton(getString(R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        mGpsDialog = alertDialogBuilder.create();
-        mGpsDialog.show();
-
-    }
-
-
-    private void showInternetDialog() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setMessage(getString(R.string.internet_dialog_text))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.setting),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton(getString(R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        mInternetDialog = alertDialogBuilder.create();
-        mInternetDialog.show();
-    }
-
-    private boolean isDialogVisible() {
-        if (null != mGpsDialog && mGpsDialog.isShowing()) {
-            Logger.debug(TAG, "isDialogVisible : true");
-            return true;
-        } else if (null != mInternetDialog && mInternetDialog.isShowing()) {
-            Logger.debug(TAG, "isDialogVisible : true");
-            return true;
-        } else {
-            Logger.debug(TAG, "isDialogVisible : false");
-            return false;
-        }
-    }
 }

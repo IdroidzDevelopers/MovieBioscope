@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -91,6 +92,7 @@ public class BottomBannerFragment extends Fragment {
         super.onStart();
         IntentFilter lFilter = new IntentFilter();
         lFilter.addAction(Intent.ACTION_TIME_TICK);
+        lFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         getActivity().registerReceiver(mReceiver, lFilter);
 
         IntentFilter lLocalFilter = new IntentFilter();
@@ -137,6 +139,21 @@ public class BottomBannerFragment extends Fragment {
                 } else if (CustomIntent.ACTION_CURRENT_LOCATION_CHANGED.equals(intent.getAction())) {
                     Log.d(TAG, "onReceive() :: ACTION_CURRENT_LOCATION_CHANGED");
                     updateCurrentLocation();
+                } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
+                    final ConnectivityManager connMgr = (ConnectivityManager) context
+                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                    final android.net.NetworkInfo wifi = connMgr
+                            .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+                    final android.net.NetworkInfo mobile = connMgr
+                            .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+                    if (wifi.isConnected() || mobile.isConnected()) {
+                        mInternetLayout.setVisibility(View.GONE);
+                    } else {
+                        mInternetLayout.setVisibility(View.VISIBLE);
+                    }
                 }
 
             }
@@ -161,9 +178,9 @@ public class BottomBannerFragment extends Fragment {
             } else {
                 mCity.setText("");
             }
-            if (null!=locationInfo.getArea()){
+            if (null != locationInfo.getArea()) {
                 mArea.setText(locationInfo.getArea());
-            }else{
+            } else {
                 mArea.setText("");
             }
         }

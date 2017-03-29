@@ -35,7 +35,7 @@ import com.lib.videoplayer.util.VideoData;
  */
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private static final long WAITING_TIME = 30 * 1000;
+    private static final long WAITING_TIME = 2 * 60 * 1000;//2 mins
     private ImageButton mPlayBottom;
     private View mRootView;
     private Handler mHandler;

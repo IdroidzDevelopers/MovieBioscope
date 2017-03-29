@@ -107,9 +107,8 @@ public class VideoTaskHandler extends Handler {
                                 break;
                             case JSON_ACTION.DELETE:
                                 List<Asset> assetsList = pushData.getAssets();
-                                for(Asset asset:assetsList){
-                                    String deleteFilePath=VideoData.getAssetPath(asset.getAssetID());
-                                    VideoData.deleteFile(deleteFilePath);
+                                for (Asset asset : assetsList) {
+                                    VideoData.deleteFileIfNotPlaying(asset);
                                 }
                                 break;
                         }

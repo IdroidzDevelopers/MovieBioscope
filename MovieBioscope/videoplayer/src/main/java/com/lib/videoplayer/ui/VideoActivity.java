@@ -619,6 +619,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         public void onCompletion(MediaPlayer mediaPlayer) {
             Log.d(TAG, "onCompletion ");
             showLoadingIcon();
+            VideoData.updateVideoCompletedState(mStateMachine.videoInfo.getVideoId());
+            VideoData.backgroundSearchForPendingDeleteVideo();
             //display location after advertisement
             if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV && !isLocationInfoVisible()) {
                 mTaskHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
@@ -875,6 +877,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
     private void sendCompletedBroadcast() {
         Logger.debug(TAG, "sendCompletedBroadcast :: called");
+        VideoData.updateVideoCompletedState(mStateMachine.videoInfo.getVideoId());
+        VideoData.backgroundSearchForPendingDeleteVideo();
         Intent intent = new Intent();
         intent.putExtra(CustomIntent.EXTRAS.VIDEO_ID, mStateMachine.videoInfo.getVideoId());
         switch (mStateMachine.videoInfo.getCurrentState()) {

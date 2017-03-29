@@ -18,6 +18,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.Movie;
 import com.lib.videoplayer.object.MoviesList;
@@ -34,6 +35,9 @@ import java.util.Random;
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
     private static final int SLOT_PER_HOUR = 3;
+    private static final int VIDEO_PLAYING = 1;
+    private static final int VIDEO_COMPLETED = 0;
+    private static final int DELETE_STATUS = 1;
     /*1*60*60*1000*/
     private static final long INTERVAL_FIVE_MINUTES = 5 * 60 * 1000;
     private static final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
@@ -316,6 +320,7 @@ public class VideoData {
     }
 
     public static int updateVideoData(Context aContext, Data lData) {
+        updateVideoPlayingState(lData.getAssetID());
         String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + "= ?";
         String[] lSelectionArg = {"" + lData.getAssetID()};
         ContentValues lValues = new ContentValues();
@@ -659,6 +664,43 @@ public class VideoData {
         }
     }
 
+    public static void deleteFileIfNotPlaying(Asset asset) {
+        if (null != asset) {
+            if (!isVideoPlaying(asset.getAssetID())) {
+                try {
+                    deleteFileById(asset.getAssetID());
+                    Log.d(TAG, "--(debug)-- :: deleteFileIfNotPlaying():: ");
+                } catch (Exception e) {
+                    Logger.error(TAG, "Exception :: deleteFileIfNotPlaying() ::", e);
+                }
+            } else {
+                updateVideoDeleteState(asset.getAssetID());
+            }
+        }
+    }
+
+    public static synchronized void backgroundSearchForPendingDeleteVideo() {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.DELETE_STATUS + " = ? AND " + VideoProvider.VIDEO_COLUMNS.IS_PLAYING + " = ?";
+        String[] lSelectionArg = new String[]{"" + 1, "" + 0};
+        Cursor lCursor = null;
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+            while (null != lCursor && lCursor.moveToNext()) {
+                String id = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                deleteFileById(id);
+                Logger.debug(TAG, "backgroundSearchForPendingDeleteVideo() :: Video to delete " + id);
+                break;
+            }
+            Logger.debug(TAG, "backgroundSearchForPendingDeleteVideo() :: No more pending chill!!!");
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: backgroundSearchForPendingDeleteVideo() :: ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+    }
+
 
     public static void deleteRecursive(File fileOrDirectory) {
         if (null != fileOrDirectory) {
@@ -736,6 +778,42 @@ public class VideoData {
         return mMoviesList;
     }
 
+    public static boolean updateVideoPlayingState(String videoId) {
+
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] lSelectionArg = new String[]{"" + videoId};
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.IS_PLAYING, VIDEO_PLAYING);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
+        Log.d(TAG, "updateVideoPlayingState :: updated the video playing state" + count);
+        return count >= 0 ? true : false;
+
+    }
+
+    public static boolean updateVideoCompletedState(String videoId) {
+
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] lSelectionArg = new String[]{"" + videoId};
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.IS_PLAYING, VIDEO_COMPLETED);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
+        Log.d(TAG, "updateVideoCompletedState :: updated the video completed state" + count);
+        return count >= 0 ? true : false;
+
+    }
+
+    public static boolean updateVideoDeleteState(String videoId) {
+
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+        String[] lSelectionArg = new String[]{"" + videoId};
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.DELETE_STATUS, DELETE_STATUS);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
+        Log.d(TAG, "updateVideoPlayingState :: updated the video playing state" + count);
+        return count >= 0 ? true : false;
+
+    }
+
     public static boolean updateMovieSelection(String movieId) {
         resetMovieSelection();
 
@@ -797,6 +875,33 @@ public class VideoData {
             }
         }
         return assetPath;
+    }
+
+    public static synchronized boolean isVideoPlaying(String assetId) {
+        boolean isPlaying = false;
+        if (null != assetId) {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+            String[] lSelectionArg = {"" + assetId};
+            Cursor lCursor = null;
+            try {
+                lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    int status = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.IS_PLAYING));
+                    if (VIDEO_PLAYING == status) {
+                        isPlaying = true;
+                        Logger.debug(TAG, "isVideoPlaying() ::" + status);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception :: getAssetPath() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+        }
+        return isPlaying;
     }
 
     /**

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import com.app.navajhalaka.R;
@@ -102,6 +103,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         intentFilter.addAction(CustomIntent.ACTION_ROUTE_IMAGE_DOWNLOAD_COMPLETE);
         intentFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver, intentFilter);
+        if (null != getActivity() && null != getActivity().getWindow()) {
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override

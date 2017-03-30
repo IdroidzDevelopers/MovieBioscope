@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,7 @@ public class MovieRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder rawHolder, int position) {
         ItemViewHolder holder = (ItemViewHolder) rawHolder;
         holder.text.setText(mDataList.get(position).getMovieName());
+        holder.text.setGravity(Gravity.CENTER);
         Bitmap bp= ThumbnailUtils.createVideoThumbnail(mDataList.get(position).getMoviePath(), MediaStore.Images.Thumbnails.MINI_KIND);
         holder.movieIcon.setImageBitmap(bp);
         holder.itemView.setTag(position);

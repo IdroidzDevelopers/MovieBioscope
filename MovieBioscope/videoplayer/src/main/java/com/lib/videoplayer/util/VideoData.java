@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
@@ -754,7 +755,7 @@ public class VideoData {
                         while (movieCursor.moveToNext()) {
                             Movie movie = new Movie();
                             movie.setMovieId(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID)));
-                            movie.setMovieName(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.NAME)));
+                            movie.setMovieName(getNameWithoutExtension(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.NAME))));
                             movie.setMoviePath(movieCursor.getString(movieCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH)));
                             movies.add(movie);
                         }
@@ -776,6 +777,13 @@ public class VideoData {
         }
         Log.d(TAG, "getRoutes() " + mMoviesList);
         return mMoviesList;
+    }
+
+    private static String getNameWithoutExtension(String name) {
+        if (null == name) {
+            return "Unknown";
+        }
+        return name.substring(0, name.lastIndexOf("."));
     }
 
     public static boolean updateVideoPlayingState(String videoId) {

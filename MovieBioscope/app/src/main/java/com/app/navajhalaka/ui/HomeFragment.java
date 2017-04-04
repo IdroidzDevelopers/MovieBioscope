@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private BroadcastReceiver mReceiver;
 
     private Handler mSlideHandler;
-    public static final int DELAY = 3 * 1000;
+    public static final int DELAY = 30 * 1000;
     private int page = 0;
 
     Runnable mSlideRunnable = new Runnable() {

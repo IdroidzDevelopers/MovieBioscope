@@ -14,7 +14,7 @@
         android:layout_height="@dimen/company_image_height"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/company_image_top_margin"
-        android:src="@mipmap/company_logo" />
+        android:src="@mipmap/company_logo_transparent" />
 
     <TextView
         android:layout_width="wrap_content"

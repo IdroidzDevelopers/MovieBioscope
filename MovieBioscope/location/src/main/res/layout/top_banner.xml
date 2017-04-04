@@ -81,7 +81,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:src="@mipmap/company_logo_with_background_bg" />
+        android:src="@mipmap/company_logo" />
 
 
     <ImageView

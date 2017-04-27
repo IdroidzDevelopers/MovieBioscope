@@ -944,4 +944,33 @@ public class VideoData {
         }
         return lData;
     }
+
+
+    public static Data getVideoByType(String type) {
+        Data lData = null;
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
+        String[] selectionArg = {type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+        String orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " ASC AND " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+        Cursor cursor = null;
+        try {
+            cursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, selection, selectionArg, orderBy);
+            while (null != cursor && cursor.moveToNext()) {
+                lData = new Data();
+                String lId = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                lData.setAssetID(lId);
+                String lValue = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                lData.setPath(lValue);
+                int lCount = cursor.getInt(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                lData.setCount(lCount);
+                break;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: getVideoByType() :: ", e);
+        } finally {
+            if (null != cursor && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return lData;
+    }
 }

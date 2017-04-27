@@ -5,7 +5,7 @@ public class SequenceData {
 
     private String mSequenceType;
     private String mVideoType;
-    private String mSequenceOrder;
+    private int mSequenceOrder;
     private int mSelection;
 
     public String getSequenceType() {
@@ -26,11 +26,11 @@ public class SequenceData {
         return this;
     }
 
-    public String getSequenceOrder() {
+    public int getSequenceOrder() {
         return mSequenceOrder;
     }
 
-    public SequenceData setSequenceOrder(String mSequenceOrder) {
+    public SequenceData setSequenceOrder(int mSequenceOrder) {
         this.mSequenceOrder = mSequenceOrder;
         return this;
     }

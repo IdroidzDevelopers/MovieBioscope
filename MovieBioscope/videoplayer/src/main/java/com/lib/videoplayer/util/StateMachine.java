@@ -29,6 +29,15 @@ public class StateMachine {
         int MOVIE_AND_ADV = 2;
     }
 
+
+    /**
+     * states either only adv or movie+adv
+     */
+    public interface SEQUENCE_TYPE {
+        int LANDING_TYPE = 1;
+        int MOVIE_INIT_TYPE = 2;
+    }
+
     /**
      * video playing state
      */

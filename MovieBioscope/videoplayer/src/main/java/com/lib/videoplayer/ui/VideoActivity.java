@@ -31,6 +31,7 @@ import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.util.FileUtil;
+import com.lib.videoplayer.util.SequenceUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 import com.lib.videoplayer.util.VideoTaskHandler;
@@ -355,6 +356,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
      */
     private void startLandingVideo() {
         mMovieView.setVisibility(View.GONE);
+        SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+
         Data lData = VideoData.getRandomLandingVideo(mContext);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             if (!this.isFinishing()) {

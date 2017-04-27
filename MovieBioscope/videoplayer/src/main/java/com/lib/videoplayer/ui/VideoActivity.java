@@ -30,6 +30,7 @@ import com.lib.videoplayer.R;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
+import com.lib.videoplayer.object.SequenceData;
 import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.SequenceUtil;
 import com.lib.videoplayer.util.StateMachine;
@@ -204,6 +205,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     protected void onResume() {
         super.onResume();
         mState.sendEmptyMessage(EVENT.RESUME);
+        mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
     }
 
     @Override
@@ -322,7 +324,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mStateMachine.videoInfo.setMovieUri(Uri.parse(lData.getPath()));
             mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.MOVIE);
             VideoData.updateVideoData(mContext, lData);
-            mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
         } else {
             hideLoadingIcon();
             mNoContentView.setVisibility(View.VISIBLE);
@@ -352,25 +353,81 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     /**
-     * Method to start landing video
+     * Method to select video for only ad state
      */
-    private void startLandingVideo() {
-        mMovieView.setVisibility(View.GONE);
-        SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
-
-        Data lData = VideoData.getRandomLandingVideo(mContext);
-        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
+    private void selectOnlyAdVideos() {
+        SequenceData sequenceData = SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+        if (null == sequenceData) {
+            sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+        } else {
+            if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
+                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+                sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+            } else {
+                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, sequenceData.getSequenceOrder());
+            }
+        }
+        //this steps we have sequenceData what to play
+        Data data = VideoData.getVideoByType(sequenceData.getVideoType());
+        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
             if (!this.isFinishing()) {
+                playInOtherView(data);
+                hideLoadingIcon();
+                mStateMachine.videoInfo.updateVideoId(data.getAssetID());
+                mStateMachine.videoInfo.setOtherUri(Uri.parse(data.getPath()));
+                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
+                VideoData.updateVideoData(mContext, data);
+            }
+        } else {
+            //select the next genre
+            selectOnlyAdVideos();
+        }
+    }
+
+    private void playInOtherView(Data data) {
+        mMovieView.setVisibility(View.GONE);
+        mOtherView.setVisibility(View.VISIBLE);
+        mOtherView.setVideoURI(Uri.parse(data.getPath()));
+        mOtherView.requestFocus();
+        mOtherView.start();
+    }
+
+
+    /**
+     * Method to select video for only ad state
+     */
+    private void selectMovieAdVideos() {
+        SequenceData sequenceData = SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
+        if (null == sequenceData) {
+            sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
+        } else {
+            if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
+                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+                sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
+            } else {
+                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, sequenceData.getSequenceOrder());
+            }
+        }
+        //this steps we have sequenceData what to play
+        Data data = VideoData.getVideoByType(sequenceData.getVideoType());
+        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
+            if (!this.isFinishing()) {
+                mMovieView.setVisibility(View.GONE);
                 mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
+                mOtherView.setVideoURI(Uri.parse(data.getPath()));
                 mOtherView.requestFocus();
                 mOtherView.start();
                 hideLoadingIcon();
-                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
-                mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
-                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.LANDING_VIDEO);
-                VideoData.updateVideoData(mContext, lData);
+                mStateMachine.videoInfo.updateVideoId(data.getAssetID());
+                mStateMachine.videoInfo.setOtherUri(Uri.parse(data.getPath()));
+                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
+                VideoData.updateVideoData(mContext, data);
             }
+        } else {
+            //select the next genre
+            selectOnlyAdVideos();
         }
     }
 
@@ -708,10 +765,22 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                             mStateMachine.deletePersistState(getVideoState());
                             mStateMachine.reset();
                             postBackgroundSearch();
-                            startLandingVideo();
+                            selectOnlyAdVideos();
                             break;
                     }
                     break;
+
+                case EVENT.PLAY_ADV:
+                    if (VideoData.isAdvExist(mContext)) {
+                        postBackgroundSearch();
+                        pauseVideo();
+                        startAd();
+                    } else {
+                        //advertisement video not present still schdule for future may be we will get later
+                        mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+                    }
+                    break;
+
                 case EVENT.PLAY_BREAKING_VIDEO:
                     switch (mStateMachine.videoInfo.getCurrentState()) {
                         case StateMachine.PLAYING_STATE.LANDING_VIDEO:
@@ -804,16 +873,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case EVENT.PLAY_ADV:
                     if (VideoData.isAdvExist(mContext)) {
                         postBackgroundSearch();
-                        switch (mStateMachine.videoInfo.getCurrentState()) {
-                            case StateMachine.PLAYING_STATE.MOVIE:
-                                pauseVideo();
-                                startAd();
-                                break;
-                            default:
-                                //schedule the next advertisement
-                                mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-                                break;
-                        }
+                        pauseVideo();
+                        startAd();
                     } else {
                         //advertisement video not present still schdule for future may be we will get later
                         mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
@@ -908,7 +969,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mMovieView.start();
             mMovieView.setOnPreparedListener(mMoviePrepareListener);
             hideLoadingIcon();
-            mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
             //reset the value so that it wont resume from same place again
         } else if (topState == StateMachine.PLAYING_STATE.BREAKING_VIDEO) {
             mMovieView.setVisibility(View.GONE);

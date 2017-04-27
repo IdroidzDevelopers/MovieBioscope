@@ -82,6 +82,8 @@ public class VideoProvider extends ContentProvider {
     public interface VIDEO_TYPE {
         String COMPANY_VIDEO = "company";
         String SAFETY_VIDEO = "safety";
+        String TRAVELER_VIDEO = "traveler";
+        String INTRO_VIDEO = "intro";
         String MOVIE = "movie";
         String ADV = "ad";
         String BREAKING_VIDEO = "news_video";

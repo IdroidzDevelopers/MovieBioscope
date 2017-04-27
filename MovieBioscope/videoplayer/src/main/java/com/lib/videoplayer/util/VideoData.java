@@ -950,7 +950,7 @@ public class VideoData {
         Data lData = null;
         String selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
         String[] selectionArg = {type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-        String orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " ASC AND " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+        String orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC AND " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
         Cursor cursor = null;
         try {
             cursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, selection, selectionArg, orderBy);

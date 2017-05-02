@@ -22,6 +22,7 @@ public interface AppInterface {
     String COMMAND_DOWNLOAD="DOWNLOAD";
     String COMMAND_UPDATE="UPDATE";
     String COMMAND_DELETE="DELETE";
+    String COMMAND_SEQUENCE="SEQUENCE";
     String TYPE_ROUTE="route";
     String URI_KEY="uri";
     String ACTION_KEY="action";

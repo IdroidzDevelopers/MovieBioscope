@@ -19,6 +19,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
+import com.lib.videoplayer.util.StateMachine;
 
 public class BioscopeApp extends Application {
 
@@ -27,7 +28,6 @@ public class BioscopeApp extends Application {
     private static final String FIRST_RUN_KEY = "first_run";
 
     private static Context sContext;
-    private boolean firstRun;
 
     @Override
     public void onCreate() {
@@ -67,7 +67,7 @@ public class BioscopeApp extends Application {
         String[] landingSequence = getContext().getResources().getStringArray(com.lib.videoplayer.R.array.landing_sequence);
         for (int i = 0; i < landingSequence.length; i++) {
             ContentValues values = new ContentValues();
-            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, 1);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
             values.put(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE, landingSequence[i]);
             values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER, i);
             values.put(VideoProvider.SEQUENCE_COLUMNS.UPDATED_TIME, System.currentTimeMillis());
@@ -77,7 +77,7 @@ public class BioscopeApp extends Application {
         String[] movieInitSequence = getContext().getResources().getStringArray(com.lib.videoplayer.R.array.movie_init_sequence);
         for (int i = 0; i < movieInitSequence.length; i++) {
             ContentValues values = new ContentValues();
-            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, 2);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
             values.put(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE, movieInitSequence[i]);
             values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER, i);
             values.put(VideoProvider.SEQUENCE_COLUMNS.UPDATED_TIME, System.currentTimeMillis());

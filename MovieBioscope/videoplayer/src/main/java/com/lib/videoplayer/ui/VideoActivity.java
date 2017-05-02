@@ -373,6 +373,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     playInMovieView(data);
                     break;
                 case VideoProvider.VIDEO_TYPE.INTRO_VIDEO:
+                    //as this video is local , every time it will be there.So no need of else case
                     if (null != data && null != data.getType()) {
                         playInOtherView(data);
                     }

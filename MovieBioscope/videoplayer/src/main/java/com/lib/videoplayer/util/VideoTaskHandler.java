@@ -14,15 +14,16 @@ import android.util.Log;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.DownloadData;
 import com.lib.videoplayer.object.PushData;
+import com.lib.videoplayer.object.SequenceCloudData;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 
 public class VideoTaskHandler extends Handler {
@@ -45,6 +46,7 @@ public class VideoTaskHandler extends Handler {
         String UPDATE = "UPDATE";
         String REFRESH = "REFRESH";
         String DELETE = "DELETE";
+        String SEQUENCE = "SEQUENCE";
     }
 
     public interface TASK {
@@ -109,6 +111,15 @@ public class VideoTaskHandler extends Handler {
                                 List<Asset> assetsList = pushData.getAssets();
                                 for (Asset asset : assetsList) {
                                     VideoData.deleteFileIfNotPlaying(asset);
+                                }
+                                break;
+                            case JSON_ACTION.SEQUENCE:
+                                Map<String, List<SequenceCloudData>> map = VideoData.createSequenceData(rowId);
+                                for (String s : map.keySet()) {
+                                    SequenceUtil.deleteSequence(s);
+                                    for (SequenceCloudData data : map.get(s)) {
+                                        SequenceUtil.insertSequence(s, data.getValue(), data.getOrder(), SequenceUtil.NOT_SELECTED);
+                                    }
                                 }
                                 break;
                         }

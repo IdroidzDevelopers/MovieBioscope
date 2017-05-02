@@ -34,8 +34,8 @@ public class StateMachine {
      * states either only adv or movie+adv
      */
     public interface SEQUENCE_TYPE {
-        int LANDING_TYPE = 1;
-        int MOVIE_INIT_TYPE = 2;
+        String LANDING_TYPE = "Landing";
+        String MOVIE_INIT_TYPE = "Movie";
     }
 
     /**

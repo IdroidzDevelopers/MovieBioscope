@@ -8,8 +8,8 @@ import android.os.Message;
 
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
-import com.lib.videoplayer.R;
 import com.lib.videoplayer.ui.MovieListActivity;
+import com.lib.videoplayer.util.SequenceUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
 import com.lib.videoplayer.util.VideoTaskHandler;
@@ -41,9 +41,10 @@ public class VideoCommandReceiver extends BroadcastReceiver {
             } else if (CustomIntent.ACTION_MOVIE_LIST.equals(intent.getAction())) {
                 context.startActivity(new Intent(context, MovieListActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 //context.sendBroadcast(new Intent().setAction("android.navajhalka.movielist"));
-            }else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())){
+            } else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())) {
                 VideoData.resetTravelSafety();
-            }else if (CustomIntent.ACTION_MOVIE_SELECTION_CHANGED.equals(intent.getAction())) {
+                SequenceUtil.resetSelection(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
+            } else if (CustomIntent.ACTION_MOVIE_SELECTION_CHANGED.equals(intent.getAction())) {
                 StateMachine.deletePersistState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
             }
         }

@@ -23,13 +23,17 @@ import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.Movie;
 import com.lib.videoplayer.object.MoviesList;
 import com.lib.videoplayer.object.PushData;
+import com.lib.videoplayer.object.SequenceCloudData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class VideoData {
@@ -101,7 +105,7 @@ public class VideoData {
     public static boolean isLandingVideoExist(Context aContext) {
         boolean flag = false;
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "IN( ?, ? , ? , ? , ? ) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN( ?, ? , ? , ? , ? ) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
             String[] lSelectionArg = {VideoProvider.VIDEO_TYPE.TRAILER, VideoProvider.VIDEO_TYPE.COMEDY_SHOW, VideoProvider.VIDEO_TYPE.SERIAL, VideoProvider.VIDEO_TYPE.DEVOTIONAL, VideoProvider.VIDEO_TYPE.SPORTS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
@@ -396,6 +400,31 @@ public class VideoData {
             pushData.setReceivedTime(firebase.getReceivedTime());
         }
         return pushData;
+    }
+
+    public static Map<String, List<SequenceCloudData>> createSequenceData(String rowId) {
+        FirebaseData firebase = FirebaseUtil.getFireBaseData(VideoApplication.getVideoContext(), rowId);
+        Map<String, List<SequenceCloudData>> map = new HashMap<String, List<SequenceCloudData>>();
+        if (null != firebase) {
+            Logger.debug(TAG, "createSequenceData :: data is " + firebase.getData());
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            try {
+                JSONObject data = new JSONObject(firebase.getData());
+                JSONObject sequence = data.getJSONObject("sequence");
+                List<SequenceCloudData> movieList = Arrays.asList(gson.fromJson(sequence.getJSONArray(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE).toString(), SequenceCloudData[].class));
+                List<SequenceCloudData> landingList = Arrays.asList(gson.fromJson(sequence.getJSONArray(StateMachine.SEQUENCE_TYPE.LANDING_TYPE).toString(), SequenceCloudData[].class));
+                if (null != movieList) {
+                    map.put(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, movieList);
+                }
+                if (null != landingList) {
+                    map.put(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, landingList);
+                }
+            } catch (JSONException e) {
+                Logger.error(TAG, "Exception createSequenceData() ", e);
+            }
+        }
+        return map;
     }
 
     public static String getAction(Context context, String rowId) {
@@ -747,40 +776,13 @@ public class VideoData {
         return isPlaying;
     }
 
+
     /**
-     * Method to get video for type
+     * Method to get the video based on type
      *
+     * @param type
      * @return
      */
-    public static Data getVideoForType(String type) {
-        Data lData = new Data();
-        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ?";
-        String[] lSelectionArg = {type};
-        Cursor lCursor = null;
-        try {
-            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
-            while (null != lCursor && lCursor.moveToNext()) {
-                String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                lData.setAssetID(lId);
-                String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                lData.setPath(lValue);
-                String lMessage = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.MESSAGE));
-                lData.setMessage(lMessage);
-                int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                lData.setCount(lCount);
-                break;
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "Exception :: getVideoForType() :: ", e);
-        } finally {
-            if (null != lCursor && !lCursor.isClosed()) {
-                lCursor.close();
-            }
-        }
-        return lData;
-    }
-
-
     public static Data getVideoByType(String type) {
         Data data = null;
         String selection;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    String SAFETY_VIDEO = "safety";
+    String TRAVELER_VIDEO = "traveler";
+    String INTRO_VIDEO = "intro";
+
+    <string-array name="landing_sequence">
+        <item>Comedy Show</item>
+        <item>Serial</item>
+    </string-array>
+
+    <string-array name="movie_init_sequence">
+        <item>intro</item>
+        <item>traveler</item>
+        <item>safety</item>
+    </string-array>
+
+</resources>

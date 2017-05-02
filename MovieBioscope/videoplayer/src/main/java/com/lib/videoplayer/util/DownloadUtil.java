@@ -33,7 +33,7 @@ public class DownloadUtil {
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
             FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + dir);
-            request.setDestinationInExternalPublicDir( dir, name);
+            request.setDestinationInExternalPublicDir(dir, name);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }
@@ -126,7 +126,11 @@ public class DownloadUtil {
                 return "/movie_bioscope/breaking_video/";
             case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
                 return "/movie_bioscope/breaking_news/";
-            case VideoProvider.VIDEO_TYPE.LANDING_VIDEO:
+            case VideoProvider.VIDEO_TYPE.TRAILER:
+            case VideoProvider.VIDEO_TYPE.COMEDY_SHOW:
+            case VideoProvider.VIDEO_TYPE.SERIAL:
+            case VideoProvider.VIDEO_TYPE.DEVOTIONAL:
+            case VideoProvider.VIDEO_TYPE.SPORTS:
                 return "/movie_bioscope/landing_video/";
             default:
                 return "/movie_bioscope/";

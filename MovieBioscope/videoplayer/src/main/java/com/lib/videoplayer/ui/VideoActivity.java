@@ -166,14 +166,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mOtherView.setOnTouchListener(this);
         initListener();
         initFragments();
-        //testing
         mGifImageView = (GifImageView) findViewById(R.id.company_logo);
-        mGifImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // mState.sendEmptyMessage(EVENT.PLAY_BREAKING_NEWS);
-            }
-        });
     }
 
     /**
@@ -307,36 +300,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     /**
-     * Method to start movie view
-     */
-    private void startMovie() {
-        mStateMachine.deletePersistState(getVideoState());
-        mOtherView.setVisibility(View.GONE);
-        Data lData = VideoData.getMovieData(mContext);
-        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
-            mMovieView.setVisibility(View.VISIBLE);
-            mMovieView.setVideoURI(Uri.parse(lData.getPath()));
-            mMovieView.setMediaController(null);
-            mMovieView.requestFocus();
-            mMovieView.start();
-            hideLoadingIcon();
-            mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
-            mStateMachine.videoInfo.setMovieUri(Uri.parse(lData.getPath()));
-            mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.MOVIE);
-            VideoData.updateVideoData(mContext, lData);
-        } else {
-            hideLoadingIcon();
-            mNoContentView.setVisibility(View.VISIBLE);
-            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.FINISH_ACTIVITY, NO_CONTENT_DISPLAY_TIME);
-        }
-    }
-
-    /**
      * Method to start ad view
      */
     private void startAd() {
         mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getRandomAd(mContext);
+        Data lData = VideoData.getVideoByType(VideoProvider.VIDEO_TYPE.ADV);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
             if (!this.isFinishing()) {// TODO: dirty fix :: need olution
                 mOtherView.setVisibility(View.VISIBLE);
@@ -361,36 +329,21 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
         } else {
             if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
-                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
                 sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
             } else {
-                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
                 sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, sequenceData.getSequenceOrder());
             }
         }
+        SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
         //this steps we have sequenceData what to play
         Data data = VideoData.getVideoByType(sequenceData.getVideoType());
-        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
-            if (!this.isFinishing()) {
+        if (!this.isFinishing()) {
+            if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
                 playInOtherView(data);
-                hideLoadingIcon();
-                mStateMachine.videoInfo.updateVideoId(data.getAssetID());
-                mStateMachine.videoInfo.setOtherUri(Uri.parse(data.getPath()));
-                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
-                VideoData.updateVideoData(mContext, data);
+            } else {
+                selectOnlyAdVideos();
             }
-        } else {
-            //select the next genre
-            selectOnlyAdVideos();
         }
-    }
-
-    private void playInOtherView(Data data) {
-        mMovieView.setVisibility(View.GONE);
-        mOtherView.setVisibility(View.VISIBLE);
-        mOtherView.setVideoURI(Uri.parse(data.getPath()));
-        mOtherView.requestFocus();
-        mOtherView.start();
     }
 
 
@@ -401,33 +354,69 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         SequenceData sequenceData = SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
         if (null == sequenceData) {
             sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
+            SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
         } else {
-            if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
-                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
-                sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
-            } else {
-                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+            if (!SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
                 sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, sequenceData.getSequenceOrder());
+                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+            } else {
+                //all the init videos done
+                sequenceData = new SequenceData();
+                sequenceData.setVideoType(VideoProvider.VIDEO_TYPE.MOVIE);
             }
         }
         //this steps we have sequenceData what to play
         Data data = VideoData.getVideoByType(sequenceData.getVideoType());
-        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
-            if (!this.isFinishing()) {
-                mMovieView.setVisibility(View.GONE);
-                mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(data.getPath()));
-                mOtherView.requestFocus();
-                mOtherView.start();
-                hideLoadingIcon();
-                mStateMachine.videoInfo.updateVideoId(data.getAssetID());
-                mStateMachine.videoInfo.setOtherUri(Uri.parse(data.getPath()));
-                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
-                VideoData.updateVideoData(mContext, data);
+        if (!this.isFinishing()) {
+            switch (sequenceData.getVideoType()) {
+                case VideoProvider.VIDEO_TYPE.MOVIE:
+                    playInMovieView(data);
+                    break;
+                case VideoProvider.VIDEO_TYPE.INTRO_VIDEO:
+                    if (null != data && null != data.getType()) {
+                        playInOtherView(data);
+                    }
+                    break;
+                default:
+                    if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
+                        playInOtherView(data);
+                    } else {
+                        selectMovieAdVideos();
+                    }
+                    break;
             }
+        }
+    }
+
+    private void playInOtherView(Data data) {
+        mMovieView.setVisibility(View.GONE);
+        mOtherView.setVisibility(View.VISIBLE);
+        mOtherView.setVideoURI(Uri.parse(data.getPath()));
+        mOtherView.requestFocus();
+        mOtherView.start();
+        hideLoadingIcon();
+        mStateMachine.videoInfo.updateVideoId(data.getAssetID());
+        mStateMachine.videoInfo.setOtherUri(Uri.parse(data.getPath()));
+        mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
+        VideoData.updateVideoData(mContext, data);
+    }
+
+    private void playInMovieView(Data data) {
+        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
+            mMovieView.setVisibility(View.VISIBLE);
+            mMovieView.setVideoURI(Uri.parse(data.getPath()));
+            mMovieView.setMediaController(null);
+            mMovieView.requestFocus();
+            mMovieView.start();
+            hideLoadingIcon();
+            mStateMachine.videoInfo.updateVideoId(data.getAssetID());
+            mStateMachine.videoInfo.setMovieUri(Uri.parse(data.getPath()));
+            mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), mStateMachine.getState(data.getType()));
+            VideoData.updateVideoData(mContext, data);
         } else {
-            //select the next genre
-            selectOnlyAdVideos();
+            hideLoadingIcon();
+            mNoContentView.setVisibility(View.VISIBLE);
+            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.FINISH_ACTIVITY, NO_CONTENT_DISPLAY_TIME);
         }
     }
 
@@ -447,73 +436,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.BREAKING_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
             }
-        }
-    }
-
-    /**
-     * Method to start traveller view
-     */
-    private void startTravellerVideo() {
-        mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getTravellerVideo(mContext);
-        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
-            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
-                mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
-                mOtherView.requestFocus();
-                mOtherView.start();
-                hideLoadingIcon();
-                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
-                mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
-                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.TRAVEL_VIDEO);
-                VideoData.updateVideoData(mContext, lData);
-            }
-        } else {
-            //still the change the change and process
-            mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.TRAVEL_VIDEO);
-            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
-        }
-    }
-
-
-    /**
-     * Method to start safety view
-     */
-    private void startSafetyVideo() {
-        mMovieView.setVisibility(View.GONE);
-        Data lData = VideoData.getSafetyVideo(mContext);
-        if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
-            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
-                mOtherView.setVisibility(View.VISIBLE);
-                mOtherView.setVideoURI(Uri.parse(lData.getPath()));
-                mOtherView.requestFocus();
-                mOtherView.start();
-                hideLoadingIcon();
-                mStateMachine.videoInfo.updateVideoId(lData.getAssetID());
-                mStateMachine.videoInfo.setOtherUri(Uri.parse(lData.getPath()));
-                mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.SAFETY_VIDEO);
-                VideoData.updateVideoData(mContext, lData);
-            }
-        } else {
-            //still the change the change and process
-            mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.SAFETY_VIDEO);
-            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
-        }
-    }
-
-    /**
-     * Method to start safety view
-     */
-    private void startIntroVideo() {
-        mMovieView.setVisibility(View.GONE);
-        if (!this.isFinishing()) {// TODO: dirty fix :: need solution
-            mOtherView.setVisibility(View.VISIBLE);
-            mOtherView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.navajhalaka_intro));
-            mOtherView.requestFocus();
-            mOtherView.start();
-            hideLoadingIcon();
-            mStateMachine.videoInfo.setOtherUri(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.navajhalaka_intro));
-            mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.INTRO_VIDEO);
         }
     }
 
@@ -756,16 +678,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 case EVENT.RESUME:
                     mStateMachine.retainPersistenceState(getVideoState());
                     switch (mStateMachine.videoInfo.getTopPausedState()) {
-                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
-                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
-                            postBackgroundSearch();
-                            resumeVideo();
-                            break;
-                        default:
+                        case StateMachine.PLAYING_STATE.NONE:
                             mStateMachine.deletePersistState(getVideoState());
                             mStateMachine.reset();
                             postBackgroundSearch();
                             selectOnlyAdVideos();
+                            break;
+                        default:
+                            postBackgroundSearch();
+                            resumeVideo();
                             break;
                     }
                     break;
@@ -841,22 +762,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         default:
                             Logger.debug(TAG, "--(debug)--  :: default ");
                             switch (mStateMachine.videoInfo.getCurrentState()) {
-                                case StateMachine.PLAYING_STATE.NONE:
-                                    postBackgroundSearch();
-                                    startTravellerVideo();
-                                    break;
-                                case StateMachine.PLAYING_STATE.TRAVEL_VIDEO:
-                                    postBackgroundSearch();
-                                    startSafetyVideo();
-                                    break;
-                                case StateMachine.PLAYING_STATE.SAFETY_VIDEO:
-                                    postBackgroundSearch();
-                                    startIntroVideo();
-                                    break;
-                                case StateMachine.PLAYING_STATE.INTRO_VIDEO:
-                                    postBackgroundSearch();
-                                    startMovie();
-                                    break;
                                 case StateMachine.PLAYING_STATE.MOVIE:
                                     //once finished , move to home
                                     mStateMachine.deletePersistState(getVideoState());
@@ -865,6 +770,10 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                                     if (!isFinishing()) {
                                         finish();
                                     }
+                                    break;
+                                default:
+                                    postBackgroundSearch();
+                                    selectMovieAdVideos();
                                     break;
                             }
                             break;

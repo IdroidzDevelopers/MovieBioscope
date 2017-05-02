@@ -31,7 +31,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
@@ -39,7 +38,7 @@ public class VideoData {
     private static final int VIDEO_PLAYING = 1;
     private static final int VIDEO_COMPLETED = 0;
     private static final int DELETE_STATUS = 1;
-    /*1*60*60*1000*/
+
     private static final long INTERVAL_FIVE_MINUTES = 5 * 60 * 1000;
     private static final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
     private static final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_FIVE_MINUTES;
@@ -68,109 +67,6 @@ public class VideoData {
         return id;
     }
 
-
-    public static Data getMovieData(Context aContext) {
-        Data lData = null;
-        String lSelection;
-        String[] lSelectionArg;
-        String orderBy = null;
-        String defaultSelectedMovieId = null;
-        if (null != aContext) {
-            defaultSelectedMovieId = getDefaultMovie();
-            if (null == defaultSelectedMovieId) {
-                Logger.info(TAG, "get movie based on random logic");
-                lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-                lSelectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-                orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-            } else {
-                Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);
-                lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
-                lSelectionArg = new String[]{"" + defaultSelectedMovieId};
-            }
-            Cursor lCursor = null;
-            try {
-                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    lData = new Data();
-                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    lData.setAssetID(lId);
-                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                    lData.setPath(lValue);
-                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                    lData.setCount(lCount);
-                    break;
-                }
-            } catch (Exception e) {
-                Log.d(TAG, "Exception :: getMovieData() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
-            }
-        }
-        return lData;
-    }
-
-    public static Data getRandomAd(Context aContext) {
-        Data lData = null;
-        if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.ADV, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-            Cursor lCursor = null;
-            try {
-                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    lData = new Data();
-                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    lData.setAssetID(lId);
-                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                    lData.setPath(lValue);
-                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                    lData.setCount(lCount);
-                    break;
-                }
-            } catch (Exception e) {
-                Log.d(TAG, "Exception :: getMovieData() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
-            }
-        }
-        return lData;
-    }
-
-    public static Data getRandomLandingVideo(Context aContext) {
-        Data lData = null;
-        if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.LANDING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-            Cursor lCursor = null;
-            try {
-                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    lData = new Data();
-                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    lData.setAssetID(lId);
-                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                    lData.setPath(lValue);
-                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                    lData.setCount(lCount);
-                    break;
-                }
-            } catch (Exception e) {
-                Logger.error(TAG, "Exception :: getRandomLandingVideo() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
-            }
-        }
-        Logger.debug(TAG, "getRandomLandingVideo() :: " + lData);
-        return lData;
-    }
 
     public static boolean isAdvExist(Context aContext) {
         boolean flag = false;
@@ -205,8 +101,8 @@ public class VideoData {
     public static boolean isLandingVideoExist(Context aContext) {
         boolean flag = false;
         if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.LANDING_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "IN( ?, ? , ? , ? , ? ) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+            String[] lSelectionArg = {VideoProvider.VIDEO_TYPE.TRAILER, VideoProvider.VIDEO_TYPE.COMEDY_SHOW, VideoProvider.VIDEO_TYPE.SERIAL, VideoProvider.VIDEO_TYPE.DEVOTIONAL, VideoProvider.VIDEO_TYPE.SPORTS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -250,67 +146,6 @@ public class VideoData {
         return flag;
     }
 
-
-    public static Data getTravellerVideo(Context aContext) {
-        Data lData = null;
-        if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + " = ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-            Cursor lCursor = null;
-            try {
-                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    lData = new Data();
-                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    lData.setAssetID(lId);
-                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                    lData.setPath(lValue);
-                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                    lData.setCount(lCount);
-                    break;
-                }
-            } catch (Exception e) {
-                Log.d(TAG, "Exception :: getTravellerVideo() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
-            }
-        }
-        return lData;
-    }
-
-
-    public static Data getSafetyVideo(Context aContext) {
-        Data lData = null;
-        if (null != aContext) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + " = ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.SAFETY_VIDEO, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
-            String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-            Cursor lCursor = null;
-            try {
-                lCursor = aContext.getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, orderBy);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    lData = new Data();
-                    String lId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    lData.setAssetID(lId);
-                    String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                    lData.setPath(lValue);
-                    int lCount = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                    lData.setCount(lCount);
-                    break;
-                }
-            } catch (Exception e) {
-                Log.d(TAG, "Exception :: getSafetyVideo() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
-            }
-        }
-        return lData;
-    }
 
     public static long getNextAdTime() {
         Random lRandom = new Random();
@@ -947,21 +782,48 @@ public class VideoData {
 
 
     public static Data getVideoByType(String type) {
-        Data lData = null;
-        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
-        String[] selectionArg = {type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
-        String orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC AND " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+        Data data = null;
+        String selection;
+        String[] selectionArg;
+        String orderBy = null;
+        switch (type) {
+            case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
+            case VideoProvider.VIDEO_TYPE.TRAVELER_VIDEO:
+                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + " = ?";
+                selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};
+                orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+                break;
+            case VideoProvider.VIDEO_TYPE.MOVIE:
+                String defaultSelectedMovieId = getDefaultMovie();
+                if (null == defaultSelectedMovieId) {
+                    Logger.info(TAG, "get movie based on random logic");
+                    selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                    selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                    orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+                } else {
+                    Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);
+                    selection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + " = ?";
+                    selectionArg = new String[]{"" + defaultSelectedMovieId};
+                }
+                break;
+            default:
+                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
+                selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                break;
+        }
         Cursor cursor = null;
         try {
             cursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, selection, selectionArg, orderBy);
             while (null != cursor && cursor.moveToNext()) {
-                lData = new Data();
-                String lId = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                lData.setAssetID(lId);
-                String lValue = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                lData.setPath(lValue);
+                data = new Data();
+                String value = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                data.setAssetID(value);
+                value = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.TYPE));
+                data.setType(value);
+                value = cursor.getString(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                data.setPath(value);
                 int lCount = cursor.getInt(cursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
-                lData.setCount(lCount);
+                data.setCount(lCount);
                 break;
             }
         } catch (Exception e) {
@@ -971,6 +833,6 @@ public class VideoData {
                 cursor.close();
             }
         }
-        return lData;
+        return data;
     }
 }

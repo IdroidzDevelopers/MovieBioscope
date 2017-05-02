@@ -53,34 +53,34 @@ public class StateMachine {
         int MOVIE_FINISHED = 9;
         int COMPANY_AD = 10;
         int LANDING_VIDEO = 11;
+        int OTHERS = 12;
     }
 
 
     public int getState(String type) {
-        switch (type) {
-            case VideoProvider.VIDEO_TYPE.TRAVELER_VIDEO:
-                return PLAYING_STATE.TRAVEL_VIDEO;
-            case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
-                return PLAYING_STATE.SAFETY_VIDEO;
-            case VideoProvider.VIDEO_TYPE.MOVIE:
-                return PLAYING_STATE.MOVIE;
-            case VideoProvider.VIDEO_TYPE.ADV:
-                return PLAYING_STATE.ADV;
-            case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
-                return PLAYING_STATE.BREAKING_VIDEO;
-            case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
-                return PLAYING_STATE.BREAKING_TEXT;
-            case VideoProvider.VIDEO_TYPE.INTRO_VIDEO:
-                return PLAYING_STATE.INTRO_VIDEO;
-            case VideoProvider.VIDEO_TYPE.COMPANY_AD:
-                return PLAYING_STATE.COMPANY_AD;
-            case VideoProvider.VIDEO_TYPE.LANDING_VIDEO:
-                return PLAYING_STATE.LANDING_VIDEO;
-            default:
-                return PLAYING_STATE.NONE;
-
-
+        if (null != type) {
+            switch (type) {
+                case VideoProvider.VIDEO_TYPE.TRAVELER_VIDEO:
+                    return PLAYING_STATE.TRAVEL_VIDEO;
+                case VideoProvider.VIDEO_TYPE.SAFETY_VIDEO:
+                    return PLAYING_STATE.SAFETY_VIDEO;
+                case VideoProvider.VIDEO_TYPE.MOVIE:
+                    return PLAYING_STATE.MOVIE;
+                case VideoProvider.VIDEO_TYPE.ADV:
+                    return PLAYING_STATE.ADV;
+                case VideoProvider.VIDEO_TYPE.BREAKING_VIDEO:
+                    return PLAYING_STATE.BREAKING_VIDEO;
+                case VideoProvider.VIDEO_TYPE.BREAKING_NEWS:
+                    return PLAYING_STATE.BREAKING_TEXT;
+                case VideoProvider.VIDEO_TYPE.INTRO_VIDEO:
+                    return PLAYING_STATE.INTRO_VIDEO;
+                case VideoProvider.VIDEO_TYPE.COMPANY_AD:
+                    return PLAYING_STATE.COMPANY_AD;
+                default:
+                    return PLAYING_STATE.OTHERS;
+            }
         }
+        return PLAYING_STATE.OTHERS;
     }
 
     /**
@@ -311,7 +311,7 @@ public class StateMachine {
             case PLAYING_STATE.LANDING_VIDEO:
                 return "LANDING_VIDEO";
             default:
-                return "UNKNOWN";
+                return "OTHERS";
         }
     }
 

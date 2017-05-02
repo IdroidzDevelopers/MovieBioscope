@@ -71,7 +71,7 @@ public class SequenceUtil {
         String[] selectionArg = {"" + sequenceType, "" + sequenceOrder};
         ContentValues content = new ContentValues();
         content.put(VideoProvider.SEQUENCE_COLUMNS.SELECTED, SELECTED);
-        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, selection, selectionArg);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, content, selection, selectionArg);
         Log.d(TAG, "updateSelection() :: rows count " + count);
         return count;
     }
@@ -81,7 +81,7 @@ public class SequenceUtil {
         String[] selectionArg = {sequenceType};
         ContentValues content = new ContentValues();
         content.put(VideoProvider.SEQUENCE_COLUMNS.SELECTED, NOT_SELECTED);
-        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, selection, selectionArg);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, content, selection, selectionArg);
         Log.d(TAG, "resetSelection() :: rows count " + count);
         return count;
     }

@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
+import com.lib.videoplayer.R;
+
 
 public class VideoProvider extends ContentProvider {
 
@@ -76,6 +78,7 @@ public class VideoProvider extends ContentProvider {
         String VIDEO_TYPE = "video_type";
         String SEQUENCE_ORDER = "sequence_order";
         String SELECTED = "selected";
+        String UPDATED_TIME = "updated_time";
     }
 
 
@@ -89,7 +92,14 @@ public class VideoProvider extends ContentProvider {
         String BREAKING_VIDEO = "news_video";
         String BREAKING_NEWS = "news_image";
         String COMPANY_AD = "company_ad";
-        String LANDING_VIDEO = "landing_video";
+
+        String TRAILER = "trailer";
+        String COMEDY_SHOW = "comedy_show";
+        String SERIAL = "serial";
+        String DEVOTIONAL = "devotional";
+        String SPORTS = "sports";
+
+
     }
 
     public interface DOWNLOAD_STATUS {
@@ -102,7 +112,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_VIDEO_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_VIDEO + "("
-            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.TRANSACTION_ID + " TEXT," + VIDEO_COLUMNS.CLOUD_TIME + " TEXT," + VIDEO_COLUMNS.IS_PLAYING + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DELETE_STATUS + " INTEGER," + VIDEO_COLUMNS.RECEIVED_TIME + " TEXT,"+ VIDEO_COLUMNS.PRIORITY + " INTEGER DEFAULT 3 ," + VIDEO_COLUMNS.SELECTED_STATE + " INTEGER DEFAULT 0)";
+            + VIDEO_COLUMNS.VIDEO_ID + " TEXT PRIMARY KEY ," + VIDEO_COLUMNS.NAME + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_URL + " TEXT," + VIDEO_COLUMNS.TYPE + " TEXT," + VIDEO_COLUMNS.LANGUAGE + " TEXT," + VIDEO_COLUMNS.MESSAGE + " TEXT," + VIDEO_COLUMNS.PATH + " TEXT," + VIDEO_COLUMNS.LAST_PLAYED_TIME + " TEXT," + VIDEO_COLUMNS.PLAY_COUNT + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DOWNLOADING_ID + " TEXT," + VIDEO_COLUMNS.DOWNLOAD_STATUS + " TEXT DEFAULT " + DOWNLOAD_STATUS.DOWNLOAD + "," + VIDEO_COLUMNS.TRANSACTION_ID + " TEXT," + VIDEO_COLUMNS.CLOUD_TIME + " TEXT," + VIDEO_COLUMNS.IS_PLAYING + " INTEGER DEFAULT 0," + VIDEO_COLUMNS.DELETE_STATUS + " INTEGER," + VIDEO_COLUMNS.RECEIVED_TIME + " TEXT," + VIDEO_COLUMNS.PRIORITY + " INTEGER DEFAULT 3 ," + VIDEO_COLUMNS.SELECTED_STATE + " INTEGER DEFAULT 0)";
 
     private static final String CREATE_VIDEO_INTERMEDIATE_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_INTERMEDIATE_VIDEO_STATE + "("
@@ -111,7 +121,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_SEQUENCE_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_SEQUENCE + "("
-            + SEQUENCE_COLUMNS.SEQUENCE_TYPE + " TEXT ," + SEQUENCE_COLUMNS.VIDEO_TYPE + " TEXT," + SEQUENCE_COLUMNS.SEQUENCE_ORDER + " TEXT," + SEQUENCE_COLUMNS.SELECTED + " INTEGER DEFAULT 0)";
+            + SEQUENCE_COLUMNS.SEQUENCE_TYPE + " TEXT ," + SEQUENCE_COLUMNS.VIDEO_TYPE + " TEXT," + SEQUENCE_COLUMNS.SEQUENCE_ORDER + " TEXT," + SEQUENCE_COLUMNS.SELECTED + " INTEGER DEFAULT 0 ," + SEQUENCE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_VIDEO_INTERMEDIATE_TABLE = 2;
@@ -152,6 +162,7 @@ public class VideoProvider extends ContentProvider {
         db.execSQL(CREATE_SEQUENCE_TABLE);
         return false;
     }
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {

@@ -4,10 +4,9 @@ import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.media.MediaScannerConnection;
-import android.os.Environment;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.app.navajhalaka.database.BusProvider;
 import com.app.navajhalaka.receiver.AcknowledgementReceiver;
@@ -20,17 +19,15 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
-import com.lib.videoplayer.util.FileUtil;
-
-import java.io.File;
-import java.io.IOException;
 
 public class BioscopeApp extends Application {
 
     private static final String TAG = BioscopeApp.class.getSimpleName();
     private static final String FOLDER_NAME = "movie_bioscope";
+    private static final String FIRST_RUN_KEY = "first_run";
 
     private static Context sContext;
+    private boolean firstRun;
 
     @Override
     public void onCreate() {
@@ -40,14 +37,52 @@ public class BioscopeApp extends Application {
         LocationApplication.setLocationContext(this);
         RouteApplication.setRouteContext(this);
         FireBaseApplication.setFirebaseContext(this);
-        //putDummyData();
-        // putBusDetail();
         registerVideoCommand();
         registerVideoComplete();
         registerAcknowledgementCommand();
-        //putClouddata();
-        //putLocationData();
-        //putRouteData();
+        if (isFirstRun()) {
+            initSequence();
+            initIntroVideo();
+        }
+        setFirstRun(false);
+    }
+
+    private boolean isFirstRun() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return preferences.getBoolean(FIRST_RUN_KEY, true);
+    }
+
+    private void initIntroVideo() {
+        ContentValues lValues1 = new ContentValues();
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.VIDEO_ID, "VID3203");
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.NAME, "Navajhalaka");
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.TYPE, VideoProvider.VIDEO_TYPE.INTRO_VIDEO);
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.PATH, "android.resource://" + getContext().getPackageName() + "/" + com.lib.videoplayer.R.raw.navajhalaka_intro);
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValues1.put(VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED);
+        getContext().getContentResolver().insert(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues1);
+    }
+
+    private void initSequence() {
+        String[] landingSequence = getContext().getResources().getStringArray(com.lib.videoplayer.R.array.landing_sequence);
+        for (int i = 0; i < landingSequence.length; i++) {
+            ContentValues values = new ContentValues();
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, 1);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE, landingSequence[i]);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER, i);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.UPDATED_TIME, System.currentTimeMillis());
+            getContext().getContentResolver().insert(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, values);
+        }
+
+        String[] movieInitSequence = getContext().getResources().getStringArray(com.lib.videoplayer.R.array.movie_init_sequence);
+        for (int i = 0; i < movieInitSequence.length; i++) {
+            ContentValues values = new ContentValues();
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, 2);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE, movieInitSequence[i]);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER, i);
+            values.put(VideoProvider.SEQUENCE_COLUMNS.UPDATED_TIME, System.currentTimeMillis());
+            getContext().getContentResolver().insert(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, values);
+        }
     }
 
     public static Context getContext() {
@@ -167,9 +202,16 @@ public class BioscopeApp extends Application {
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCompleteReceiver(), lIntentFilter);
     }
 
-    private void registerAcknowledgementCommand(){
+    private void registerAcknowledgementCommand() {
         IntentFilter lIntentFilter = new IntentFilter();
         lIntentFilter.addAction(CustomIntent.ACTION_ACK_DATA_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new AcknowledgementReceiver(), lIntentFilter);
+    }
+
+    public void setFirstRun(boolean firstRun) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(FIRST_RUN_KEY, firstRun);
+        editor.commit();
     }
 }

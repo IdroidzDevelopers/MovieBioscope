@@ -20,7 +20,7 @@
         android:layout_marginTop="@dimen/breaking_news_border"
         android:background="@android:color/holo_red_dark"
         android:gravity="center"
-        android:text="BREAKING NEWS"
+        android:text="@string/breaking_news_uppercase"
         android:textColor="@android:color/white"
         android:textSize="30sp" />
 

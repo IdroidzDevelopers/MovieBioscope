@@ -55,6 +55,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private Handler mTaskHandler;
     private BroadcastReceiver mReceiver;
     private View mLoading;
+    private TextView mBrkVideoHeader;
 
     //Header , Footer, breaking news
     private Fragment mTopBannerFragment;
@@ -167,6 +168,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         initListener();
         initFragments();
         mGifImageView = (GifImageView) findViewById(R.id.company_logo);
+        mBrkVideoHeader = (TextView) findViewById(R.id.breaking_video_header);
     }
 
     /**
@@ -208,6 +210,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         hideLocationInfo();
         removeBreakingNews();
         removeCompanyAd();
+        hideBreakingVideoHeaderIfRequired();
         if (null != mTaskHandler) {
             mTaskHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
             mTaskHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
@@ -436,6 +439,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mStateMachine.videoInfo.setBreakingUri(Uri.parse(lData.getPath()));
                 mStateMachine.changeState(mStateMachine.videoInfo.getCurrentState(), StateMachine.PLAYING_STATE.BREAKING_VIDEO);
                 VideoData.updateVideoData(mContext, lData);
+                showBreakingVideoHeader();
             }
         }
     }
@@ -601,6 +605,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             Log.d(TAG, "onCompletion ");
+            hideBreakingVideoHeaderIfRequired();
             showLoadingIcon();
             VideoData.updateVideoCompletedState(mStateMachine.videoInfo.getVideoId());
             VideoData.backgroundSearchForPendingDeleteVideo();
@@ -608,6 +613,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV && !isLocationInfoVisible()) {
                 mTaskHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
                 mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
+            }
+            if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV) {
+                mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
             }
             sendCompletedBroadcast();
             if (isDeleteType(mStateMachine.videoInfo.getCurrentState())) {
@@ -704,33 +712,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
 
                 case EVENT.PLAY_BREAKING_VIDEO:
-                    switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
-                            pauseVideo();
-                            startBreakingVideo();
-                            break;
-                    }
+                    pauseVideo();
+                    startBreakingVideo();
                     break;
                 case EVENT.PLAY_BREAKING_NEWS:
-                    switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
-                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
-                            pauseVideo();
-                            showBreakingNews();
-                            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);
-                            break;
-                    }
+                    pauseVideo();
+                    showBreakingNews();
+                    mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_BREAKING_NEWS, BREAKING_NEWS_DISPLAY_TIME);
                     break;
-
                 case EVENT.PLAY_COMPANY_AD:
-                    switch (mStateMachine.videoInfo.getCurrentState()) {
-                        case StateMachine.PLAYING_STATE.LANDING_VIDEO:
-                        case StateMachine.PLAYING_STATE.BREAKING_VIDEO:
-                            pauseVideo();
-                            showCompanyAd();
-                            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_COMPANY_AD, COMPANY_AD_DISPLAY_TIME);
-                            break;
-                    }
+                    pauseVideo();
+                    showCompanyAd();
+                    mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.REMOVE_COMPANY_AD, COMPANY_AD_DISPLAY_TIME);
                     break;
             }
         }
@@ -888,6 +881,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             mOtherView.start();
             mOtherView.setOnPreparedListener(mOtherPrepareListener);
             hideLoadingIcon();
+            showBreakingVideoHeader();
         } else {
             mMovieView.setVisibility(View.GONE);
             mOtherView.setVisibility(View.VISIBLE);
@@ -934,6 +928,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             }
         } else {
             return StateMachine.VIDEO_STATE.NONE;
+        }
+    }
+
+    private void showBreakingVideoHeader() {
+        if (null != mBrkVideoHeader && mBrkVideoHeader.getVisibility() != View.VISIBLE) {
+            mBrkVideoHeader.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideBreakingVideoHeaderIfRequired() {
+        if (null != mBrkVideoHeader && mBrkVideoHeader.getVisibility() == View.VISIBLE) {
+            mBrkVideoHeader.setVisibility(View.GONE);
         }
     }
 

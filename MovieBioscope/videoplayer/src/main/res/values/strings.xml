@@ -11,5 +11,7 @@
     <string name="_no_content_text">No content available</string>
     <string name="new_feed_test_text">Note ban: Rs 500, Rs 1,000 notes exchange ends tonight; exemptions stay till 15 December</string>
     <string name="no_movie_available">No content available</string>
+    <string name="breaking_news_uppercase">BREAKING NEWS</string>
+    <string name="breaking_video_uppercase">BREAKING VIDEO</string>
 
 </resources>

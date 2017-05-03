@@ -61,6 +61,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"></FrameLayout>
 
+    <TextView
+        android:id="@+id/breaking_video_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_dark"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:text="@string/breaking_video_uppercase"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/company_logo"
         android:layout_width="@dimen/company_gif_width"

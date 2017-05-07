@@ -14,6 +14,8 @@ import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
 import com.lib.utility.util.Logger;
 
+import java.io.IOException;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -27,6 +29,7 @@ public class SplashFragment extends Fragment {
     private View mRootView;
     private Handler mHandler;
     private Runnable mMoveNextRunnable;
+    private Process process;
 
     public SplashFragment() {
         // Required empty public constructor
@@ -56,6 +59,7 @@ public class SplashFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.splash_layout, container, false);
         mHandler = new Handler();
         mMoveNextRunnable = new MovePageRunnable();
+        process = launchLogcat("sdcard/log.txt");
         return mRootView;
     }
 
@@ -101,6 +105,17 @@ public class SplashFragment extends Fragment {
         } else {
             Logger.debug(TAG, "moveToNextPage :: lTransaction is null " );
         }
+    }
+
+    public Process launchLogcat(String filename){
+        Process process = null;
+        String cmd = "logcat -f " + filename + "\n";
+        try {
+            process = Runtime.getRuntime().exec(cmd);
+        } catch (IOException e) {
+            process = null;
+        }
+        return process;
     }
 
 

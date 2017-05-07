@@ -14,7 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.app.navajhalaka.R;
 import com.app.navajhalaka.app.BioscopeApp;
@@ -84,6 +86,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return mRootView;
     }
 
+
     private void initView() {
         Route defaultRoute = RouteUtil.getCurrentRoute(RouteApplication.getRouteContext());
         String routeId = null;
@@ -127,6 +130,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        mPlayBottom.requestFocus();
         mSlideHandler.postDelayed(mSlideRunnable, DELAY);
         StartVideoTimer();
     }

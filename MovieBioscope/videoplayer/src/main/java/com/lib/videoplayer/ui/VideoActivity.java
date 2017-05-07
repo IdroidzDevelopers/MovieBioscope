@@ -19,7 +19,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.lib.location.ui.BottomBannerFragment;
@@ -159,6 +161,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mTaskHandler = new TaskHandler();
         mReceiver = new Receiver();
         mContext = this;
+
         mMovieView = (VideoView) findViewById(R.id.movie_view);
         mOtherView = (VideoView) findViewById(R.id.ad_video);
         mNoContentView = (TextView) findViewById(R.id.no_content);

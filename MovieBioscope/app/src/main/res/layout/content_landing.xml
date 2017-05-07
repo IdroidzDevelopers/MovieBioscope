@@ -21,6 +21,10 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/play_icon_right_margin"
-        android:background="@drawable/play_button_bg" />
+        android:background="@drawable/play_button_bg"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+        <requestFocus />
+    </ImageButton>
 
 </RelativeLayout>

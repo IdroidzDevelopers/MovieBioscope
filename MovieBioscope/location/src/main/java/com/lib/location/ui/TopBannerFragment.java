@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,9 +42,9 @@ import java.util.List;
 public class TopBannerFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = TopBannerFragment.class.getSimpleName();
     private View mRootView;
-    private ImageView mRoute;
+    private ImageButton mRoute;
     private ImageView mHome;
-    private ImageView mMovie;
+    private ImageButton mMovie;
     private static final String ARG_PARAM1 = "param1";
     private Dialog mRouteDialog;
     private String mType;
@@ -93,7 +94,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
 
     private void initView() {
         mReceiver = new Receiver();
-        mRoute = (ImageView) mRootView.findViewById(R.id.route);
+        mRoute = (ImageButton) mRootView.findViewById(R.id.route);
         mJourneyTime = (TextView) mRootView.findViewById(R.id.journey_hours);
         mJourneyDistance = (TextView) mRootView.findViewById(R.id.total_distance);
         mRoute.setOnClickListener(this);
@@ -101,7 +102,7 @@ public class TopBannerFragment extends Fragment implements View.OnClickListener 
             mHome = (ImageView) mRootView.findViewById(R.id.home);
             mHome.setOnClickListener(this);
         } else {
-            mMovie = (ImageView) mRootView.findViewById(R.id.movie_list);
+            mMovie = (ImageButton) mRootView.findViewById(R.id.movie_list);
             mMovie.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

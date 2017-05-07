@@ -65,7 +65,7 @@
     </LinearLayout>
     <!--journey layout : end-->
 
-    <ImageView
+    <ImageButton
         android:id="@+id/home"
         android:layout_width="100dp"
         android:layout_height="45dp"
@@ -73,14 +73,20 @@
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_marginRight="150dp"
-        android:src="@drawable/home_bg" />
+        android:src="@drawable/home_bg"
+        android:background="@null"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/route"
         android:layout_width="100dp"
         android:layout_height="60dp"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:layout_toLeftOf="@+id/home"
-        android:src="@drawable/route_bg" />
+        android:src="@drawable/route_bg"
+        android:background="@null"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
 </RelativeLayout>

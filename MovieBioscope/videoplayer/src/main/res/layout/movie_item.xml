@@ -14,7 +14,9 @@
             android:id="@+id/movieicon"
             android:layout_width="170dp"
             android:layout_height="120dp"
-            android:src="@mipmap/ic_movie" />
+            android:src="@mipmap/ic_movie"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
 
         <TextView
             android:id="@+id/movie_item_text"

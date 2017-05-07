@@ -489,6 +489,9 @@ public class VideoData {
         if (null != data.getReceivedTime()) {
             value.put(VideoProvider.VIDEO_COLUMNS.RECEIVED_TIME, data.getReceivedTime());
         }
+        if (null != data.getPriority()) {
+            value.put(VideoProvider.VIDEO_COLUMNS.PRIORITY, data.getPriority());
+        }
         int count = context.getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, value, selection, selectionArg);
         Logger.debug(TAG, "updated count is " + count);
 
@@ -811,6 +814,7 @@ public class VideoData {
             default:
                 selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
                 selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC , " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 break;
         }
         Cursor cursor = null;

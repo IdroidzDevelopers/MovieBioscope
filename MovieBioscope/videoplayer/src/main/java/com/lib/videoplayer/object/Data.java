@@ -14,6 +14,16 @@ public class Data {
     private String mLastPlayedTime;
     private int mCount;
     private String mTransactionId;
+    private String mPriority;
+
+    public String getPriority() {
+        return mPriority;
+    }
+
+    public Data setPriority(String priority) {
+        this.mPriority = priority;
+        return this;
+    }
 
     public String getCloudTime() {
         return mCloudTime;

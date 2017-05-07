@@ -309,7 +309,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mMovieView.setVisibility(View.GONE);
         Data lData = VideoData.getVideoByType(VideoProvider.VIDEO_TYPE.ADV);
         if (null != lData && null != lData.getPath() && FileUtil.isFileExist(lData.getPath())) {
-            if (!this.isFinishing()) {// TODO: dirty fix :: need olution
+            if (!this.isFinishing()) {// TODO: dirty fix :: need solution
                 mOtherView.setVisibility(View.VISIBLE);
                 mOtherView.setVideoURI(Uri.parse(lData.getPath()));
                 mOtherView.requestFocus();
@@ -419,6 +419,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             VideoData.updateVideoData(mContext, data);
         } else {
             hideLoadingIcon();
+            mMovieView.setVisibility(View.GONE);
+            mOtherView.setVisibility(View.GONE);
             mNoContentView.setVisibility(View.VISIBLE);
             mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.FINISH_ACTIVITY, NO_CONTENT_DISPLAY_TIME);
         }

@@ -190,6 +190,7 @@ public class VideoTaskHandler extends Handler {
         data.setUrl(asset.getUrl());
         data.setLanguage(asset.getLanguage());
         data.setType(asset.getType());
+        data.setPriority(asset.getPriority());
         return data;
     }
 

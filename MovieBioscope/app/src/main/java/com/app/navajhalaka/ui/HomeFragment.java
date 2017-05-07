@@ -38,7 +38,7 @@ import com.lib.videoplayer.util.VideoData;
  */
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private static final long WAITING_TIME = 2 * 60 * 1000;//2 mins
+    private static final long WAITING_TIME = 30 * 1000;//30 secs
     private ImageButton mPlayBottom;
     private View mRootView;
     private Handler mHandler;
@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private BroadcastReceiver mReceiver;
 
     private Handler mSlideHandler;
-    public static final int DELAY = 30 * 1000;
+    public static final int DELAY = 5 * 1000;// 5 seconds
     private int page = 0;
 
     Runnable mSlideRunnable = new Runnable() {

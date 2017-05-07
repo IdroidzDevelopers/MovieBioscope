@@ -7,6 +7,16 @@ public class Asset {
     private String url;
     private String type;
     private String language;
+    private String priority;
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public Asset setPriority(String priority) {
+        this.priority = priority;
+        return this;
+    }
 
     @Override
     public String toString() {

@@ -43,7 +43,7 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class VideoActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = VideoActivity.class.getSimpleName();
-    private static final long BANNER_TIMEOUT = 60 * 1000;//60 secs
+    private static final long BANNER_TIMEOUT = 10 * 1000;//10 secs
     private static final long BREAKING_NEWS_DISPLAY_TIME = 30 * 1000;//30 secs
     private static final long COMPANY_AD_DISPLAY_TIME = 30 * 1000;//30 secs
     private static final long NO_CONTENT_DISPLAY_TIME = 5 * 1000;

@@ -19,9 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.lib.location.ui.BottomBannerFragment;
@@ -333,14 +331,19 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         SequenceData sequenceData = SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
         if (null == sequenceData) {
             sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+            SequenceUtil.updateNewSequence(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
         } else {
-            if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
+            //get next
+            if (!SequenceUtil.isLastForVideoType(sequenceData)) {//not last , just increment the video count
+                SequenceUtil.updateCurrentSequence(sequenceData);
+            } else if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
                 sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE);
+                SequenceUtil.updateNewSequence(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
             } else {
-                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, sequenceData.getSequenceOrder());
+                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, sequenceData);
+                SequenceUtil.updateNewSequence(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
             }
         }
-        SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
         //this steps we have sequenceData what to play
         Data data = VideoData.getVideoByType(sequenceData.getVideoType());
         if (!this.isFinishing()) {
@@ -360,15 +363,18 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         SequenceData sequenceData = SequenceUtil.getCurrentSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
         if (null == sequenceData) {
             sequenceData = SequenceUtil.getDefaultSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
-            SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
+            SequenceUtil.updateNewSequence(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
         } else {
-            if (!SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
-                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, sequenceData.getSequenceOrder());
-                SequenceUtil.updateSelection(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
-            } else {
+            //get next
+            if (!SequenceUtil.isLastForVideoType(sequenceData)) {//not last , just increment the video count
+                SequenceUtil.updateCurrentSequence(sequenceData);
+            } else if (SequenceUtil.isLast(sequenceData.getSequenceType(), sequenceData.getSequenceOrder())) {
                 //all the init videos done
                 sequenceData = new SequenceData();
                 sequenceData.setVideoType(VideoProvider.VIDEO_TYPE.MOVIE);
+            } else {
+                sequenceData = SequenceUtil.getNextInSequence(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, sequenceData);
+                SequenceUtil.updateNewSequence(sequenceData.getSequenceType(), sequenceData.getSequenceOrder());
             }
         }
         //this steps we have sequenceData what to play

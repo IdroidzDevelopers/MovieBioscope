@@ -7,6 +7,27 @@ public class SequenceData {
     private String mVideoType;
     private int mSequenceOrder;
     private int mSelection;
+    private int mTotalVideoCountForType;
+
+    public int getTotalVideoCountForType() {
+        return mTotalVideoCountForType;
+    }
+
+    public SequenceData setTotalVideoCountForType(int mTotalVideoCountForType) {
+        this.mTotalVideoCountForType = mTotalVideoCountForType;
+        return this;
+    }
+
+    public int getCurrentVideoCountForType() {
+        return mCurrentVideoCountForType;
+    }
+
+    public SequenceData setCurrentVideoCountForType(int mCurrentVideoCountForType) {
+        this.mCurrentVideoCountForType = mCurrentVideoCountForType;
+        return this;
+    }
+
+    private int mCurrentVideoCountForType;
 
     public String getSequenceType() {
         return mSequenceType;

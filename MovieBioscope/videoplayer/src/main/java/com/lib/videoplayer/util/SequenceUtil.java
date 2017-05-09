@@ -29,6 +29,8 @@ public class SequenceUtil {
                 data.setVideoType(cursor.getString(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE)));
                 data.setSequenceOrder(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER)));
                 data.setSelection(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SELECTED)));
+                data.setCurrentVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE)));
+                data.setTotalVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE)));
                 break;
             }
         } catch (Exception e) {
@@ -42,8 +44,9 @@ public class SequenceUtil {
         return data;
     }
 
-    public static SequenceData getNextInSequence(String sequenceType, int sequenceOrder) {
+    public static SequenceData getNextInSequence(String sequenceType, SequenceData sequenceData) {
         SequenceData data = null;
+        int sequenceOrder = sequenceData.getSequenceOrder();
         String selection = VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE + "= ? AND " + VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER + " = ?";
         String[] selectionArg = {sequenceType, "" + ++sequenceOrder};//get the next element
         Cursor cursor = null;
@@ -55,6 +58,8 @@ public class SequenceUtil {
                 data.setVideoType(cursor.getString(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE)));
                 data.setSequenceOrder(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER)));
                 data.setSelection(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SELECTED)));
+                data.setCurrentVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE)));
+                data.setTotalVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE)));
                 break;
             }
         } catch (Exception e) {
@@ -68,14 +73,25 @@ public class SequenceUtil {
         return data;
     }
 
-    public static long updateSelection(String sequenceType, int sequenceOrder) {
+    public static long updateNewSequence(String sequenceType, int sequenceOrder) {
         resetSelection(sequenceType);
         String selection = VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE + "= ? AND " + VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER + " = ?";
         String[] selectionArg = {"" + sequenceType, "" + sequenceOrder};
         ContentValues content = new ContentValues();
         content.put(VideoProvider.SEQUENCE_COLUMNS.SELECTED, SELECTED);
+        content.put(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE, 1);//new one
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, content, selection, selectionArg);
-        Logger.debug(TAG, "updateSelection() :: rows count " + count);
+        Logger.debug(TAG, "updateNewSequence() :: rows count " + count);
+        return count;
+    }
+
+    public static long updateCurrentSequence(SequenceData sequenceData) {
+        String selection = VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE + "= ? AND " + VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER + " = ?";
+        String[] selectionArg = {"" + sequenceData.getSequenceType(), "" + sequenceData.getSequenceOrder()};
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE, sequenceData.getCurrentVideoCountForType() + 1);//increment the CURRENT_VIDEO_COUNT_FOR_TYPE
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, content, selection, selectionArg);
+        Logger.debug(TAG, "updateCurrentSequence() :: rows count " + count);
         return count;
     }
 
@@ -84,6 +100,7 @@ public class SequenceUtil {
         String[] selectionArg = {sequenceType};
         ContentValues content = new ContentValues();
         content.put(VideoProvider.SEQUENCE_COLUMNS.SELECTED, NOT_SELECTED);
+        content.put(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE, NOT_SELECTED);
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, content, selection, selectionArg);
         Logger.debug(TAG, "resetSelection() :: rows count " + count);
         return count;
@@ -119,6 +136,16 @@ public class SequenceUtil {
     }
 
 
+    public static boolean isLastForVideoType(SequenceData data) {
+        if (null != data) {
+            if (data.getTotalVideoCountForType() == data.getCurrentVideoCountForType()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static SequenceData getDefaultSequence(String sequenceType) {
         SequenceData data = null;
         String selection = VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE + "= ? ";
@@ -133,6 +160,8 @@ public class SequenceUtil {
                 data.setVideoType(cursor.getString(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE)));
                 data.setSequenceOrder(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER)));
                 data.setSelection(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.SELECTED)));
+                data.setCurrentVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE)));
+                data.setTotalVideoCountForType(cursor.getInt(cursor.getColumnIndex(VideoProvider.SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE)));
                 break;
             }
         } catch (Exception e) {

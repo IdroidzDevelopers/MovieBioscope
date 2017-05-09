@@ -13,8 +13,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
-import com.lib.videoplayer.R;
-
 
 public class VideoProvider extends ContentProvider {
 
@@ -80,6 +78,8 @@ public class VideoProvider extends ContentProvider {
         String VIDEO_TYPE = "video_type";
         String SEQUENCE_ORDER = "sequence_order";
         String SELECTED = "selected";
+        String TOTAL_VIDEO_COUNT_FOR_TYPE = "total_video_count_for_type";
+        String CURRENT_VIDEO_COUNT_FOR_TYPE = "current_video_count_for_type";
         String UPDATED_TIME = "updated_time";
     }
 
@@ -129,7 +129,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_SEQUENCE_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_SEQUENCE + "("
-            + SEQUENCE_COLUMNS.SEQUENCE_TYPE + " TEXT ," + SEQUENCE_COLUMNS.VIDEO_TYPE + " TEXT," + SEQUENCE_COLUMNS.SEQUENCE_ORDER + " TEXT," + SEQUENCE_COLUMNS.SELECTED + " INTEGER DEFAULT 0 ," + SEQUENCE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
+            + SEQUENCE_COLUMNS.SEQUENCE_TYPE + " TEXT ," + SEQUENCE_COLUMNS.VIDEO_TYPE + " TEXT," + SEQUENCE_COLUMNS.SEQUENCE_ORDER + " TEXT," + SEQUENCE_COLUMNS.SELECTED + " INTEGER DEFAULT 0 ," + SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE + " INTEGER DEFAULT 1 ," + SEQUENCE_COLUMNS.CURRENT_VIDEO_COUNT_FOR_TYPE + " INTEGER DEFAULT 0 ," + SEQUENCE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
 
     private static final String CREATE_ADS_SLOTS_CONFIG_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_ADS_SLOTS_CONFIG + "("

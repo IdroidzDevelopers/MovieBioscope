@@ -25,6 +25,7 @@ public class VideoProvider extends ContentProvider {
     public static final String TABLE_VIDEO = "video_table";
     public static final String TABLE_INTERMEDIATE_VIDEO_STATE = "video_intermediate_state";
     public static final String TABLE_SEQUENCE = "video_sequence";
+    public static final String TABLE_ADS_SLOTS_CONFIG = "ads_slots_config";
     private static final int DATABASE_VERSION = 1;
 
     public static final String AUTHORITY = "com.lib.videoplayer.contentprovider.database.VideoProvider";
@@ -32,6 +33,7 @@ public class VideoProvider extends ContentProvider {
     public static final Uri CONTENT_URI_VIDEO_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_VIDEO);
     public static final Uri CONTENT_URI_INTERMEDIATE_VIDEO_STATE = Uri.parse(CONTENT_URI + "/" + TABLE_INTERMEDIATE_VIDEO_STATE);
     public static final Uri CONTENT_URI_SEQUENCE_TABLE = Uri.parse(CONTENT_URI + "/" + TABLE_SEQUENCE);
+    public static final Uri CONTENT_URI_ADS_SLOTS_CONFIG = Uri.parse(CONTENT_URI + "/" + TABLE_ADS_SLOTS_CONFIG);
     public DatabaseHelper mDbHelper;
     private static final UriMatcher sUriMatcher;
 
@@ -81,6 +83,12 @@ public class VideoProvider extends ContentProvider {
         String UPDATED_TIME = "updated_time";
     }
 
+    public interface ADS_SLOTS_CONFIG_COLUMNS {
+        String SLOT_TYPE = "slot_type";
+        String SLOTS_PER_HOUR_COUNT = "slots_per_hour_count";
+        String ADS_PER_SLOT_COUNT = "ads_per_slot_count";
+    }
+
 
     public interface VIDEO_TYPE {
         String COMPANY_VIDEO = "company";
@@ -123,16 +131,22 @@ public class VideoProvider extends ContentProvider {
             + TABLE_SEQUENCE + "("
             + SEQUENCE_COLUMNS.SEQUENCE_TYPE + " TEXT ," + SEQUENCE_COLUMNS.VIDEO_TYPE + " TEXT," + SEQUENCE_COLUMNS.SEQUENCE_ORDER + " TEXT," + SEQUENCE_COLUMNS.SELECTED + " INTEGER DEFAULT 0 ," + SEQUENCE_COLUMNS.UPDATED_TIME + " TEXT" + ")";
 
+    private static final String CREATE_ADS_SLOTS_CONFIG_TABLE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_ADS_SLOTS_CONFIG + "("
+            + ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE + " TEXT ," + ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT + " INTEGER," + ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT + " INTEGER" + ")";
+
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_VIDEO_INTERMEDIATE_TABLE = 2;
     private static final int CASE_SEQUENCE_TABLE = 3;
-    private static final int CASE_DEFAULT = 4;
+    private static final int CASE_ADS_SLOTS_CONFIG_TABLE = 4;
+    private static final int CASE_DEFAULT = 6;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, TABLE_VIDEO, CASE_VIDEO_TABLE);
         sUriMatcher.addURI(AUTHORITY, TABLE_INTERMEDIATE_VIDEO_STATE, CASE_VIDEO_INTERMEDIATE_TABLE);
         sUriMatcher.addURI(AUTHORITY, TABLE_SEQUENCE, CASE_SEQUENCE_TABLE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_ADS_SLOTS_CONFIG, CASE_ADS_SLOTS_CONFIG_TABLE);
         sUriMatcher.addURI(AUTHORITY, "/*", CASE_DEFAULT);
     }
 
@@ -145,6 +159,8 @@ public class VideoProvider extends ContentProvider {
                 return AUTHORITY + "/" + TABLE_VIDEO;
             case CASE_VIDEO_INTERMEDIATE_TABLE:
                 return AUTHORITY + "/" + TABLE_INTERMEDIATE_VIDEO_STATE;
+            case CASE_ADS_SLOTS_CONFIG_TABLE:
+                return AUTHORITY + "/" + TABLE_ADS_SLOTS_CONFIG;
             case CASE_DEFAULT:
                 return AUTHORITY + "/*";
             default:
@@ -160,6 +176,7 @@ public class VideoProvider extends ContentProvider {
         db.execSQL(CREATE_VIDEO_TABLE);
         db.execSQL(CREATE_VIDEO_INTERMEDIATE_TABLE);
         db.execSQL(CREATE_SEQUENCE_TABLE);
+        db.execSQL(CREATE_ADS_SLOTS_CONFIG_TABLE);
         return false;
     }
 
@@ -179,6 +196,10 @@ public class VideoProvider extends ContentProvider {
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case CASE_SEQUENCE_TABLE:
+                queryBuilder.setTables(uri.getLastPathSegment());
+                lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case CASE_ADS_SLOTS_CONFIG_TABLE:
                 queryBuilder.setTables(uri.getLastPathSegment());
                 lCursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -216,6 +237,13 @@ public class VideoProvider extends ContentProvider {
 
                 }
                 break;
+            case CASE_ADS_SLOTS_CONFIG_TABLE:
+                try {
+                    lRowId = lDb.insertOrThrow(uri.getLastPathSegment(), null, values);
+                } catch (Exception e) {
+
+                }
+                break;
             default:
                 break;
         }
@@ -240,6 +268,9 @@ public class VideoProvider extends ContentProvider {
             case CASE_SEQUENCE_TABLE:
                 count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
                 break;
+            case CASE_ADS_SLOTS_CONFIG_TABLE:
+                count = db.delete(uri.getLastPathSegment(), selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI " + uri);
         }
@@ -259,6 +290,9 @@ public class VideoProvider extends ContentProvider {
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             case CASE_SEQUENCE_TABLE:
+                lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
+                break;
+            case CASE_ADS_SLOTS_CONFIG_TABLE:
                 lCount = lDb.update(uri.getLastPathSegment(), values, selection, selectionArgs);
                 break;
             default:

@@ -19,6 +19,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.receivers.VideoCommandReceiver;
+import com.lib.videoplayer.util.AdsSlotConfigUtil;
 import com.lib.videoplayer.util.StateMachine;
 
 public class BioscopeApp extends Application {
@@ -186,12 +187,26 @@ public class BioscopeApp extends Application {
         getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_TABLE, lValue7);*/
     }
 
+    private void putAdsConfigData() {
+        ContentValues lValue5 = new ContentValues();
+        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE, "AD");
+        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT, 5);
+        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT, 5);
+        getContentResolver().insert(VideoProvider.CONTENT_URI_ADS_SLOTS_CONFIG, lValue5);
+    }
+
+    private void checkAdsConfigData(){
+        int x=AdsSlotConfigUtil.getAdsPerSlotCount("AD");
+        int y=AdsSlotConfigUtil.getSlotsPerHourCount("AD");
+    }
+
     private void registerVideoCommand() {
         IntentFilter lIntentFilter = new IntentFilter();
         lIntentFilter.addAction(CustomIntent.ACTION_VIDEO_DATA_RECEIVED);
         lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_LIST);
         lIntentFilter.addAction(CustomIntent.ACTION_ROUTE_CHANGED);
         lIntentFilter.addAction(CustomIntent.ACTION_MOVIE_SELECTION_CHANGED);
+        lIntentFilter.addAction(CustomIntent.ACTION_ADS_SLOTS_CONFIG_RECEIVED);
         LocalBroadcastManager.getInstance(this).registerReceiver(new VideoCommandReceiver(), lIntentFilter);
     }
 

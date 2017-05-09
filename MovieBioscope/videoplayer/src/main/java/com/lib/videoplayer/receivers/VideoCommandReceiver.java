@@ -9,6 +9,7 @@ import android.os.Message;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.ui.MovieListActivity;
+import com.lib.videoplayer.util.AdsSlotConfigUtil;
 import com.lib.videoplayer.util.SequenceUtil;
 import com.lib.videoplayer.util.StateMachine;
 import com.lib.videoplayer.util.VideoData;
@@ -46,6 +47,9 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                 SequenceUtil.resetSelection(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
             } else if (CustomIntent.ACTION_MOVIE_SELECTION_CHANGED.equals(intent.getAction())) {
                 StateMachine.deletePersistState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
+            } else if (CustomIntent.ACTION_ADS_SLOTS_CONFIG_RECEIVED.equals(intent.getAction())) {
+                AdsSlotConfigUtil.deleteAdsSlotsConfigData();
+                //TODO from uri get data and insert in table
             }
         }
     }

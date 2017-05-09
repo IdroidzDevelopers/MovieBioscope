@@ -16,6 +16,7 @@ public class CustomIntent {
     public static final String ACTION_MOVIE_COMPLETED = "com.android.action.MOVIE_COMPLETE";
     public static final String ACTION_ADV_COMPLETED = "com.android.action.ADV_COMPLETE";
     public static final String ACTION_ACK_DATA_RECEIVED = "com.android.action.ACK_DATA_RECEIVED";
+    public static final String ACTION_ADS_SLOTS_CONFIG_RECEIVED = "com.android.action.ADS_SLOTS_CONFIG_RECEIVED";
 
     public interface EXTRAS {
         String URI_KEY = "uri";

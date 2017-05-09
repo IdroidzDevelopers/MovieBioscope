@@ -23,6 +23,7 @@ public interface AppInterface {
     String COMMAND_UPDATE="UPDATE";
     String COMMAND_DELETE="DELETE";
     String COMMAND_SEQUENCE="SEQUENCE";
+    String COMMAND_ADS_SLOTS_CONFIG="ADS_SLOT";
     String TYPE_ROUTE="route";
     String URI_KEY="uri";
     String ACTION_KEY="action";

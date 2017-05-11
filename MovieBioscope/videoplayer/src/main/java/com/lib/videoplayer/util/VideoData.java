@@ -38,15 +38,14 @@ import java.util.Random;
 
 public class VideoData {
     private static final String TAG = VideoData.class.getSimpleName();
-    private static final int SLOT_PER_HOUR = 3;
     private static final int VIDEO_PLAYING = 1;
     private static final int VIDEO_COMPLETED = 0;
     private static final int DELETE_STATUS = 1;
 
-    private static final long INTERVAL_FIVE_MINUTES = 5 * 60 * 1000;
-    private static final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
-    private static final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_FIVE_MINUTES;
-    private static final long MAX_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS + INTERVAL_FIVE_MINUTES;
+    public interface VideoModes{
+        String LANDING_MODE="LANDING";
+        String MOVIE_MODE="MOVIE";
+    }
 
 
     public static String getDefaultMovie() {
@@ -152,6 +151,11 @@ public class VideoData {
 
 
     public static long getNextAdTime() {
+        int SLOT_PER_HOUR = AdsSlotConfigUtil.getSlotsPerHourCount(VideoModes.LANDING_MODE);
+        long INTERVAL_TWO_MINUTES = 2 * 60 * 1000;
+        final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
+        final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_TWO_MINUTES;
+        long MAX_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS + INTERVAL_TWO_MINUTES;
         Random lRandom = new Random();
         long lRandomValue = MIN_TIME_IN_MILLIS +
                 (long) (lRandom.nextDouble() * (MAX_TIME_IN_MILLIS - MIN_TIME_IN_MILLIS));

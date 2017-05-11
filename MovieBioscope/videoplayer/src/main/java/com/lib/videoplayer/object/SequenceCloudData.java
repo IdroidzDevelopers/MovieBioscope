@@ -7,6 +7,7 @@ public class SequenceCloudData {
     private String type;
     private String value;
     private String order;
+    private int count;
 
     public String getName() {
         return name;
@@ -42,5 +43,13 @@ public class SequenceCloudData {
     public SequenceCloudData setOrder(String order) {
         this.order = order;
         return this;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

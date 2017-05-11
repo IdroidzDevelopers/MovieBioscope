@@ -118,7 +118,7 @@ public class VideoTaskHandler extends Handler {
                                 for (String s : map.keySet()) {
                                     SequenceUtil.deleteSequence(s);
                                     for (SequenceCloudData data : map.get(s)) {
-                                        SequenceUtil.insertSequence(s, data.getValue(), data.getOrder(), SequenceUtil.NOT_SELECTED);
+                                        SequenceUtil.insertSequence(s, data.getValue(), data.getOrder(), SequenceUtil.NOT_SELECTED,data.getCount());
                                     }
                                 }
                                 break;

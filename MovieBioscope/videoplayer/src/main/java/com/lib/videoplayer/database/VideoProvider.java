@@ -87,6 +87,7 @@ public class VideoProvider extends ContentProvider {
         String SLOT_TYPE = "slot_type";
         String SLOTS_PER_HOUR_COUNT = "slots_per_hour_count";
         String ADS_PER_SLOT_COUNT = "ads_per_slot_count";
+        String CURRENT_RUNNING_AD_COUNT = "current_running_ad_count";
     }
 
 
@@ -133,7 +134,7 @@ public class VideoProvider extends ContentProvider {
 
     private static final String CREATE_ADS_SLOTS_CONFIG_TABLE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_ADS_SLOTS_CONFIG + "("
-            + ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE + " TEXT ," + ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT + " INTEGER," + ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT + " INTEGER" + ")";
+            + ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE + " TEXT ," + ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT + " INTEGER," + ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT + " INTEGER," + ADS_SLOTS_CONFIG_COLUMNS.CURRENT_RUNNING_AD_COUNT + " INTEGER DEFAULT 0 " + ")";
 
     private static final int CASE_VIDEO_TABLE = 1;
     private static final int CASE_VIDEO_INTERMEDIATE_TABLE = 2;

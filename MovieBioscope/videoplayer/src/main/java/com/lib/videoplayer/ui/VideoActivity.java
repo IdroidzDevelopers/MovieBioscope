@@ -31,6 +31,7 @@ import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.SequenceData;
+import com.lib.videoplayer.util.AdsSlotConfigUtil;
 import com.lib.videoplayer.util.FileUtil;
 import com.lib.videoplayer.util.SequenceUtil;
 import com.lib.videoplayer.util.StateMachine;
@@ -322,6 +323,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 VideoData.updateVideoData(mContext, lData);
             }
         }
+        AdsSlotConfigUtil.updateCurrentRunningCount(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
     }
 
     /**
@@ -632,7 +634,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             if (isDeleteType(mStateMachine.videoInfo.getCurrentState())) {
                 VideoData.deleteFileById(mStateMachine.videoInfo.getVideoId());
             }
-            mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+            if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV && !AdsSlotConfigUtil.isLast(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE)){
+                startAd();
+            }else {
+                mState.sendEmptyMessage(EVENT.PLAY_NEXT);
+            }
         }
     }
 
@@ -712,6 +718,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     break;
 
                 case EVENT.PLAY_ADV:
+                    AdsSlotConfigUtil.resetCurrentRunningCount(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
                     if (VideoData.isAdvExist(mContext)) {
                         postBackgroundSearch();
                         pauseVideo();
@@ -785,6 +792,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     }
                     break;
                 case EVENT.PLAY_ADV:
+                    AdsSlotConfigUtil.resetCurrentRunningCount(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
                     if (VideoData.isAdvExist(mContext)) {
                         postBackgroundSearch();
                         pauseVideo();

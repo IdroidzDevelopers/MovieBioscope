@@ -42,11 +42,6 @@ public class VideoData {
     private static final int VIDEO_COMPLETED = 0;
     private static final int DELETE_STATUS = 1;
 
-    public interface VideoModes{
-        String LANDING_MODE="LANDING";
-        String MOVIE_MODE="MOVIE";
-    }
-
 
     public static String getDefaultMovie() {
         String id = null;
@@ -151,7 +146,7 @@ public class VideoData {
 
 
     public static long getNextAdTime() {
-        int SLOT_PER_HOUR = AdsSlotConfigUtil.getSlotsPerHourCount(VideoModes.LANDING_MODE);
+        int SLOT_PER_HOUR = AdsSlotConfigUtil.getSlotsPerHourCount(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
         long INTERVAL_TWO_MINUTES = 2 * 60 * 1000;
         final long AVG_TIME_IN_MILLIS = AlarmManager.INTERVAL_HOUR / SLOT_PER_HOUR;
         final long MIN_TIME_IN_MILLIS = AVG_TIME_IN_MILLIS - INTERVAL_TWO_MINUTES;

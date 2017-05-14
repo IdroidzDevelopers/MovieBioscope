@@ -202,7 +202,9 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     protected void onResume() {
         super.onResume();
         mState.sendEmptyMessage(EVENT.RESUME);
-        mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+        if (mStateMachine.videoInfo.getVideoState() == StateMachine.VIDEO_STATE.MOVIE_AND_ADV) {
+            mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+        }
     }
 
     @Override
@@ -627,16 +629,16 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 mTaskHandler.sendEmptyMessage(TASK_EVENT.DISPLAY_LOCATION_INFO);
                 mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_LOCATION_INFO, BANNER_TIMEOUT);
             }
-            if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV) {
-                mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
-            }
             sendCompletedBroadcast();
             if (isDeleteType(mStateMachine.videoInfo.getCurrentState())) {
                 VideoData.deleteFileById(mStateMachine.videoInfo.getVideoId());
             }
-            if (mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV && !AdsSlotConfigUtil.isLast(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE)){
+            if (mStateMachine.videoInfo.getVideoState() == StateMachine.VIDEO_STATE.MOVIE_AND_ADV && mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV && !AdsSlotConfigUtil.isLast(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE)) {
                 startAd();
-            }else {
+            } else {
+                if (mStateMachine.videoInfo.getVideoState() == StateMachine.VIDEO_STATE.MOVIE_AND_ADV && mStateMachine.videoInfo.getCurrentState() == StateMachine.PLAYING_STATE.ADV) {
+                    mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
+                }
                 mState.sendEmptyMessage(EVENT.PLAY_NEXT);
             }
         }
@@ -717,7 +719,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     }
                     break;
 
-                case EVENT.PLAY_ADV:
+/*                case EVENT.PLAY_ADV:
                     AdsSlotConfigUtil.resetCurrentRunningCount(AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
                     if (VideoData.isAdvExist(mContext)) {
                         postBackgroundSearch();
@@ -727,7 +729,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         //advertisement video not present still schdule for future may be we will get later
                         mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
                     }
-                    break;
+                    break;*/
 
                 case EVENT.PLAY_BREAKING_VIDEO:
                     pauseVideo();

@@ -41,10 +41,10 @@ public class BioscopeApp extends Application {
         registerVideoCommand();
         registerVideoComplete();
         registerAcknowledgementCommand();
-        putAdsConfigData();
         if (isFirstRun()) {
             initSequence();
             initIntroVideo();
+            putAdsConfigData();
         }
         setFirstRun(false);
     }
@@ -191,8 +191,8 @@ public class BioscopeApp extends Application {
     private void putAdsConfigData() {
         ContentValues lValue5 = new ContentValues();
         lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE, AdsSlotConfigUtil.SLOT_TYPE.LANDING_SLOT_TYPE);
-        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT, 10);
-        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT, 5);
+        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT, 30);
+        lValue5.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT, 2);
         getContentResolver().insert(VideoProvider.CONTENT_URI_ADS_SLOTS_CONFIG, lValue5);
     }
 

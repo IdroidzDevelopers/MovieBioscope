@@ -18,6 +18,7 @@ import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.VideoApplication;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.AdsSlotsData;
 import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.Movie;
@@ -400,6 +401,22 @@ public class VideoData {
         }
         return pushData;
     }
+
+    public static AdsSlotsData createAdsSlotsData(Context context, String rowId) {
+        FirebaseData firebase = FirebaseUtil.getFireBaseData(context, rowId);
+        AdsSlotsData adsSlotsData = null;
+        if (null != firebase) {
+            Logger.debug(TAG, "data is " + firebase.getData());
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            adsSlotsData = gson.fromJson(firebase.getData(), AdsSlotsData.class);
+            //adsSlotsData.setCloudTime(firebase.getSentTime());
+            //adsSlotsData.setReceivedTime(firebase.getReceivedTime());
+        }
+        return adsSlotsData;
+    }
+
+
 
     public static Map<String, List<SequenceCloudData>> createSequenceData(String rowId) {
         FirebaseData firebase = FirebaseUtil.getFireBaseData(VideoApplication.getVideoContext(), rowId);

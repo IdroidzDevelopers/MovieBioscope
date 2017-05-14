@@ -22,12 +22,24 @@ public class AdsSlotConfigUtil {
     }
 
     public static Uri insertAdsSlotsConfiguration(String slotType, int slotsPerHourCount, int adsPerSlotCount) {
+        String lSelection = VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE + "= ?";
+        String[] lSelectionArg = {slotType};
         ContentValues values = new ContentValues();
-        values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE, slotType);
-        values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT, slotsPerHourCount);
-        values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT, adsPerSlotCount);
-        Uri uri = VideoApplication.getVideoContext().getContentResolver().insert(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, values);
-        Logger.debug(TAG, "insertAdsSlotsConfiguration() :: uri  " + uri);
+        Uri uri = null;
+        try {
+            values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOT_TYPE, slotType);
+            values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.SLOTS_PER_HOUR_COUNT, slotsPerHourCount);
+            values.put(VideoProvider.ADS_SLOTS_CONFIG_COLUMNS.ADS_PER_SLOT_COUNT, adsPerSlotCount);
+            int updateCount = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_ADS_SLOTS_CONFIG, values, lSelection, lSelectionArg);
+            Logger.debug(TAG, "insertAdsSlotsConfiguration() :: update count  " + updateCount);
+            if (updateCount == 0) {
+                uri = VideoApplication.getVideoContext().getContentResolver().insert(VideoProvider.CONTENT_URI_ADS_SLOTS_CONFIG, values);
+                Logger.debug(TAG, "insertAdsSlotsConfiguration() :: uri  " + uri);
+            }
+
+        } catch (Exception e) {
+
+        }
         return uri;
     }
 

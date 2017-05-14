@@ -49,7 +49,21 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                 StateMachine.deletePersistState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);
             } else if (CustomIntent.ACTION_ADS_SLOTS_CONFIG_RECEIVED.equals(intent.getAction())) {
                 AdsSlotConfigUtil.deleteAdsSlotsConfigData();
-                //TODO from uri get data and insert in table
+                String uri = intent.getStringExtra(CustomIntent.EXTRAS.URI_KEY);
+                Logger.debug(TAG, "table uri is " + uri);
+                if (null != uri) {
+                    String[] content = uri.split("/");
+                    if (content.length > 0) {
+                        String rowId = content[content.length - 1];
+                        Logger.debug(TAG, "rowId " + rowId);
+                        Message lMessage = new Message();
+                        lMessage.what = VideoTaskHandler.TASK.HANDLE_ADS_SLOT_CONFIG;
+                        Bundle lBundle = new Bundle();
+                        lBundle.putString(VideoTaskHandler.KEY.ROW_ID, rowId);
+                        lMessage.setData(lBundle);
+                        VideoTaskHandler.getInstance(context).sendMessage(lMessage);
+                    }
+                }
             }
         }
     }

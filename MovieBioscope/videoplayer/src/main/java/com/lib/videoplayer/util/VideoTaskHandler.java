@@ -12,14 +12,17 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.lib.firebase.util.FirebaseUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
+import com.lib.videoplayer.object.AdsSlotsData;
 import com.lib.videoplayer.object.Asset;
 import com.lib.videoplayer.object.Data;
 import com.lib.videoplayer.object.DownloadData;
 import com.lib.videoplayer.object.PushData;
 import com.lib.videoplayer.object.SequenceCloudData;
+import com.lib.videoplayer.object.SlotData;
 
 import java.io.File;
 import java.util.List;
@@ -47,12 +50,14 @@ public class VideoTaskHandler extends Handler {
         String REFRESH = "REFRESH";
         String DELETE = "DELETE";
         String SEQUENCE = "SEQUENCE";
+        String ADS_SLOTS_CONFIG = "SLOTS";
     }
 
     public interface TASK {
         int HANDLE_VIDEO_DATA = 1;
         int HANDLE_DOWNLOADED_VIDEO = 2;
         int BACK_GROUND_BREAKING_NEWS_SEARCH = 3;
+        int HANDLE_ADS_SLOT_CONFIG = 4;
     }
 
     private static VideoTaskHandler sInstance;
@@ -118,7 +123,7 @@ public class VideoTaskHandler extends Handler {
                                 for (String s : map.keySet()) {
                                     SequenceUtil.deleteSequence(s);
                                     for (SequenceCloudData data : map.get(s)) {
-                                        SequenceUtil.insertSequence(s, data.getValue(), data.getOrder(), SequenceUtil.NOT_SELECTED,data.getCount());
+                                        SequenceUtil.insertSequence(s, data.getValue(), data.getOrder(), SequenceUtil.NOT_SELECTED, data.getVideo());
                                     }
                                 }
                                 break;
@@ -159,6 +164,27 @@ public class VideoTaskHandler extends Handler {
             case TASK.BACK_GROUND_BREAKING_NEWS_SEARCH:
                 VideoData.backgroundSearchForBreaking(sContext);
                 break;
+            case TASK.HANDLE_ADS_SLOT_CONFIG: {
+                if (null != lBundle) {
+                    String rowId = (String) lBundle.get(KEY.ROW_ID);
+                    AdsSlotsData data = VideoData.createAdsSlotsData(sContext, rowId);
+                    if (null != data) {
+                        Logger.info(TAG, "HANDLE_ADS_SLOT_CONFIG :: action " + data.getAction() + " rowId " + rowId);
+                        switch (data.getAction()) {
+                            case JSON_ACTION.ADS_SLOTS_CONFIG:
+                                if (null != data.getSlot()) {
+                                    SlotData slot = data.getSlot();
+                                    if (null != slot && null != slot.getSlotType() && null != slot.getSlotsPerHour() && null != slot.getAdsPerSlot()) {
+                                        AdsSlotConfigUtil.insertAdsSlotsConfiguration(slot.getSlotType(), Integer.parseInt(slot.getSlotsPerHour()), Integer.parseInt(slot.getAdsPerSlot()));
+                                    }
+                                }
+                                VideoData.createAndSendAcknowledgementData(data.getTransactionID(), "Received");
+                                break;
+                        }
+                    }
+                    break;
+                }
+            }
 
         }
 

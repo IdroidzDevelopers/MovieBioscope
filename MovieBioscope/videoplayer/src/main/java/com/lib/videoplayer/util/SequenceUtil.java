@@ -184,14 +184,16 @@ public class SequenceUtil {
     }
 
 
-    public static Uri insertSequence(String sequenceType, String videoType, String sequenceOrder, int selection,int videoCount) {
+    public static Uri insertSequence(String sequenceType, String videoType, String sequenceOrder, int selection, int videoCount) {
         ContentValues values = new ContentValues();
         values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_TYPE, sequenceType);
         values.put(VideoProvider.SEQUENCE_COLUMNS.VIDEO_TYPE, videoType);
         values.put(VideoProvider.SEQUENCE_COLUMNS.SEQUENCE_ORDER, sequenceOrder);
         values.put(VideoProvider.SEQUENCE_COLUMNS.SELECTED, selection);
         values.put(VideoProvider.SEQUENCE_COLUMNS.UPDATED_TIME, System.currentTimeMillis());
-        values.put(VideoProvider.SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE, videoCount);
+        if (videoCount != 0) {
+            values.put(VideoProvider.SEQUENCE_COLUMNS.TOTAL_VIDEO_COUNT_FOR_TYPE, videoCount);
+        }
         Uri uri = VideoApplication.getVideoContext().getContentResolver().insert(VideoProvider.CONTENT_URI_SEQUENCE_TABLE, values);
         Logger.debug(TAG, "insertSequence() :: uri  " + uri);
         return uri;

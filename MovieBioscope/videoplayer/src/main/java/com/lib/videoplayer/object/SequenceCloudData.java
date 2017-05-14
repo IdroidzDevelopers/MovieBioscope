@@ -7,7 +7,16 @@ public class SequenceCloudData {
     private String type;
     private String value;
     private String order;
-    private int video;
+    private int count;
+
+    public int getCount() {
+        return count;
+    }
+
+    public SequenceCloudData setCount(int count) {
+        this.count = count;
+        return this;
+    }
 
     public String getName() {
         return name;
@@ -45,11 +54,4 @@ public class SequenceCloudData {
         return this;
     }
 
-    public int getVideo() {
-        return video;
-    }
-
-    public void setVideo(int video) {
-        this.video = video;
-    }
 }

@@ -140,19 +140,21 @@ public class BottomBannerFragment extends Fragment {
                     Log.d(TAG, "onReceive() :: ACTION_CURRENT_LOCATION_CHANGED");
                     updateCurrentLocation();
                 } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
-                    final ConnectivityManager connMgr = (ConnectivityManager) context
-                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                    if (null != context) {
+                        final ConnectivityManager connMgr = (ConnectivityManager) context
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                    final android.net.NetworkInfo wifi = connMgr
-                            .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                        final android.net.NetworkInfo wifi = connMgr
+                                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-                    final android.net.NetworkInfo mobile = connMgr
-                            .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                        final android.net.NetworkInfo mobile = connMgr
+                                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-                    if (wifi.isConnected() || mobile.isConnected()) {
-                        mInternetLayout.setVisibility(View.GONE);
-                    } else {
-                        mInternetLayout.setVisibility(View.VISIBLE);
+                        if ((null != wifi && wifi.isConnected()) || (null != mobile && mobile.isConnected())) {
+                            mInternetLayout.setVisibility(View.GONE);
+                        } else {
+                            mInternetLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
 

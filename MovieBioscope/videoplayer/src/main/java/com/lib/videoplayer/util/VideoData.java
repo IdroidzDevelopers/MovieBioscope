@@ -417,7 +417,6 @@ public class VideoData {
     }
 
 
-
     public static Map<String, List<SequenceCloudData>> createSequenceData(String rowId) {
         FirebaseData firebase = FirebaseUtil.getFireBaseData(VideoApplication.getVideoContext(), rowId);
         Map<String, List<SequenceCloudData>> map = new HashMap<String, List<SequenceCloudData>>();
@@ -430,10 +429,10 @@ public class VideoData {
                 JSONObject sequence = data.getJSONObject("sequence");
                 List<SequenceCloudData> movieList = Arrays.asList(gson.fromJson(sequence.getJSONArray(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE).toString(), SequenceCloudData[].class));
                 List<SequenceCloudData> landingList = Arrays.asList(gson.fromJson(sequence.getJSONArray(StateMachine.SEQUENCE_TYPE.LANDING_TYPE).toString(), SequenceCloudData[].class));
-                if (null != movieList) {
+                if (null != movieList && movieList.size() != 0) {
                     map.put(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE, movieList);
                 }
-                if (null != landingList) {
+                if (null != landingList && landingList.size() != 0) {
                     map.put(StateMachine.SEQUENCE_TYPE.LANDING_TYPE, landingList);
                 }
             } catch (JSONException e) {

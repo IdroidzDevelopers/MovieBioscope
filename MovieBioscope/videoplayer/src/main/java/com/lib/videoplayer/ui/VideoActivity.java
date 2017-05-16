@@ -350,12 +350,17 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
         //this steps we have sequenceData what to play
         Data data = VideoData.getVideoByType(sequenceData.getVideoType());
-        if (!this.isFinishing()) {
-            if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
-                playInOtherView(data);
-            } else {
-                selectOnlyAdVideos();
+        if (null != data) {
+            if (!this.isFinishing()) {
+                if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
+                    playInOtherView(data);
+                } else {
+                    selectOnlyAdVideos();
+                }
             }
+        } else {
+                VideoData.resetVideoSequencePlayedState(sequenceData.getVideoType());
+                selectOnlyAdVideos();
         }
     }
 

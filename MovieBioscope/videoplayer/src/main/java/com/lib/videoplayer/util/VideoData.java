@@ -686,6 +686,7 @@ public class VideoData {
         String[] lSelectionArg = new String[]{"" + videoId};
         ContentValues content = new ContentValues();
         content.put(VideoProvider.VIDEO_COLUMNS.IS_PLAYING, VIDEO_COMPLETED);
+        content.put(VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE, 1);
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
         Log.d(TAG, "updateVideoCompletedState :: updated the video completed state" + count);
         return count >= 0 ? true : false;
@@ -817,8 +818,8 @@ public class VideoData {
                 String defaultSelectedMovieId = getDefaultMovie();
                 if (null == defaultSelectedMovieId) {
                     Logger.info(TAG, "get movie based on random logic");
-                    selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-                    selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                    selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND "+ VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                    selectionArg = new String[]{type,"" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                     orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 } else {
                     Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);
@@ -827,10 +828,10 @@ public class VideoData {
                 }
                 break;
             default:
-                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? ";
-                selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND "+VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                selectionArg = new String[]{type,"" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                 //orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC , " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-                orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+                orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC," +VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 break;
         }
         Cursor cursor = null;
@@ -856,5 +857,21 @@ public class VideoData {
             }
         }
         return data;
+    }
+
+    /**
+     * Method to reset all videoes of a particular sequence to not played state
+     * once all videos has played in a sequence
+     *
+     * @return count of reset videos
+     */
+    public static int resetVideoSequencePlayedState(String sequenceType) {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ?";
+        String[] lSelectionArg = {"" + sequenceType};
+        ContentValues content = new ContentValues();
+        content.put(VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE, 0);
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
+        Log.d(TAG, "resetVideoSequencePlayedState() :: rows count " + count);
+        return count;
     }
 }

@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -57,6 +58,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private BroadcastReceiver mReceiver;
     private View mLoading;
     private TextView mBrkVideoHeader;
+    private RelativeLayout mNewFeedLayout;
+    private TextView mNewsTextView;
 
     //Header , Footer, breaking news
     private Fragment mTopBannerFragment;
@@ -76,6 +79,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
     //testing
     private GifImageView mGifImageView;
+
 
 
     public interface EVENT {
@@ -100,6 +104,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         int REMOVE_BREAKING_NEWS = 3;
         int FINISH_ACTIVITY = 4;
         int REMOVE_COMPANY_AD = 5;
+        int SHOW_TICKER_TEXT = 7;
+        int HIDE_TICKER_TEXT = 8;
     }
 
     @Override
@@ -171,6 +177,11 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         initFragments();
         mGifImageView = (GifImageView) findViewById(R.id.company_logo);
         mBrkVideoHeader = (TextView) findViewById(R.id.breaking_video_header);
+        //news feed
+        mNewFeedLayout = (RelativeLayout) findViewById(R.id.news_feed_layout);
+        mNewFeedLayout.bringToFront();
+        mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
+        mNewsTextView.setSelected(true);
     }
 
     /**
@@ -581,6 +592,15 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         }
     }
 
+    private void hideTickerText() {
+        mNewFeedLayout.setVisibility(View.GONE);
+    }
+
+    private void showTickerText() {
+        mNewFeedLayout.setVisibility(View.VISIBLE);
+        mNewFeedLayout.bringToFront();
+    }
+
 
     public class TaskHandler extends Handler {
         @Override
@@ -610,6 +630,12 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     if (!isFinishing()) {
                         finish();
                     }
+                    break;
+                case TASK_EVENT.SHOW_TICKER_TEXT:
+                    showTickerText();
+                    break;
+                case TASK_EVENT.HIDE_TICKER_TEXT:
+                    hideTickerText();
                     break;
 
                 default:
@@ -992,6 +1018,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             }
         }
     }
+
 
 
 }

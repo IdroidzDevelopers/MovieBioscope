@@ -132,6 +132,8 @@ public class DownloadUtil {
             case VideoProvider.VIDEO_TYPE.DEVOTIONAL:
             case VideoProvider.VIDEO_TYPE.SPORTS:
                 return "/movie_bioscope/landing_video/";
+            case VideoProvider.VIDEO_TYPE.TICKER:
+                return "/movie_bioscope/ticker/";
             default:
                 return "/movie_bioscope/";
 

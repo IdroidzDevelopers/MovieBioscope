@@ -108,6 +108,7 @@ public class VideoProvider extends ContentProvider {
         String SERIAL = "serial";
         String DEVOTIONAL = "devotional";
         String SPORTS = "sports";
+        String TICKER = "ticker";
 
 
     }

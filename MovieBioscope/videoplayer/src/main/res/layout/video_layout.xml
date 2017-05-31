@@ -81,4 +81,8 @@
         android:layout_marginRight="@dimen/company_gif_right_margin"
         android:layout_alignParentTop="true"
         android:src="@drawable/tv_logo" />
+
+    <include
+        android:id="@+id/news_feed_layout"
+        layout="@layout/new_feed_layout" />
 </RelativeLayout>

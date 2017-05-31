@@ -535,25 +535,25 @@ public class VideoData {
     }
 
     public static void deleteAllTicker() {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? ";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.TICKER};
-            Cursor lCursor = null;
-            try {
-                lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
-                while (null != lCursor && lCursor.moveToNext()) {
-                    String videoId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
-                    if(null!=videoId){
-                        deleteFileById(videoId);
-                    }
-                    break;
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? ";
+        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.TICKER};
+        Cursor lCursor = null;
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+            while (null != lCursor && lCursor.moveToNext()) {
+                String videoId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                if (null != videoId) {
+                    deleteFileById(videoId);
                 }
-            } catch (Exception e) {
-                Log.d(TAG, "Exception :: deleteAllTicker() :: ", e);
-            } finally {
-                if (null != lCursor && !lCursor.isClosed()) {
-                    lCursor.close();
-                }
+                break;
             }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception :: deleteAllTicker() :: ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
     }
 
     public static void deleteFileById(String videoId) {
@@ -840,8 +840,8 @@ public class VideoData {
                 String defaultSelectedMovieId = getDefaultMovie();
                 if (null == defaultSelectedMovieId) {
                     Logger.info(TAG, "get movie based on random logic");
-                    selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND "+ VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-                    selectionArg = new String[]{type,"" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                    selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                    selectionArg = new String[]{type, "" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                     orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 } else {
                     Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);
@@ -850,10 +850,10 @@ public class VideoData {
                 }
                 break;
             default:
-                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND "+VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-                selectionArg = new String[]{type,"" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+                selectionArg = new String[]{type, "" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                 //orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC , " + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
-                orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC," +VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
+                orderBy = VideoProvider.VIDEO_COLUMNS.PRIORITY + " DESC," + VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 break;
         }
         Cursor cursor = null;
@@ -895,5 +895,36 @@ public class VideoData {
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, content, lSelection, lSelectionArg);
         Log.d(TAG, "resetVideoSequencePlayedState() :: rows count " + count);
         return count;
+    }
+
+    public static String getTicketText() {
+        String ticketText = null;
+        Data data = new Data();
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
+        String[] selectionArg = {"" + VideoProvider.VIDEO_TYPE.TICKER, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+        Cursor lCursor = null;
+        try {
+            lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, selection, selectionArg, null);
+            while (null != lCursor && lCursor.moveToNext()) {
+                String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                data.setPath(lValue);
+                break;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception :: getTicketText() :: ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        Log.d(TAG, "getTicketText() :: data  " + data);
+        if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
+            try {
+                ticketText = FileUtil.getStringFromFile(data.getPath());
+            } catch (Exception e) {
+                Log.e(TAG, "Exception :: while getting string from file () :: ", e);
+            }
+        }
+        return ticketText;
     }
 }

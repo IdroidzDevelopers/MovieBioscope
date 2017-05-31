@@ -84,5 +84,6 @@
 
     <include
         android:id="@+id/news_feed_layout"
-        layout="@layout/new_feed_layout" />
+        layout="@layout/new_feed_layout"
+        android:visibility="gone"/>
 </RelativeLayout>

@@ -81,7 +81,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private GifImageView mGifImageView;
 
 
-
     public interface EVENT {
         int PLAY_NEXT = 0;
         int PLAY_BREAKING_VIDEO = 1;
@@ -216,6 +215,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         if (mStateMachine.videoInfo.getVideoState() == StateMachine.VIDEO_STATE.MOVIE_AND_ADV) {
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
         }
+        mTaskHandler.sendEmptyMessage(TASK_EVENT.SHOW_TICKER_TEXT);
     }
 
     @Override
@@ -370,8 +370,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                 }
             }
         } else {
-                VideoData.resetVideoSequencePlayedState(sequenceData.getVideoType());
-                selectOnlyAdVideos();
+            VideoData.resetVideoSequencePlayedState(sequenceData.getVideoType());
+            selectOnlyAdVideos();
         }
     }
 
@@ -596,9 +596,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mNewFeedLayout.setVisibility(View.GONE);
     }
 
-    private void showTickerText() {
-        mNewFeedLayout.setVisibility(View.VISIBLE);
-        mNewFeedLayout.bringToFront();
+    private void showTickerTextIfExist() {
+        String tickerText = VideoData.getTicketText();
+        if (null != tickerText && !"".equals(tickerText)) {
+            mNewsTextView.setText(tickerText);
+            mNewFeedLayout.setVisibility(View.VISIBLE);
+            mNewFeedLayout.bringToFront();
+        }
     }
 
 
@@ -632,7 +636,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                     }
                     break;
                 case TASK_EVENT.SHOW_TICKER_TEXT:
-                    showTickerText();
+                    showTickerTextIfExist();
                     break;
                 case TASK_EVENT.HIDE_TICKER_TEXT:
                     hideTickerText();
@@ -1018,7 +1022,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
             }
         }
     }
-
 
 
 }

@@ -628,13 +628,14 @@ public class VideoData {
         }
     }
 
-    public static void resetTravelSafety() {
-        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?, ?)";
-        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO};
+    public static void resetIntroTravelSafety() {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?, ? , ? )";
+        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO,VideoProvider.VIDEO_TYPE.INTRO_VIDEO};
         ContentValues lValues = new ContentValues();
         lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, 0);//reset so that it will play again
+        lValues.put(VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE, 0);//reset so that it will play again
         int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues, lSelection, lSelectionArg);
-        Logger.debug(TAG, "resetTravelSafety :: count " + count);
+        Logger.debug(TAG, "resetIntroTravelSafety :: count " + count);
     }
 
     public static List<MoviesList> getMoviesList() {

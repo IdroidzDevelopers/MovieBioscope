@@ -43,7 +43,7 @@ public class VideoCommandReceiver extends BroadcastReceiver {
                 context.startActivity(new Intent(context, MovieListActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 //context.sendBroadcast(new Intent().setAction("android.navajhalka.movielist"));
             } else if (CustomIntent.ACTION_ROUTE_CHANGED.equals(intent.getAction())) {
-                VideoData.resetTravelSafety();
+                VideoData.resetIntroTravelSafety();
                 SequenceUtil.resetSelection(StateMachine.SEQUENCE_TYPE.MOVIE_INIT_TYPE);
             } else if (CustomIntent.ACTION_MOVIE_SELECTION_CHANGED.equals(intent.getAction())) {
                 StateMachine.deletePersistState(StateMachine.VIDEO_STATE.MOVIE_AND_ADV);

@@ -4,25 +4,21 @@ package com.lib.route.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 
-import com.lib.route.R;
 import com.lib.route.RouteApplication;
 import com.lib.route.database.RouteProvider;
 import com.lib.route.objects.Route;
 import com.lib.utility.util.Logger;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RouteUtil {
     private static final String TAG = RouteUtil.class.getSimpleName();
     private static final boolean DEBUG = true;
+    public static final String TRAVELLER_LOGO = "traveller_logo";
 
     public static synchronized boolean updateCurrentRoute(Context aContext, String routeId) {
         String lSelection = RouteProvider.ROUTECOLUMNS.ROUTE_ID + " = ?";
@@ -116,8 +112,8 @@ public class RouteUtil {
         List<String> routeImages = new ArrayList<String>();
         if (null != routeId) {
             Cursor lCursor = null;
-            String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ? AND "+RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS+" = ?";
-            String[] lSelectionArg = new String[]{"" + routeId,RouteProvider.DOWNLOAD_STATUS.DOWNLOADED};
+            String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ? AND " + RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS + " = ?";
+            String[] lSelectionArg = new String[]{"" + routeId, RouteProvider.DOWNLOAD_STATUS.DOWNLOADED};
             try {
                 lCursor = RouteApplication.getRouteContext().getContentResolver().query(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, lSelection, lSelectionArg, null);
                 if (null != lCursor) {
@@ -136,6 +132,29 @@ public class RouteUtil {
         }
         if (DEBUG) Log.d(TAG, "getImagesForRoute() " + routeImages);
         return routeImages;
+    }
+
+    public static String getTravellerImagePath() {
+        Cursor lCursor = null;
+        String path = null;
+        String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ? AND " + RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS + " = ?";
+        String[] lSelectionArg = new String[]{RouteUtil.TRAVELLER_LOGO, RouteProvider.DOWNLOAD_STATUS.DOWNLOADED};
+        try {
+            lCursor = RouteApplication.getRouteContext().getContentResolver().query(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, lSelection, lSelectionArg, null);
+            if (null != lCursor) {
+                while (lCursor.moveToNext()) {
+                    path = lCursor.getString(lCursor.getColumnIndex(RouteProvider.ROUTE_IMAGE_COLUMNS.PATH));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception getTravellerImagePath() ", e);
+        } finally {
+            if (null != lCursor && !lCursor.isClosed()) {
+                lCursor.close();
+            }
+        }
+        if (DEBUG) Log.d(TAG, "getTravellerImagePath() " + path);
+        return path;
     }
 
     public static String getRouteFrom(Context context, String downloadId) {
@@ -162,20 +181,20 @@ public class RouteUtil {
         return routeId;
     }
 
-    public static void deleteAllRouteData(){
+    public static void deleteAllRouteData() {
         try {
             int routeDeleteCount = RouteApplication.getRouteContext().getContentResolver().delete(RouteProvider.CONTENT_URI_BUS_ROUTE_TABLE, null, null);
-            Log.d(TAG, "Route Delete Count :: "+routeDeleteCount);
-        }catch (Exception e){
+            Log.d(TAG, "Route Delete Count :: " + routeDeleteCount);
+        } catch (Exception e) {
             Log.d(TAG, "Exception :: deleteAllRouteData() :: ", e);
         }
     }
 
-    public static void deleteAllRouteImagesData(){
+    public static void deleteAllRouteImagesData() {
         try {
             int routeDeleteCount = RouteApplication.getRouteContext().getContentResolver().delete(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, null);
-            Log.d(TAG, "Route Images Delete Count :: "+routeDeleteCount);
-        }catch (Exception e){
+            Log.d(TAG, "Route Images Delete Count :: " + routeDeleteCount);
+        } catch (Exception e) {
             Log.d(TAG, "Exception :: deleteAllRouteImagesData() :: ", e);
         }
     }

@@ -19,12 +19,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.lib.location.ui.BottomBannerFragment;
 import com.lib.location.ui.TopBannerFragment;
+import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.R;
@@ -77,8 +79,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     private OtherPrepareListener mOtherPrepareListener;
     private OtherSeekListener mOtherSeekListener;
 
-    //testing
-    private GifImageView mGifImageView;
+    private GifImageView mTravellerImageView;
 
 
     public interface EVENT {
@@ -174,13 +175,22 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mOtherView.setOnTouchListener(this);
         initListener();
         initFragments();
-        mGifImageView = (GifImageView) findViewById(R.id.company_logo);
         mBrkVideoHeader = (TextView) findViewById(R.id.breaking_video_header);
         //news feed
         mNewFeedLayout = (RelativeLayout) findViewById(R.id.news_feed_layout);
         mNewFeedLayout.bringToFront();
         mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
         mNewsTextView.setSelected(true);
+        initTravellerImageIfExist();
+    }
+
+    private void initTravellerImageIfExist() {
+        mTravellerImageView = (GifImageView) findViewById(R.id.traveller_logo);
+        String path = RouteUtil.getTravellerImagePath();
+        if (null != path && FileUtil.isFileExist(path)) {
+            mTravellerImageView.setImageURI(Uri.parse(path));
+            mTravellerImageView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -598,6 +608,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
 
     private void showTickerTextIfExist() {
         String tickerText = VideoData.getTicketText();
+        Log.d(TAG,"--(ticker)-- :: length "+tickerText.length());
         if (null != tickerText && !"".equals(tickerText)) {
             mNewsTextView.setText(tickerText);
             mNewFeedLayout.setVisibility(View.VISIBLE);
@@ -1017,6 +1028,8 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
                         }
                     } else if (VideoProvider.VIDEO_TYPE.COMPANY_AD.equals(type)) {
                         mState.sendEmptyMessage(EVENT.PLAY_COMPANY_AD);
+                    } else if (VideoProvider.VIDEO_TYPE.TICKER.equals(type)) {
+                        mTaskHandler.sendEmptyMessage(TASK_EVENT.SHOW_TICKER_TEXT);
                     }
                 }
             }

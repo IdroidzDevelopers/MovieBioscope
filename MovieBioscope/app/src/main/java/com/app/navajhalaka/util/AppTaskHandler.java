@@ -187,7 +187,7 @@ public class AppTaskHandler extends Handler {
         ContentValues value = new ContentValues();
         value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, url);
         value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
-        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, "company_logo");
+        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, RouteUtil.TRAVELLER_LOGO);
         value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
         RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
     }

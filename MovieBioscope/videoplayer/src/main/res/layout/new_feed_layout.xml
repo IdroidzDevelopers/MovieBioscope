@@ -16,6 +16,7 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
+        android:layout_marginLeft="100dp"
         android:textColor="@android:color/white"
         android:textSize="40sp" />
 </RelativeLayout>

@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -236,11 +235,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         removeBreakingNews();
         removeCompanyAd();
         hideBreakingVideoHeaderIfRequired();
+        hideTickerText();
         if (null != mTaskHandler) {
             mTaskHandler.removeMessages(TASK_EVENT.HIDE_LOCATION_INFO);
             mTaskHandler.removeMessages(TASK_EVENT.PREPARE_FOR_NEXT_AD);
             mTaskHandler.removeMessages(TASK_EVENT.REMOVE_COMPANY_AD);
             mTaskHandler.removeMessages(TASK_EVENT.REMOVE_BREAKING_NEWS);
+            mTaskHandler.removeMessages(TASK_EVENT.HIDE_TICKER_TEXT);
         }
         pauseVideo();
     }
@@ -603,16 +604,29 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private void hideTickerText() {
-        mNewFeedLayout.setVisibility(View.GONE);
+        if (null != mNewFeedLayout && mNewFeedLayout.getVisibility() == View.VISIBLE) {
+            mNewFeedLayout.setVisibility(View.GONE);
+        }
     }
 
     private void showTickerTextIfExist() {
         String tickerText = VideoData.getTicketText();
-        Log.d(TAG,"--(ticker)-- :: length "+tickerText.length());
         if (null != tickerText && !"".equals(tickerText)) {
+            Log.d(TAG, "--(ticker)-- :: length " + tickerText.length());
             mNewsTextView.setText(tickerText);
             mNewFeedLayout.setVisibility(View.VISIBLE);
             mNewFeedLayout.bringToFront();
+            long dismissTime = getDismissTime(tickerText.length());
+            Log.d(TAG, "--(ticker)-- :: dismissTime " + dismissTime);
+            mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_TICKER_TEXT, dismissTime);
+        }
+    }
+
+    private int getDismissTime(int length) {
+        if (length < 50) {
+            return 25 * 1000;
+        } else {
+            return (length / 2) * 1000;
         }
     }
 

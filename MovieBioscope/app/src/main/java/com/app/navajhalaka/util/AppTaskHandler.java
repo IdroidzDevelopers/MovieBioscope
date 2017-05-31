@@ -95,6 +95,7 @@ public class AppTaskHandler extends Handler {
 
             case AppInterface.HANDLE_BUS_DETAILS:
                 if (null != lBundle) {
+                    try{
                     BusRegData busData = gson.fromJson(msg.getData().getString("data"), BusRegData.class);
                     if (null != busData && null != busData.getMessage() && busData.getMessage().equalsIgnoreCase("Success")) {
                         BusDetails busDetails[] = busData.getData();
@@ -105,6 +106,8 @@ public class AppTaskHandler extends Handler {
                                         busDetail.getCompany(), busDetail.getCompanyName());
                                 List<Routes> busRoutes = busDetail.getRoutes();
                                 List<String> topicsList = busDetail.getTopics();
+                                List<String> compantLogoUrl = busDetail.getLogoUrl();
+                                downLoadCompanyLogo(compantLogoUrl.get(0));
                                 if (null != topicsList && topicsList.size() > 0) {
                                     for (String topic : topicsList) {
                                         FirebaseUtil.insertFirebaseTopics(BioscopeApp.getContext(), topic);
@@ -142,6 +145,9 @@ public class AppTaskHandler extends Handler {
                             }
                         }
                     }
+                }catch(Exception e){
+                Log.e(TAG,"Error::"+e);
+            }
                 }
                 break;
             case AppInterface.HANDLE_REFRESH: {
@@ -174,5 +180,15 @@ public class AppTaskHandler extends Handler {
             Log.e(TAG,"Exception in Jsonparsing",je);
         }
         return transactionId;
+    }
+
+    private void downLoadCompanyLogo(String url){
+        long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), url, "company_logo.jpg");
+        ContentValues value = new ContentValues();
+        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, url);
+        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
+        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, "company_logo");
+        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
+        RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
     }
 }

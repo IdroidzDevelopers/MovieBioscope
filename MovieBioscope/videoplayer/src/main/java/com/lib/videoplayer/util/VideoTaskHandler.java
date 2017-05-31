@@ -194,6 +194,9 @@ public class VideoTaskHandler extends Handler {
         for (Asset asset : pushData.getAssets()) {
             //check is there any entry with the same assert id then ignore it .may be its a duplicate message
             if (!VideoData.isAssetExist(sContext, asset.getAssetID())) {
+                if(null!=asset.getType()&&asset.getType().equalsIgnoreCase("ticker")){
+                    VideoData.deleteAllTicker();
+                }
                 long lDownloadId = DownloadUtil.beginDownload(sContext, asset.getUrl(), DownloadUtil.getDestinationDir(asset.getType()), asset.getName());
                 Data data = copyAssetToData(asset);
                 data.setMessage(pushData.getContent());

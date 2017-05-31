@@ -534,6 +534,28 @@ public class VideoData {
         }
     }
 
+    public static void deleteAllTicker() {
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? ";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.TICKER};
+            Cursor lCursor = null;
+            try {
+                lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, lSelection, lSelectionArg, null);
+                while (null != lCursor && lCursor.moveToNext()) {
+                    String videoId = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                    if(null!=videoId){
+                        deleteFileById(videoId);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Exception :: deleteAllTicker() :: ", e);
+            } finally {
+                if (null != lCursor && !lCursor.isClosed()) {
+                    lCursor.close();
+                }
+            }
+    }
+
     public static void deleteFileById(String videoId) {
         String path = getAssetPath(videoId);
         deleteFile(path);

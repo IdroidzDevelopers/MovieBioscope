@@ -282,8 +282,8 @@ public class VideoData {
      */
     public static synchronized void backgroundSearchForBreaking(Context context) {
         if (null != context) {
-            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
-            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};//0 means never played
+            String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?,?) AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ? AND " + VideoProvider.VIDEO_COLUMNS.PLAY_COUNT + "= ?";
+            String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.VIDEO_TYPE.COMPANY_AD, VideoProvider.VIDEO_TYPE.TICKER, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED, "" + 0};//0 means never played
             String orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
             Cursor lCursor = null;
             try {
@@ -630,7 +630,7 @@ public class VideoData {
 
     public static void resetIntroTravelSafety() {
         String lSelection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?, ? , ? )";
-        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO,VideoProvider.VIDEO_TYPE.INTRO_VIDEO};
+        String[] lSelectionArg = {"" + VideoProvider.VIDEO_TYPE.COMPANY_VIDEO, VideoProvider.VIDEO_TYPE.SAFETY_VIDEO, VideoProvider.VIDEO_TYPE.INTRO_VIDEO};
         ContentValues lValues = new ContentValues();
         lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, 0);//reset so that it will play again
         lValues.put(VideoProvider.VIDEO_COLUMNS.HAS_PLAYED_IN_SEQUENCE, 0);//reset so that it will play again
@@ -898,8 +898,7 @@ public class VideoData {
         return count;
     }
 
-    public static String getTicketText() {
-        String ticketText = null;
+    public static Data getTickerData() {
         Data data = new Data();
         String selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
         String[] selectionArg = {"" + VideoProvider.VIDEO_TYPE.TICKER, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
@@ -907,18 +906,27 @@ public class VideoData {
         try {
             lCursor = VideoApplication.getVideoContext().getContentResolver().query(VideoProvider.CONTENT_URI_VIDEO_TABLE, null, selection, selectionArg, null);
             while (null != lCursor && lCursor.moveToNext()) {
-                String lValue = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
-                data.setPath(lValue);
+                String value = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.VIDEO_ID));
+                data.setAssetID(value);
+                value = lCursor.getString(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PATH));
+                data.setPath(value);
+                int count = lCursor.getInt(lCursor.getColumnIndex(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT));
+                data.setCount(count);
                 break;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception :: getTicketText() :: ", e);
+            Log.e(TAG, "Exception :: getTickerData() :: ", e);
         } finally {
             if (null != lCursor && !lCursor.isClosed()) {
                 lCursor.close();
             }
         }
-        Log.d(TAG, "getTicketText() :: data  " + data);
+        Log.d(TAG, "getTickerData() :: data  " + data);
+        return data;
+    }
+
+    public static String getTickerText(Data data) {
+        String ticketText = null;
         if (null != data && null != data.getPath() && FileUtil.isFileExist(data.getPath())) {
             try {
                 ticketText = FileUtil.getStringFromFile(data.getPath());
@@ -926,6 +934,19 @@ public class VideoData {
                 Log.e(TAG, "Exception :: while getting string from file () :: ", e);
             }
         }
+        Log.d(TAG, "getTicketText() :: ticketText  " + ticketText);
         return ticketText;
     }
+
+    public static int updateTickerTextData(Data lData) {
+        String lSelection = VideoProvider.VIDEO_COLUMNS.VIDEO_ID + "= ?";
+        String[] lSelectionArg = {"" + lData.getAssetID()};
+        ContentValues lValues = new ContentValues();
+        lValues.put(VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME, System.currentTimeMillis());
+        lValues.put(VideoProvider.VIDEO_COLUMNS.PLAY_COUNT, lData.getCount() + 1);//incremented the play count
+        int count = VideoApplication.getVideoContext().getContentResolver().update(VideoProvider.CONTENT_URI_VIDEO_TABLE, lValues, lSelection, lSelectionArg);
+        Log.d(TAG, "updateTickerTextData() :: update count " + count);
+        return count;
+    }
+
 }

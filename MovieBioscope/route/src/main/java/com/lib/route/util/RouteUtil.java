@@ -134,28 +134,6 @@ public class RouteUtil {
         return routeImages;
     }
 
-    public static String getTravellerImagePath() {
-        Cursor lCursor = null;
-        String path = null;
-        String lSelection = RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID + " = ? AND " + RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS + " = ?";
-        String[] lSelectionArg = new String[]{RouteUtil.TRAVELLER_LOGO, RouteProvider.DOWNLOAD_STATUS.DOWNLOADED};
-        try {
-            lCursor = RouteApplication.getRouteContext().getContentResolver().query(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, null, lSelection, lSelectionArg, null);
-            if (null != lCursor) {
-                while (lCursor.moveToNext()) {
-                    path = lCursor.getString(lCursor.getColumnIndex(RouteProvider.ROUTE_IMAGE_COLUMNS.PATH));
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception getTravellerImagePath() ", e);
-        } finally {
-            if (null != lCursor && !lCursor.isClosed()) {
-                lCursor.close();
-            }
-        }
-        if (DEBUG) Log.d(TAG, "getTravellerImagePath() " + path);
-        return path;
-    }
 
     public static String getRouteFrom(Context context, String downloadId) {
         String routeId = null;

@@ -180,16 +180,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         mNewFeedLayout.bringToFront();
         mNewsTextView = (TextView) mNewFeedLayout.findViewById(R.id.news_feed);
         mNewsTextView.setSelected(true);
-        initTravellerImageIfExist();
-    }
-
-    private void initTravellerImageIfExist() {
-        mTravellerImageView = (GifImageView) findViewById(R.id.traveller_logo);
-        String path = RouteUtil.getTravellerImagePath();
-        if (null != path && FileUtil.isFileExist(path)) {
-            mTravellerImageView.setImageURI(Uri.parse(path));
-            mTravellerImageView.setVisibility(View.VISIBLE);
-        }
     }
 
     /**
@@ -224,7 +214,6 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
         if (mStateMachine.videoInfo.getVideoState() == StateMachine.VIDEO_STATE.MOVIE_AND_ADV) {
             mTaskHandler.sendEmptyMessage(TASK_EVENT.PREPARE_FOR_NEXT_AD);
         }
-        mTaskHandler.sendEmptyMessage(TASK_EVENT.SHOW_TICKER_TEXT);
     }
 
     @Override
@@ -610,12 +599,14 @@ public class VideoActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private void showTickerTextIfExist() {
-        String tickerText = VideoData.getTicketText();
+        Data data = VideoData.getTickerData();
+        String tickerText = VideoData.getTickerText(data);
         if (null != tickerText && !"".equals(tickerText)) {
             Log.d(TAG, "--(ticker)-- :: length " + tickerText.length());
             mNewsTextView.setText(tickerText);
             mNewFeedLayout.setVisibility(View.VISIBLE);
             mNewFeedLayout.bringToFront();
+            VideoData.updateTickerTextData(data);
             long dismissTime = getDismissTime(tickerText.length());
             Log.d(TAG, "--(ticker)-- :: dismissTime " + dismissTime);
             mTaskHandler.sendEmptyMessageDelayed(TASK_EVENT.HIDE_TICKER_TEXT, dismissTime);

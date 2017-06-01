@@ -13,7 +13,7 @@ public class BusDetails {
     private String companyName;
     private List<String> topics;
     private List<Routes> routes;
-    private List<String> logoUrl;
+    private CompanyDetails companyDetails;
 
     public String getRegNo() {
         return regNo;
@@ -63,11 +63,12 @@ public class BusDetails {
         this.routes = routes;
     }
 
-    public List<String> getLogoUrl() {
-        return logoUrl;
+    public CompanyDetails getCompanyDetails() {
+        return companyDetails;
     }
 
-    public void setLogoUrl(List<String> logoUrl) {
-        this.logoUrl = logoUrl;
+    public BusDetails setCompanyDetails(CompanyDetails companyDetails) {
+        this.companyDetails = companyDetails;
+        return this;
     }
 }

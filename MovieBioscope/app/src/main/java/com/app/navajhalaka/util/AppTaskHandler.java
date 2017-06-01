@@ -10,18 +10,19 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.app.navajhalaka.app.BioscopeApp;
 import com.app.navajhalaka.firebase.FireBaseManager;
 import com.app.navajhalaka.model.AnalyticData;
 import com.app.navajhalaka.model.BusDetails;
 import com.app.navajhalaka.model.BusRegData;
+import com.app.navajhalaka.model.CompanyDetails;
 import com.app.navajhalaka.model.DestinationDetails;
 import com.app.navajhalaka.model.Images;
 import com.app.navajhalaka.model.Routes;
 import com.app.navajhalaka.model.SourceDetails;
 import com.app.navajhalaka.volley.VolleyUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.lib.firebase.util.FirebaseUtil;
 import com.lib.location.util.LocationUtil;
 import com.lib.route.RouteApplication;
@@ -29,7 +30,6 @@ import com.lib.route.database.RouteProvider;
 import com.lib.route.util.DownloadUtil;
 import com.lib.route.util.RouteUtil;
 import com.lib.utility.util.CustomIntent;
-import com.lib.videoplayer.util.VideoData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,66 +95,68 @@ public class AppTaskHandler extends Handler {
 
             case AppInterface.HANDLE_BUS_DETAILS:
                 if (null != lBundle) {
-                    try{
-                    BusRegData busData = gson.fromJson(msg.getData().getString("data"), BusRegData.class);
-                    if (null != busData && null != busData.getMessage() && busData.getMessage().equalsIgnoreCase("Success")) {
-                        BusDetails busDetails[] = busData.getData();
-                        if (busDetails.length > 0) {
-                            BusDetails busDetail = busDetails[0];
-                            if (null != busDetail) {
-                                BusUtil.insertBusInfo(busDetail.getFleetID(), busDetail.getRegNo(),
-                                        busDetail.getCompany(), busDetail.getCompanyName());
-                                List<Routes> busRoutes = busDetail.getRoutes();
-                                List<String> topicsList = busDetail.getTopics();
-                                List<String> compantLogoUrl = busDetail.getLogoUrl();
-                                downLoadCompanyLogo(compantLogoUrl.get(0));
-                                if (null != topicsList && topicsList.size() > 0) {
-                                    for (String topic : topicsList) {
-                                        FirebaseUtil.insertFirebaseTopics(BioscopeApp.getContext(), topic);
+                    try {
+                        BusRegData busData = gson.fromJson(msg.getData().getString("data"), BusRegData.class);
+                        if (null != busData && null != busData.getMessage() && busData.getMessage().equalsIgnoreCase("Success")) {
+                            BusDetails busDetails[] = busData.getData();
+                            if (busDetails.length > 0) {
+                                BusDetails busDetail = busDetails[0];
+                                if (null != busDetail) {
+                                    BusUtil.insertBusInfo(busDetail.getFleetID(), busDetail.getRegNo(),
+                                            busDetail.getCompany(), busDetail.getCompanyName());
+                                    List<Routes> busRoutes = busDetail.getRoutes();
+                                    List<String> topicsList = busDetail.getTopics();
+                                    CompanyDetails companyDetails = busDetail.getCompanyDetails();
+                                    if (null != companyDetails) {
+                                        downLoadCompanyLogo(companyDetails.getUrl());
                                     }
-                                }
-                                FireBaseManager.getFireBaseToken();
-                                FireBaseManager.subscribeFirebaseTopics();
-                                if (busRoutes.size() > 0) {
-                                    for (Routes route : busRoutes) {
-                                        if (null != route) {
-                                            String routeId = route.getRouteID();
-                                            String source = route.getSource();
-                                            String destination = route.getDestination();
-                                            SourceDetails sourceInfo = route.getSourceDetails();
-                                            DestinationDetails destinationInfo = route.getDestinationDetails();
-                                            RouteUtil.insertRouteInfo(routeId, source, sourceInfo.getFormatted_address(),
-                                                    sourceInfo.getLatitude(), sourceInfo.getLongitude(),
-                                                    destination, destinationInfo.getFormatted_address(),
-                                                    destinationInfo.getLatitude(), destinationInfo.getLongitude());
-                                            //inserting download details to route image provider to route image
-                                            for (Images image : route.getImages()) {
-                                                long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), image.getUrl(), image.getName());
-                                                ContentValues value = new ContentValues();
-                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, image.getUrl());
-                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
-                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, routeId);
-                                                value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
-                                                RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
-                                            }
+                                    if (null != topicsList && topicsList.size() > 0) {
+                                        for (String topic : topicsList) {
+                                            FirebaseUtil.insertFirebaseTopics(BioscopeApp.getContext(), topic);
                                         }
-
                                     }
-                                    LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_ROUTE_RECEIVED));
+                                    FireBaseManager.getFireBaseToken();
+                                    FireBaseManager.subscribeFirebaseTopics();
+                                    if (busRoutes.size() > 0) {
+                                        for (Routes route : busRoutes) {
+                                            if (null != route) {
+                                                String routeId = route.getRouteID();
+                                                String source = route.getSource();
+                                                String destination = route.getDestination();
+                                                SourceDetails sourceInfo = route.getSourceDetails();
+                                                DestinationDetails destinationInfo = route.getDestinationDetails();
+                                                RouteUtil.insertRouteInfo(routeId, source, sourceInfo.getFormatted_address(),
+                                                        sourceInfo.getLatitude(), sourceInfo.getLongitude(),
+                                                        destination, destinationInfo.getFormatted_address(),
+                                                        destinationInfo.getLatitude(), destinationInfo.getLongitude());
+                                                //inserting download details to route image provider to route image
+                                                for (Images image : route.getImages()) {
+                                                    long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), image.getUrl(), image.getName());
+                                                    ContentValues value = new ContentValues();
+                                                    value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, image.getUrl());
+                                                    value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
+                                                    value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, routeId);
+                                                    value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
+                                                    RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
+                                                }
+                                            }
+
+                                        }
+                                        LocalBroadcastManager.getInstance(BioscopeApp.getContext()).sendBroadcast(new Intent(CustomIntent.ACTION_ROUTE_RECEIVED));
+                                    }
                                 }
                             }
                         }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error::" + e);
                     }
-                }catch(Exception e){
-                Log.e(TAG,"Error::"+e);
-            }
                 }
                 break;
             case AppInterface.HANDLE_REFRESH: {
-                String fleetId=BusUtil.getFleetId();
-                String data=lBundle.getString("data");
-                String transactionId=getTransactionId(data);
-                VolleyUtil.sendCommandAcknowledgement(fleetId,transactionId,null,"Received");
+                String fleetId = BusUtil.getFleetId();
+                String data = lBundle.getString("data");
+                String transactionId = getTransactionId(data);
+                VolleyUtil.sendCommandAcknowledgement(fleetId, transactionId, null, "Received");
                 FirebaseUtil.deleteAllFirebaseData();
                 FirebaseUtil.deleteAllFirebaseTopicsData();
                 LocationUtil.deleteAllLocationData();
@@ -169,26 +171,28 @@ public class AppTaskHandler extends Handler {
         }
     }
 
-    private String getTransactionId(String data){
-        String transactionId=null;
+    private String getTransactionId(String data) {
+        String transactionId = null;
         try {
             JSONObject dataJson = new JSONObject(data);
-            if (dataJson.has("transactionID")){
-                transactionId=dataJson.getString("transactionID");
+            if (dataJson.has("transactionID")) {
+                transactionId = dataJson.getString("transactionID");
             }
-        }catch (JSONException je){
-            Log.e(TAG,"Exception in Jsonparsing",je);
+        } catch (JSONException je) {
+            Log.e(TAG, "Exception in Jsonparsing", je);
         }
         return transactionId;
     }
 
-    private void downLoadCompanyLogo(String url){
-        long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), url, "company_logo.jpg");
-        ContentValues value = new ContentValues();
-        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, url);
-        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
-        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, RouteUtil.TRAVELLER_LOGO);
-        value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
-        RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
+    private void downLoadCompanyLogo(String url) {
+        if (null != url) {
+            long downloadId = DownloadUtil.beginDownload(RouteApplication.getRouteContext(), url, "company_logo.jpg");
+            ContentValues value = new ContentValues();
+            value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_URL, url);
+            value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.DOWNLOAD_ID, downloadId);
+            value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.ROUTE_ID, RouteUtil.TRAVELLER_LOGO);
+            value.put(RouteProvider.ROUTE_IMAGE_COLUMNS.STATUS, RouteProvider.DOWNLOAD_STATUS.DOWNLOADING);
+            RouteApplication.getRouteContext().getContentResolver().insert(RouteProvider.CONTENT_URI_ROUTE_IMAGE_TABLE, value);
+        }
     }
 }

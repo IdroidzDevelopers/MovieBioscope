@@ -109,6 +109,11 @@ public class VideoTaskHandler extends Handler {
                                 VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.ADV) + "/"));
                                 VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_NEWS) + "/"));
                                 VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.BREAKING_VIDEO) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.TRAILER) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.DEVOTIONAL) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.COMEDY_SHOW) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.SERIAL) + "/"));
+                                VideoData.deleteRecursive(new File(sdcard + DownloadUtil.getDestinationDir(VideoProvider.VIDEO_TYPE.SPORTS) + "/"));
                                 VideoData.deleteAllVideoDataExceptCompanyAndSafety();
                                 downloadContent(pushData);
                                 break;

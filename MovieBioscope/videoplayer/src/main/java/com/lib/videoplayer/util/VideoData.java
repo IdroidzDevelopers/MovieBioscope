@@ -524,8 +524,8 @@ public class VideoData {
     }
 
     public static void deleteAllVideoDataExceptCompanyAndSafety() {
-        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?,?)";
-        String[] selectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.VIDEO_TYPE.ADV, VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO};
+        String selection = VideoProvider.VIDEO_COLUMNS.TYPE + " IN (?,?,?,?,?,?,?,?,?)";
+        String[] selectionArg = new String[]{"" + VideoProvider.VIDEO_TYPE.MOVIE, VideoProvider.VIDEO_TYPE.ADV, VideoProvider.VIDEO_TYPE.BREAKING_NEWS, VideoProvider.VIDEO_TYPE.BREAKING_VIDEO, VideoProvider.VIDEO_TYPE.TRAILER, VideoProvider.VIDEO_TYPE.SPORTS, VideoProvider.VIDEO_TYPE.COMEDY_SHOW, VideoProvider.VIDEO_TYPE.DEVOTIONAL, VideoProvider.VIDEO_TYPE.SERIAL};
         try {
             int videoDeleteCount = VideoApplication.getVideoContext().getContentResolver().delete(VideoProvider.CONTENT_URI_VIDEO_TABLE, selection, selectionArg);
             Log.d(TAG, "Video data Delete Count :: " + videoDeleteCount);

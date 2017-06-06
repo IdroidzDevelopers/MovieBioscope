@@ -9,6 +9,7 @@
         android:layout_width="@dimen/company_gif_width"
         android:layout_height="@dimen/company_gif_height"
         android:src="@drawable/digvijaya_news_icon"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
 
     <TextView
@@ -22,7 +23,7 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
         android:textColor="@android:color/white"
         android:textSize="40sp" />
 </RelativeLayout>

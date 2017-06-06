@@ -842,7 +842,7 @@ public class VideoData {
                 if (null == defaultSelectedMovieId) {
                     Logger.info(TAG, "get movie based on random logic");
                     selection = VideoProvider.VIDEO_COLUMNS.TYPE + "= ? AND " + VideoProvider.VIDEO_COLUMNS.DOWNLOAD_STATUS + "= ?";
-                    selectionArg = new String[]{type, "" + 0, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
+                    selectionArg = new String[]{type, VideoProvider.DOWNLOAD_STATUS.DOWNLOADED};
                     orderBy = VideoProvider.VIDEO_COLUMNS.LAST_PLAYED_TIME + " ASC";
                 } else {
                     Logger.info(TAG, "get user selected movie with asset id " + defaultSelectedMovieId);

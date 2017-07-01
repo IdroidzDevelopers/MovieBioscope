@@ -5,12 +5,14 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 import com.lib.route.database.RouteProvider;
 import com.lib.route.objects.DownloadData;
+import com.lib.utility.util.ExternalStorage;
 import com.lib.utility.util.Logger;
+
+import java.io.File;
 
 
 public class DownloadUtil {
@@ -28,13 +30,16 @@ public class DownloadUtil {
     public static long beginDownload(Context context, String downloadUri, String name) {
         long downloadId = -1;
         if (NetworkUtil.isInternetAvailable(context)) {
+            File ext = ExternalStorage.getPath(context);
+            File root = new File(ext + File.separator);
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + "/movie_bioscope/images/");
-            request.setDestinationInExternalPublicDir("/movie_bioscope/images/", name);
-            //Enqueue a new download and same the referenceId
+            FileUtil.createFolderIfRequired(Uri.fromFile(root) + "/movie_bioscope/images/");
+            Uri path = Uri.withAppendedPath(Uri.fromFile(root), "/movie_bioscope/images/" + name);
+            Log.d(TAG, "--<SD CARD :: TEST > beginDownload :: path " + path);
+            request.setDestinationUri(path);
             downloadId = downloadManager.enqueue(request);
         }
         Log.d(TAG, "beginDownload :: downloadId " + downloadId);

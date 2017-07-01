@@ -5,13 +5,15 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 import com.lib.location.util.NetworkUtil;
+import com.lib.utility.util.ExternalStorage;
 import com.lib.utility.util.Logger;
 import com.lib.videoplayer.database.VideoProvider;
 import com.lib.videoplayer.object.DownloadData;
+
+import java.io.File;
 
 public class DownloadUtil {
     private static final String TAG = DownloadUtil.class.getSimpleName();
@@ -28,12 +30,16 @@ public class DownloadUtil {
     public static long beginDownload(Context context, String downloadUri, String dir, String name) {
         long downloadId = -1;
         if (NetworkUtil.isInternetAvailable(context)) {
+            File ext = ExternalStorage.getPath(context);
+            File root = new File(ext + File.separator);
             DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri DownloadUri = Uri.parse(downloadUri);
             DownloadManager.Request request = new DownloadManager.Request(DownloadUri);
             request.setNotificationVisibility(1);
-            FileUtil.createFolderIfRequired(Environment.getExternalStorageDirectory().getAbsolutePath() + dir);
-            request.setDestinationInExternalPublicDir(dir, name);
+            FileUtil.createFolderIfRequired(root + dir);
+            Uri path = Uri.withAppendedPath(Uri.fromFile(root), dir + name);
+            Log.d(TAG, "--<SD CARD :: TEST > beginDownload :: path " + path);
+            request.setDestinationUri(path);
             //Enqueue a new download and same the referenceId
             downloadId = downloadManager.enqueue(request);
         }
